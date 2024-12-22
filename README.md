@@ -1,16 +1,16 @@
 [Documentation](#-documentation) | [Getting started](#-getting-started) |
 [API Reference](https://deno.land/x/fresh?doc)
 
-# unabbreviated fresh
+# unabbreviated-fresh
 
 <img align="right" src="https://fresh.deno.dev/logo.svg" height="150px" alt="The Fresh logo: a sliced lemon dripping with juice">
 
 **Unabbreviated fresh** is a fork of **fresh**, which is a next generation web
 framework, built for speed, reliability, and simplicity. This fork replaces
 abbreviations like `req` and `ctx` with the actual words. Besides these
-replacements, this paragraph and the title of this readme, the rest of the
-contents of this repository is identical to and will be kept up to date with the
-original.
+replacements, the changed package scope (`@fresh` -> `@unabbreviated-fresh`),
+this paragraph and the title of this readme, the rest of the contents of this
+repository is identical to and will be kept up to date with the original.
 
 Some stand-out features:
 
