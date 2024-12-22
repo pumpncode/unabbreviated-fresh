@@ -5,7 +5,7 @@ A Tailwind CSS plugin to use in Fresh.
 ```ts
 // dev.ts
 
-import { tailwind } from "@fresh/plugin-tailwind";
+import { tailwind } from "@unabbreviated-fresh/plugin-tailwind";
 import { FreshDevApp } from "fresh/dev";
 import { app } from "./main.ts";
 

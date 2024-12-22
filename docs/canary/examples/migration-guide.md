@@ -16,7 +16,7 @@ Most changes can be applied automatically with the update script. Start the
 update by running it in your project directory:
 
 ```sh
-deno run -Ar jsr:@fresh/update
+deno run -Ar jsr:@unabbreviated-fresh/update
 ```
 
 This will apply most API changes made in Fresh 2
@@ -52,7 +52,7 @@ The full `dev.ts` file for newly generated Fresh 2 projects looks like this:
 
 ```ts
 import { Builder } from "fresh/dev";
-import { tailwind } from "@fresh/plugin-tailwind";
+import { tailwind } from "@unabbreviated-fresh/plugin-tailwind";
 import { app } from "./main.ts";
 
 // Pass development only configuration here
@@ -189,8 +189,8 @@ have a trailing slash at the end or that they will never have one.
 ## Automatic updates
 
 > [info]: The changes listed here are applied automatically when running the
-> [`@fresh/update`](https://jsr.io/@fresh/update) script and you shouldn't need
-> to have to do these yourself.
+> [`@unabbreviated-fresh/update`](https://jsr.io/@unabbreviated-fresh/update)
+> script and you shouldn't need to have to do these yourself.
 
 ### Unified middleware signatures
 

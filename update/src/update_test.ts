@@ -82,7 +82,7 @@ Deno.test("update - 1.x project deno.json", async () => {
     expect(JSON.parse(files["/deno.json"]))
       .toEqual({
         imports: {
-          "fresh": `jsr:@fresh/core@^${FRESH_VERSION}`,
+          "fresh": `jsr:@unabbreviated-fresh/core@^${FRESH_VERSION}`,
           "@preact/signals": `npm:@preact/signals@^${PREACT_SIGNALS_VERSION}`,
           "preact": `npm:preact@^${PREACT_VERSION}`,
         },
@@ -106,7 +106,7 @@ Deno.test("update - 1.x project deno.json with imports", async () => {
     expect(JSON.parse(files["/deno.json"]))
       .toEqual({
         imports: {
-          "fresh": `jsr:@fresh/core@^${FRESH_VERSION}`,
+          "fresh": `jsr:@unabbreviated-fresh/core@^${FRESH_VERSION}`,
           "@preact/signals": `npm:@preact/signals@^${PREACT_SIGNALS_VERSION}`,
           "preact": `npm:preact@^${PREACT_VERSION}`,
         },

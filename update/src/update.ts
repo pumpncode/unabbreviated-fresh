@@ -83,7 +83,7 @@ export async function updateProject(dir: string) {
       config.imports = {};
     }
 
-    config.imports["fresh"] = `jsr:@fresh/core@^${FRESH_VERSION}`;
+    config.imports["fresh"] = `jsr:@unabbreviated-fresh/core@^${FRESH_VERSION}`;
     config.imports["preact"] = `npm:preact@^${PREACT_VERSION}`;
     config.imports["@preact/signals"] =
       `npm:@preact/signals@^${PREACT_SIGNALS_VERSION}`;

@@ -34,19 +34,19 @@ function error(tty: MockTTY, message: string): never {
   throw new InitError();
 }
 
-export const HELP_TEXT = `@fresh/init
+export const HELP_TEXT = `@unabbreviated-fresh/init
 
 Initialize a new Fresh project. This will create all the necessary files for a
 new project.
 
 To generate a project in the './foobar' subdirectory:
-  deno run -Ar jsr:@fresh/init ./foobar
+  deno run -Ar jsr:@unabbreviated-fresh/init ./foobar
 
 To generate a project in the current directory:
-  deno run -Ar jsr:@fresh/init .
+  deno run -Ar jsr:@unabbreviated-fresh/init .
 
 USAGE:
-    deno run -Ar jsr:@fresh/init [DIRECTORY]
+    deno run -Ar jsr:@unabbreviated-fresh/init [DIRECTORY]
 
 OPTIONS:
     --force      Overwrite existing files
@@ -538,7 +538,11 @@ export default function Counter(props: CounterProps) {
   await writeFile("islands/Counter.tsx", ISLANDS_COUNTER_TSX);
 
   const DEV_TS = `#!/usr/bin/env -S deno run -A --watch=static/,routes/
-${useTailwind ? `import { tailwind } from "@fresh/plugin-tailwind";\n` : ""}
+${
+    useTailwind
+      ? `import { tailwind } from "@unabbreviated-fresh/plugin-tailwind";\n`
+      : ""
+  }
 import { Builder } from "fresh/dev";
 import { app } from "./main.ts";
 
@@ -558,7 +562,7 @@ if (Deno.args.includes("build")) {
       dev: "deno run -A --watch=static/,routes/ dev.ts",
       build: "deno run -A dev.ts build",
       start: "deno run -A main.ts",
-      update: "deno run -A -r jsr:@fresh/update .",
+      update: "deno run -A -r jsr:@unabbreviated-fresh/update .",
     },
     lint: {
       rules: {
@@ -567,9 +571,9 @@ if (Deno.args.includes("build")) {
     },
     exclude: ["**/_fresh/*"],
     imports: {
-      "fresh": `jsr:@fresh/core@^${FRESH_VERSION}`,
-      "@fresh/plugin-tailwind":
-        `jsr:@fresh/plugin-tailwind@^${FRESH_TAILWIND_VERSION}`,
+      "fresh": `jsr:@unabbreviated-fresh/core@^${FRESH_VERSION}`,
+      "@unabbreviated-fresh/plugin-tailwind":
+        `jsr:@unabbreviated-fresh/plugin-tailwind@^${FRESH_TAILWIND_VERSION}`,
       "preact": `npm:preact@^${PREACT_VERSION}`,
       "@preact/signals": `npm:@preact/signals@^${PREACT_SIGNALS_VERSION}`,
     } as Record<string, string>,

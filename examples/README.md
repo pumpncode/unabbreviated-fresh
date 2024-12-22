@@ -11,7 +11,7 @@ Learn more about the Fresh framework here:
 ```tsx
 import { App } from "fresh";
 // Import the island function
-import { DemoIsland } from "jsr:@fresh/examples/island";
+import { DemoIsland } from "jsr:@unabbreviated-fresh/examples/island";
 
 export const app = new App({ root: import.meta.url })
   .use(staticFiles());
@@ -19,7 +19,7 @@ export const app = new App({ root: import.meta.url })
 // Register the island
 app.island(
   // Module specifier for esbuild, could also be a file path
-  "jsr:@fresh/examples/island",
+  "jsr:@unabbreviated-fresh/examples/island",
   // Name of the island
   "DemoIsland",
   // Island component function
@@ -37,8 +37,8 @@ await app.listen();
 ```tsx
 import { App } from "fresh";
 // Import the example apps
-import { app1 } from "jsr:@fresh/examples/app1";
-import { app2 } from "jsr:@fresh/examples/app2";
+import { app1 } from "jsr:@unabbreviated-fresh/examples/app1";
+import { app2 } from "jsr:@unabbreviated-fresh/examples/app2";
 
 export const app = new App({ root: import.meta.url })
   .use(staticFiles());

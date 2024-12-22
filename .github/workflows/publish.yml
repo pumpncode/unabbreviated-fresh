@@ -21,18 +21,18 @@ jobs:
       - name: Publish Fresh
         run: deno publish
 
-      - name: Publish @fresh/init
+      - name: Publish @unabbreviated-fresh/init
         working-directory: ./init
         run: deno publish
 
-      - name: Publish @fresh/plugin-tailwindcss
+      - name: Publish @unabbreviated-fresh/plugin-tailwindcss
         working-directory: ./plugin-tailwindcss
         run: deno publish
 
-      - name: Publish @fresh/update
+      - name: Publish @unabbreviated-fresh/update
         working-directory: ./update
         run: deno publish
 
-      - name: Publish @fresh/examples
+      - name: Publish @unabbreviated-fresh/examples
         working-directory: ./examples
         run: deno publish
