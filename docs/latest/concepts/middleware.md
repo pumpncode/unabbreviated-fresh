@@ -25,7 +25,7 @@ interface State {
 }
 
 export async function handler(
-  req: Request,
+  request: Request,
   ctx: FreshContext<State>,
 ) {
   ctx.state.data = "myData";
@@ -37,7 +37,7 @@ export async function handler(
 
 ```ts routes/myHandler.ts
 export const handler: Handlers<any, { data: string }> = {
-  GET(_req, ctx) {
+  GET(_request, ctx) {
     return new Response(`middleware data is ${ctx.state.data}`);
   },
 };
@@ -85,11 +85,11 @@ example:
 
 ```ts routes/_middleware.ts
 export const handler = [
-  async function middleware1(req, ctx) {
+  async function middleware1(request, ctx) {
     // do something
     return ctx.next();
   },
-  async function middleware2(req, ctx) {
+  async function middleware2(request, ctx) {
     // do something
     return ctx.next();
   },
@@ -102,7 +102,7 @@ running a fictitious `routes/[tenant]/admin/_middleware.ts` like this:
 ```ts routes/[tenant]/admin/_middleware.ts
 import { FreshContext } from "$fresh/server.ts";
 
-export async function handler(_req: Request, ctx: FreshContext) {
+export async function handler(_request: Request, ctx: FreshContext) {
   const currentTenant = ctx.params.tenant;
   // do something with the tenant
   const resp = await ctx.next();
@@ -150,9 +150,9 @@ create a `_middleware.ts` file in the `routes` folder like this:
 ```ts routes/_middleware.ts
 import { FreshContext } from "$fresh/server.ts";
 
-export async function handler(req: Request, ctx: FreshContext) {
+export async function handler(request: Request, ctx: FreshContext) {
   console.log(ctx.destination);
-  console.log(req.url);
+  console.log(request.url);
   const resp = await ctx.next();
   return resp;
 }
@@ -204,7 +204,7 @@ is only supposed to deal with routes.
 If you want to redirect a request from a middleware, you can do so by returning:
 
 ```ts
-export function handler(req: Request): Response {
+export function handler(request: Request): Response {
   return Response.redirect("https://example.com", 307);
 }
 ```
@@ -213,7 +213,7 @@ export function handler(req: Request): Response {
 redirect. You can also redirect to a relative path by doing:
 
 ```ts
-export function handler(req: Request): Response {
+export function handler(request: Request): Response {
   return new Response("", {
     status: 307,
     headers: { Location: "/my/new/relative/path" },

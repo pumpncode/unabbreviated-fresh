@@ -63,7 +63,7 @@ export class Context {
 }
 
 export async function handler(
-  _req: Request,
+  _request: Request,
   ctx: FreshContext<State>,
 ) {
   ctx.state.context = Context.instance();

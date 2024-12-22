@@ -126,11 +126,11 @@ interface State {
 }
 
 export async function handler(
-  req: Request,
+  request: Request,
   ctx: FreshContext<State>,
 ) {
   ctx.state.data = "myData";
-  ctx.state.url = req.url;
+  ctx.state.url = request.url;
   const resp = await ctx.next();
   resp.headers.set("server", "fresh server");
   return resp;
@@ -150,10 +150,10 @@ interface State {
 export async function handler(
   ctx: FreshContext<State>,
 ) {
-  const req = ctx.req;
+  const request = ctx.request;
 
   ctx.state.data = "myData";
-  ctx.state.url = req.url;
+  ctx.state.url = request.url;
   const resp = await ctx.next();
   resp.headers.set("server", "fresh server");
   return resp;
@@ -165,8 +165,9 @@ Deno.test("update - 1.x project middlewares one arg", async () => {
   await withTmpDir(async (dir) => {
     await writeFiles(dir, {
       "/deno.json": "{}",
-      "/routes/_middleware.ts": `export async function handler(req: Request) {
-  return new Response("hello world from: " + req.url);
+      "/routes/_middleware.ts":
+        `export async function handler(request: Request) {
+  return new Response("hello world from: " + request.url);
 }`,
     });
 
@@ -177,9 +178,9 @@ Deno.test("update - 1.x project middlewares one arg", async () => {
       .toEqual(`import { FreshContext } from "fresh";
 
 export async function handler(ctx: FreshContext) {
-  const req = ctx.req;
+  const request = ctx.request;
 
-  return new Response("hello world from: " + req.url);
+  return new Response("hello world from: " + request.url);
 }`);
   });
 });
@@ -215,20 +216,20 @@ Deno.test("update - 1.x update handler signature", async () => {
       "/routes/index.tsx": `import { Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  async GET(req, ctx) {},
-  async POST(req, ctx) {},
-  async PATCH(req, ctx) {},
-  async PUT(req, ctx) {},
-  async DELETE(req, ctx) {},
+  async GET(request, ctx) {},
+  async POST(request, ctx) {},
+  async PATCH(request, ctx) {},
+  async PUT(request, ctx) {},
+  async DELETE(request, ctx) {},
 };`,
       "/routes/foo.tsx": `import { Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  async GET(_req, ctx) {},
-  async POST(_req, ctx) {},
-  async PATCH(_req, ctx) {},
-  async PUT(_req, ctx) {},
-  async DELETE(_req, ctx) {},
+  async GET(_request, ctx) {},
+  async POST(_request, ctx) {},
+  async PATCH(_request, ctx) {},
+  async PUT(_request, ctx) {},
+  async DELETE(_request, ctx) {},
 };`,
       "/routes/name.tsx": `import { Handlers } from "$fresh/server.ts";
 
@@ -258,19 +259,19 @@ export const handler: Handlers = {
 
 export const handler: Handlers = {
   async GET(ctx) {
-    const req = ctx.req;
+    const request = ctx.request;
   },
   async POST(ctx) {
-    const req = ctx.req;
+    const request = ctx.request;
   },
   async PATCH(ctx) {
-    const req = ctx.req;
+    const request = ctx.request;
   },
   async PUT(ctx) {
-    const req = ctx.req;
+    const request = ctx.request;
   },
   async DELETE(ctx) {
-    const req = ctx.req;
+    const request = ctx.request;
   },
 };`);
     expect(files["/routes/foo.tsx"])
@@ -289,19 +290,19 @@ export const handler: Handlers = {
 
 export const handler: Handlers = {
   async GET(ctx) {
-    const request = ctx.req;
+    const request = ctx.request;
   },
   async POST(ctx) {
-    const request = ctx.req;
+    const request = ctx.request;
   },
   async PATCH(ctx) {
-    const request = ctx.req;
+    const request = ctx.request;
   },
   async PUT(ctx) {
-    const request = ctx.req;
+    const request = ctx.request;
   },
   async DELETE(ctx) {
-    const request = ctx.req;
+    const request = ctx.request;
   },
 };`);
     expect(files["/routes/name-unused.tsx"])
@@ -324,8 +325,8 @@ Deno.test(
       await writeFiles(dir, {
         "/deno.json": `{}`,
         "/routes/index.tsx": `export const handler: Handlers = {
-  GET(req) {
-    return Response.redirect(req.url);
+  GET(request) {
+    return Response.redirect(request.url);
   },
 };`,
       });
@@ -334,9 +335,9 @@ Deno.test(
       expect(files["/routes/index.tsx"])
         .toEqual(`export const handler: Handlers = {
   GET(ctx) {
-    const req = ctx.req;
+    const request = ctx.request;
 
-    return Response.redirect(req.url);
+    return Response.redirect(request.url);
   },
 };`);
     });
@@ -350,10 +351,10 @@ Deno.test.ignore(
       await writeFiles(dir, {
         "/deno.json": `{}`,
         "/routes/index.tsx": `export const handler: Handlers = {
-  GET: (req) => Response.redirect(req.url)
+  GET: (request) => Response.redirect(request.url)
 };`,
         "/routes/foo.tsx": `export const handler: Handlers = {
-  GET: (req, ctx) => Response.redirect(req.url),
+  GET: (request, ctx) => Response.redirect(request.url),
 };`,
       });
       await updateProject(dir);
@@ -361,17 +362,17 @@ Deno.test.ignore(
       expect(files["/routes/index.tsx"])
         .toEqual(`export const handler: Handlers = {
   GET: (ctx) => {
-    const req = ctx.req;
+    const request = ctx.request;
 
-    return Response.redirect(req.url);
+    return Response.redirect(request.url);
   },
 };`);
       expect(files["/routes/foo.tsx"])
         .toEqual(`export const handler: Handlers = {
   GET: (ctx) => {
-    const req = ctx.req;
+    const request = ctx.request;
 
-    return Response.redirect(req.url);
+    return Response.redirect(request.url);
   },
 };`);
     });
@@ -385,8 +386,8 @@ Deno.test(
       await writeFiles(dir, {
         "/deno.json": `{}`,
         "/routes/index.tsx": `export const handler = {
-  GET(req: Request){
-    return Response.redirect(req.url);
+  GET(request: Request){
+    return Response.redirect(request.url);
   }
 };`,
       });
@@ -397,9 +398,9 @@ Deno.test(
 
 export const handler = {
   GET(ctx: FreshContext) {
-    const req = ctx.req;
+    const request = ctx.request;
 
-    return Response.redirect(req.url);
+    return Response.redirect(request.url);
   },
 };`);
     });
@@ -415,11 +416,11 @@ Deno.test(
         "/routes/index.tsx": `import { Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  async GET(req, { params, render, remoteAddr }) {},
-  async POST(req, { params, render, remoteAddr }) {},
-  async PATCH(req, { params, render, remoteAddr }) {},
-  async PUT(req, { params, render, remoteAddr }) {},
-  async DELETE(req, { params, render, remoteAddr }) {},
+  async GET(request, { params, render, remoteAddr }) {},
+  async POST(request, { params, render, remoteAddr }) {},
+  async PATCH(request, { params, render, remoteAddr }) {},
+  async PUT(request, { params, render, remoteAddr }) {},
+  async DELETE(request, { params, render, remoteAddr }) {},
 };`,
       });
       await updateProject(dir);
@@ -428,19 +429,19 @@ export const handler: Handlers = {
         .toEqual(`import { Handlers } from "fresh/compat";
 
 export const handler: Handlers = {
-  async GET({ params, render, info, req }) {
+  async GET({ params, render, info, request }) {
     const remoteAddr = info.remoteAddr;
   },
-  async POST({ params, render, info, req }) {
+  async POST({ params, render, info, request }) {
     const remoteAddr = info.remoteAddr;
   },
-  async PATCH({ params, render, info, req }) {
+  async PATCH({ params, render, info, request }) {
     const remoteAddr = info.remoteAddr;
   },
-  async PUT({ params, render, info, req }) {
+  async PUT({ params, render, info, request }) {
     const remoteAddr = info.remoteAddr;
   },
-  async DELETE({ params, render, info, req }) {
+  async DELETE({ params, render, info, request }) {
     const remoteAddr = info.remoteAddr;
   },
 };`);
@@ -453,15 +454,15 @@ Deno.test("update - 1.x update define* handler signatures", async () => {
     await writeFiles(dir, {
       "/deno.json": `{}`,
       "/routes/_app.tsx": `import { defineApp } from "$fresh/server.ts";
-export default defineApp(async (req, ctx) => {
+export default defineApp(async (request, ctx) => {
   return null;
 });`,
       "/routes/_layout.tsx": `import { defineLayout } from "$fresh/server.ts";
-export default defineLayout(async (req, ctx) => {
+export default defineLayout(async (request, ctx) => {
   return null;
 });`,
       "/routes/foo.tsx": `import { defineRoute } from "$fresh/server.ts";
-export default defineRoute(async (req, ctx) => {
+export default defineRoute(async (request, ctx) => {
   return null;
 });`,
     });
@@ -473,7 +474,7 @@ export default defineRoute(async (req, ctx) => {
       .toEqual(`import { defineApp } from "fresh/compat";
 
 export default defineApp(async (ctx) => {
-  const req = ctx.req;
+  const request = ctx.request;
 
   return null;
 });`);
@@ -481,7 +482,7 @@ export default defineApp(async (ctx) => {
       .toEqual(`import { defineLayout } from "fresh/compat";
 
 export default defineLayout(async (ctx) => {
-  const req = ctx.req;
+  const request = ctx.request;
 
   return null;
 });`);
@@ -489,7 +490,7 @@ export default defineLayout(async (ctx) => {
       .toEqual(`import { defineRoute } from "fresh/compat";
 
 export default defineRoute(async (ctx) => {
-  const req = ctx.req;
+  const request = ctx.request;
 
   return null;
 });`);
@@ -503,7 +504,7 @@ Deno.test(
       await writeFiles(dir, {
         "/deno.json": `{}`,
         "/routes/index.tsx":
-          `export default async function Index(req: Request, ctx: RouteContext) {
+          `export default async function Index(request: Request, ctx: RouteContext) {
   if (true) {
     return ctx.renderNotFound();
   }
@@ -511,7 +512,7 @@ Deno.test(
     ctx.renderNotFound();
     return ctx.renderNotFound();
   }
-  return new Response(req.url);
+  return new Response(request.url);
 }`,
       });
       await updateProject(dir);
@@ -520,7 +521,7 @@ Deno.test(
         .toEqual(`import { FreshContext } from "fresh";
 
 export default async function Index(ctx: FreshContext) {
-  const req = ctx.req;
+  const request = ctx.request;
 
   if (true) {
     return ctx.throw(404);
@@ -529,7 +530,7 @@ export default async function Index(ctx: FreshContext) {
     ctx.throw(404);
     return ctx.throw(404);
   }
-  return new Response(req.url);
+  return new Response(request.url);
 }`);
     });
   },
@@ -544,7 +545,7 @@ Deno.test.ignore(
         "/routes/index.tsx": `import { Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  async GET(_req, ctx) {
+  async GET(_request, ctx) {
     return ctx.renderNotFound();
   },
 };`,
@@ -582,7 +583,7 @@ Deno.test.ignore(
         "/routes/index.tsx": `import { Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  async GET(_req, ctx) {
+  async GET(_request, ctx) {
     let msg = ctx.remoteAddr.transport === "tcp" ? "ok" : "not ok";
     msg += typeof ctx.renderNotFound === "function";
     return new Response(msg);
@@ -614,7 +615,7 @@ Deno.test.ignore("update - 1.x destructured ctx members", async () => {
       "/routes/index.tsx": `import { Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  async GET(_req, { url, renderNotFound, remoteAddr }) {
+  async GET(_request, { url, renderNotFound, remoteAddr }) {
     if (true) {
       return new Response(!!remoteAddr ? "ok" : "not ok");
     } else {

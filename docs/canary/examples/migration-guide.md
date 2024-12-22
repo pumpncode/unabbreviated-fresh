@@ -196,10 +196,10 @@ have a trailing slash at the end or that they will never have one.
 
 Middleware, handler and route component signatures have been unified to all look
 the same. Instead of receiving two arguments, they receive one. The `Request`
-object is stored on the context object as `ctx.req`.
+object is stored on the context object as `ctx.request`.
 
 ```diff
-- const middleware = (req, ctx) => new Response("ok");
+- const middleware = (request, ctx) => new Response("ok");
 + const middleware = (ctx) => new Response("ok");
 ```
 
@@ -207,7 +207,7 @@ Same is true for handlers:
 
 ```diff
   export const handler = {
--   GET(req, ctx) {
+-   GET(request, ctx) {
 +   GET(ctx) {
       return new Response("ok");
     },
@@ -217,7 +217,7 @@ Same is true for handlers:
 ...and async route components:
 
 ```diff
--  export default async function MyPage(req: Request, ctx: RouteContext) {
+-  export default async function MyPage(request: Request, ctx: RouteContext) {
 +  export default async function MyPage(props: PageProps) {
     const value = await loadFooValue();
     return <p>foo is: {value}</p>;

@@ -6,7 +6,7 @@ import { trace } from "@opentelemetry/api";
 import { DENO_DEPLOYMENT_ID } from "./runtime/build_id.ts";
 import * as colors from "@std/fmt/colors";
 import { type MiddlewareFn, runMiddlewares } from "./middlewares/mod.ts";
-import { FreshReqContext } from "./context.ts";
+import { FreshRequestContext } from "./context.ts";
 import {
   mergePaths,
   type Method,
@@ -193,14 +193,14 @@ export class App<State> {
     }
 
     return async (
-      req: Request,
+      request: Request,
       conn: Deno.ServeHandlerInfo = DEFAULT_CONN_INFO,
     ) => {
-      const url = new URL(req.url);
+      const url = new URL(request.url);
       // Prevent open redirect attacks
       url.pathname = url.pathname.replace(/\/+/g, "/");
 
-      const method = req.method.toUpperCase() as Method;
+      const method = request.method.toUpperCase() as Method;
       const matched = this.#router.match(method, url);
 
       const next = matched.patternMatch && !matched.methodMatch
@@ -208,8 +208,8 @@ export class App<State> {
         : DEFAULT_NOT_FOUND;
 
       const { params, handlers, pattern } = matched;
-      const ctx = new FreshReqContext<State>(
-        req,
+      const ctx = new FreshRequestContext<State>(
+        request,
         url,
         conn,
         params,

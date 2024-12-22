@@ -8,8 +8,8 @@ await buildProd(app);
 const handler = await app.handler();
 
 Deno.test("CORS should not set on GET /fresh-badge.svg", async () => {
-  const req = new Request("http://localhost/fresh-badge.svg");
-  const resp = await handler(req);
+  const request = new Request("http://localhost/fresh-badge.svg");
+  const resp = await handler(request);
   await resp?.body?.cancel();
 
   expect(resp.headers.get("cross-origin-resource-policy")).toEqual(null);

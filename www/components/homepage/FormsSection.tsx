@@ -11,8 +11,8 @@ import { FormSubmitDemo } from "../../islands/FormSubmitDemo.tsx";
 const routingCode = `import { Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  async POST(req) {
-    const form = await req.formData();
+  async POST(request) {
+    const form = await request.formData();
 
     // Do something with the form data here,
     // then redirect user to thank you page

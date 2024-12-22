@@ -45,7 +45,7 @@ can use an async layout to do so.
 ```tsx routes/sub/_layout.tsx
 import { FreshContext } from "$fresh/server.ts";
 
-export default async function Layout(req: Request, ctx: FreshContext) {
+export default async function Layout(request: Request, ctx: FreshContext) {
   // do something with state here
   const data = await loadData();
 
@@ -67,7 +67,7 @@ function arguments.
 ```tsx
 import { defineLayout } from "$fresh/server.ts";
 
-export default defineLayout(async (req, ctx) => {
+export default defineLayout(async (request, ctx) => {
   const data = await loadData();
 
   return (

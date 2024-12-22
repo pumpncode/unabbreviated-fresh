@@ -14,7 +14,7 @@ import { type HandlerFn, isHandlerByMethod } from "../../handlers.ts";
 import { type FsAdapter, fsAdapter } from "../../fs.ts";
 import { HttpError } from "../../error.ts";
 import { parseRootPath } from "../../config.ts";
-import type { FreshReqContext, PageProps } from "../../context.ts";
+import type { FreshRequestContext, PageProps } from "../../context.ts";
 
 const TEST_FILE_PATTERN = /[._]test\.(?:[tj]sx?|[mc][tj]s)$/;
 const GROUP_REG = /(^|[/\\\\])\((_[^/\\\\]+)\)[/\\\\]/;
@@ -336,7 +336,7 @@ function errorMiddleware<State>(
     try {
       return await ctx.next();
     } catch (err) {
-      (ctx as FreshReqContext<State>).error = err;
+      (ctx as FreshRequestContext<State>).error = err;
       return mid(ctx);
     }
   };

@@ -26,7 +26,7 @@ interface Page {
 }
 
 export const handler: Handlers<Page> = {
-  async GET(_req, ctx) {
+  async GET(_request, ctx) {
     let rawMarkdown = "";
     if (ctx.params.slug === "remote") {
       const resp = await fetch(

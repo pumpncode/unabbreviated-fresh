@@ -16,7 +16,7 @@ const enum RootKind {
   Partial,
 }
 
-interface IslandReq {
+interface IslandRequest {
   kind: RootKind.Island;
   name: string;
   propsIdx: number;
@@ -24,7 +24,7 @@ interface IslandReq {
   start: Comment | Text;
   end: Comment | Text | null;
 }
-interface PartialReq {
+interface PartialRequest {
   kind: RootKind.Partial;
   name: string;
   key: string | null;
@@ -33,8 +33,8 @@ interface PartialReq {
 }
 
 interface ReviveContext {
-  roots: Array<IslandReq | PartialReq>;
-  stack: Array<PartialReq | IslandReq>;
+  roots: Array<IslandRequest | PartialRequest>;
+  stack: Array<PartialRequest | IslandRequest>;
   slots: Map<number, { name: string; start: Comment; end: Comment | null }>;
   slotIdStack: number[];
 }
@@ -245,7 +245,7 @@ function _walkInner(
         const name = parts[2];
         const propsIdx = parts[3];
         const key = parts[4];
-        const found: IslandReq = {
+        const found: IslandRequest = {
           kind: RootKind.Island,
           name,
           propsIdx: Number(propsIdx),
@@ -269,7 +269,7 @@ function _walkInner(
       } else if (kind === "partial") {
         const name = parts[2];
         const key = parts[3];
-        const found: PartialReq = {
+        const found: PartialRequest = {
           kind: RootKind.Partial,
           name,
           key: key === "" ? null : key,

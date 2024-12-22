@@ -31,7 +31,7 @@ then adds a custom header to the response before returning it:
 import { Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  async GET(_req, ctx) {
+  async GET(_request, ctx) {
     const resp = await ctx.render();
     resp.headers.set("X-Custom-Header", "Hello");
     return resp;
@@ -56,7 +56,7 @@ response:
 import { Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  GET(_req) {
+  GET(_request) {
     const uuid = crypto.randomUUID();
     return new Response(JSON.stringify(uuid), {
       headers: { "Content-Type": "application/json" },

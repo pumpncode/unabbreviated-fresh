@@ -40,8 +40,8 @@ interface Data {
 }
 
 export const handler: Handlers<Data> = {
-  GET(req, ctx) {
-    const url = new URL(req.url);
+  GET(request, ctx) {
+    const url = new URL(request.url);
     const query = url.searchParams.get("q") || "";
     const results = NAMES.filter((name) => name.includes(query));
     return ctx.render({ results, query });

@@ -69,7 +69,7 @@ import { assert } from "$std/assert/assert.ts";
 import { type CookieOptions, createServerClient } from "supabase/ssr";
 
 export function createSupabaseClient(
-  req: Request,
+  request: Request,
   // Keep this optional parameter in mind, we'll get back to it.
   resHeaders = new Headers(),
 ) {
@@ -85,7 +85,7 @@ export function createSupabaseClient(
     auth: { flowType: "pkce" },
     cookies: {
       get(name: string) {
-        return decodeURIComponent(getCookies(req.headers)[name]);
+        return decodeURIComponent(getCookies(request.headers)[name]);
       },
       set(name: string, value: string, options: CookieOptions) {
         setCookie(resHeaders, {
@@ -118,15 +118,15 @@ import { FreshContext, Handlers } from "$fresh/server.ts";
 import { createSupabaseClient } from "lib/supabase.ts";
 
 export const handler: Handlers = {
-  async POST(req: Request, _ctx: FreshContext) {
-    const form = await req.formData();
+  async POST(request: Request, _ctx: FreshContext) {
+    const form = await request.formData();
     const email = form.get("email");
     const password = form.get("password");
 
     const headers = new Headers();
     headers.set("location", "/sign-in"); // Redirect to /sign-in on success.
 
-    const supabase = createSupabaseClient(req);
+    const supabase = createSupabaseClient(request);
     const { error } = await supabase.auth.signUp({
       email: String(email),
       password: String(password),
@@ -163,17 +163,17 @@ import { Handlers } from "$fresh/server.ts";
 import { createSupabaseClient } from "lib/supabase.ts";
 
 export const handler: Handlers = {
-  async GET(req: Request) {
-    const { searchParams } = new URL(req.url);
+  async GET(request: Request) {
+    const { searchParams } = new URL(request.url);
     const token_hash = searchParams.get("token_hash");
     const type = searchParams.get("type") as EmailOtpType | null;
     const next = searchParams.get("next") ?? "/welcome";
 
-    const redirectTo = new URL(req.url);
+    const redirectTo = new URL(request.url);
     redirectTo.pathname = next;
 
     if (token_hash && type) {
-      const supabase = createSupabaseClient(req);
+      const supabase = createSupabaseClient(request);
       const { error } = await supabase.auth.verifyOtp({ type, token_hash });
       if (error) throw error; // Have a look at the full app for proper error handling.
     }
@@ -197,15 +197,15 @@ import { Handlers } from "$fresh/server.ts";
 import { createSupabaseClient } from "lib/supabase.ts";
 
 export const handler: Handlers = {
-  async POST(req) {
-    const form = await req.formData();
+  async POST(request) {
+    const form = await request.formData();
     const email = form.get("email")!;
     const password = form.get("password")!;
 
     const headers = new Headers();
     headers.set("location", "/");
 
-    const supabase = createSupabaseClient(req, headers);
+    const supabase = createSupabaseClient(request, headers);
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -233,12 +233,12 @@ import { FreshContext } from "$fresh/server.ts";
 import { createSupabaseClient } from "lib/supabase.ts";
 
 export const handler = [
-  async function authMiddleware(req: Request, ctx: FreshContext) {
-    const url = new URL(req.url);
+  async function authMiddleware(request: Request, ctx: FreshContext) {
+    const url = new URL(request.url);
     const headers = new Headers();
     headers.set("location", "/");
 
-    const supabase = createSupabaseClient(req, headers);
+    const supabase = createSupabaseClient(request, headers);
     // Note: Always use `getUser` instead of `getSession` as this calls the Supabase API and revalidates the token.
     const { error, data: { user } } = await supabase.auth.getUser();
 

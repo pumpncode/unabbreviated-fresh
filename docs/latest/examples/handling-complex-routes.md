@@ -20,7 +20,7 @@ the handler so that we end up with something like the following:
 import { FreshContext, RouteConfig } from "$fresh/server.ts";
 
 export const handler = {
-  GET(_req: Request, { params }: FreshContext) {
+  GET(_request: Request, { params }: FreshContext) {
     console.log(params);
     return new Response(params.path);
   },
@@ -51,7 +51,7 @@ Let's look at something a bit more complex:
 import { FreshContext, RouteConfig } from "$fresh/server.ts";
 
 export const handler = {
-  GET(_req: Request, { params }: FreshContext) {
+  GET(_request: Request, { params }: FreshContext) {
     console.log(params);
     return new Response(params.path);
   },

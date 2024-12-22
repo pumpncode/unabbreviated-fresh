@@ -29,7 +29,7 @@ Let's look at a basic route that returns a plain text string:
 import { FreshContext, Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  GET(_req: Request, _ctx: FreshContext) {
+  GET(_request: Request, _ctx: FreshContext) {
     return new Response("Hello World");
   },
 };
@@ -71,7 +71,7 @@ response after rendering the page component.
 import { HandlerContext, Handlers, PageProps } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  async GET(_req: Request, ctx: HandlerContext) {
+  async GET(_request: Request, ctx: HandlerContext) {
     const resp = await ctx.render();
     resp.headers.set("X-Custom-Header", "Hello World");
     return resp;
@@ -96,7 +96,7 @@ interface Data {
 }
 
 export const handler: Handlers<Data> = {
-  async GET(req, ctx) {
+  async GET(request, ctx) {
     const value = await loadFooValue();
     return ctx.render({ foo: value });
   },
@@ -113,7 +113,7 @@ avoid having to create the `Data` interface boilerplate.
 
 ```tsx routes/page.tsx
 // Async route component
-export default async function MyPage(req: Request, ctx: RouteContext) {
+export default async function MyPage(request: Request, ctx: RouteContext) {
   const value = await loadFooValue();
   return <p>foo is: {value}</p>;
 }
@@ -126,12 +126,12 @@ same file like before.
 
 ```tsx routes/page.tsx
 export const handler: Handlers = {
-  async POST(req) {
+  async POST(request) {
     // ... do something here
   },
 };
 
-export default async function MyPage(req: Request, ctx: RouteContext) {
+export default async function MyPage(request: Request, ctx: RouteContext) {
   const value = await loadFooValue();
   return <p>foo is: {value}</p>;
 }
@@ -144,7 +144,7 @@ in another manner. This can be done by returning a `Response` object.
 
 ```tsx route/page.tsx
 // Async route component
-export default async function MyPage(req: Request, ctx: RouteContext) {
+export default async function MyPage(request: Request, ctx: RouteContext) {
   const value = await loadFooValue();
 
   // Return 404 if `value` is null
@@ -175,7 +175,7 @@ function arguments.
 ```tsx
 import { defineRoute } from "$fresh/server.ts";
 
-export default defineRoute(async (req, ctx) => {
+export default defineRoute(async (request, ctx) => {
   const data = await loadData();
 
   return (

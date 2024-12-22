@@ -1,7 +1,7 @@
 import * as tsmorph from "ts-morph";
 import { type ImportState, SyntaxKind } from "./update.ts";
 
-export function maybePrependReqVar(
+export function maybePrependRequestVar(
   method:
     | tsmorph.MethodDeclaration
     | tsmorph.FunctionDeclaration
@@ -20,8 +20,8 @@ export function maybePrependReqVar(
       hasInferredTypes = false;
     }
 
-    hasRequestVar = params.length > 1 || paramName === "req";
-    if (hasRequestVar || paramName === "_req") {
+    hasRequestVar = params.length > 1 || paramName === "request";
+    if (hasRequestVar || paramName === "_request") {
       if (hasRequestVar && params.length === 1) {
         params[0].replaceWithText("ctx");
         if (!hasInferredTypes) {
@@ -64,7 +64,7 @@ export function maybePrependReqVar(
         declarationKind: tsmorph.VariableDeclarationKind.Const,
         declarations: [{
           name: paramName,
-          initializer: "ctx.req",
+          initializer: "ctx.request",
         }],
       });
     }
@@ -87,7 +87,7 @@ export function maybePrependReqVar(
         }
         if (hasRequestVar && !paramName.startsWith("_")) {
           const txt = maybeObjBinding.getFullText().slice(0, -2);
-          maybeObjBinding.replaceWithText(txt + ", req }");
+          maybeObjBinding.replaceWithText(txt + ", request }");
         }
 
         if (needsRemoteAddr) {

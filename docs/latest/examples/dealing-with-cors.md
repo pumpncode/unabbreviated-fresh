@@ -18,8 +18,8 @@ doing the following:
 ```ts routes/_middleware.ts
 import { FreshContext } from "$fresh/server.ts";
 
-export async function handler(req: Request, ctx: FreshContext) {
-  const origin = req.headers.get("Origin") || "*";
+export async function handler(request: Request, ctx: FreshContext) {
+  const origin = request.headers.get("Origin") || "*";
   const resp = await ctx.next();
   const headers = resp.headers;
 
@@ -47,18 +47,18 @@ deal with "preflight requests". Let's imagine you're trying to support a
 ```ts routes/_middleware.ts
 import { FreshContext } from "$fresh/server.ts";
 
-export async function handler(req: Request, ctx: FreshContext) {
-  if (req.method == "OPTIONS") {
+export async function handler(request: Request, ctx: FreshContext) {
+  if (request.method == "OPTIONS") {
     const resp = new Response(null, {
       status: 204,
     });
-    const origin = req.headers.get("Origin") || "*";
+    const origin = request.headers.get("Origin") || "*";
     const headers = resp.headers;
     headers.set("Access-Control-Allow-Origin", origin);
     headers.set("Access-Control-Allow-Methods", "DELETE");
     return resp;
   }
-  const origin = req.headers.get("Origin") || "*";
+  const origin = request.headers.get("Origin") || "*";
   const resp = await ctx.next();
   const headers = resp.headers;
 

@@ -1,4 +1,4 @@
-import type { FreshContext, FreshReqContext } from "../context.ts";
+import type { FreshContext, FreshRequestContext } from "../context.ts";
 import type { App as _App } from "../app.ts";
 import type { Define as _Define } from "../define.ts";
 
@@ -41,7 +41,7 @@ import type { Define as _Define } from "../define.ts";
  * // checking and code completion. It does not register the middleware with the
  * // app.
  * const loggerMiddleware = define.middleware((ctx) => {
- *   console.log(`${ctx.req.method} ${ctx.req.url}`);
+ *   console.log(`${ctx.request.method} ${ctx.request.url}`);
  *   // Call the next middleware
  *   return ctx.next();
  * });
@@ -83,7 +83,7 @@ export type Middleware<State> = MiddlewareFn<State> | MiddlewareFn<State>[];
 
 export function runMiddlewares<State>(
   middlewares: MiddlewareFn<State>[][],
-  ctx: FreshReqContext<State>,
+  ctx: FreshRequestContext<State>,
 ): Promise<Response> {
   let fn = ctx.next;
   let i = middlewares.length;

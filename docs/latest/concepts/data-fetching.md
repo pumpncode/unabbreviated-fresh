@@ -17,7 +17,7 @@ interface Project {
 }
 
 export const handler: Handlers<Project> = {
-  async GET(_req, ctx) {
+  async GET(_request, ctx) {
     const project = await db.projects.findOne({ id: ctx.params.id });
     if (!project) {
       return ctx.renderNotFound({
@@ -56,7 +56,7 @@ interface Project {
   stars: number;
 }
 
-export default async function ProjectPage(_req, ctx: FreshContext) {
+export default async function ProjectPage(_request, ctx: FreshContext) {
   const project: Project | null = await db.projects.findOne({
     id: ctx.params.id,
   });

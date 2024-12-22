@@ -35,6 +35,8 @@ export interface FreshContext<State = unknown> {
   readonly config: ResolvedFreshConfig;
   readonly state: State;
   /** The original incoming `Request` object` */
+  readonly request: Request;
+  /** The original incoming `Request` object` */
   readonly req: Request;
   /**
    * The request url parsed into an `URL` instance. This is typically used
@@ -88,10 +90,11 @@ export interface FreshContext<State = unknown> {
 
 export let getBuildCache: (ctx: FreshContext<unknown>) => BuildCache;
 
-export class FreshReqContext<State>
+export class FreshRequestContext<State>
   implements FreshContext<State>, PageProps<unknown, State> {
   config: ResolvedFreshConfig;
   url: URL;
+  request: Request;
   req: Request;
   params: Record<string, string>;
   state: State = {} as State;
@@ -108,11 +111,11 @@ export class FreshReqContext<State>
   Component!: FunctionComponent;
 
   static {
-    getBuildCache = (ctx) => (ctx as FreshReqContext<unknown>).#buildCache;
+    getBuildCache = (ctx) => (ctx as FreshRequestContext<unknown>).#buildCache;
   }
 
   constructor(
-    req: Request,
+    request: Request,
     url: URL,
     info: Deno.ServeHandlerInfo,
     params: Record<string, string>,
@@ -122,7 +125,8 @@ export class FreshReqContext<State>
     buildCache: BuildCache,
   ) {
     this.url = url;
-    this.req = req;
+    this.request = request;
+    this.req = request;
     this.info = info;
     this.params = params;
     this.config = config;
@@ -215,9 +219,10 @@ export class FreshReqContext<State>
   }
 }
 
-Object.defineProperties(FreshReqContext.prototype, {
+Object.defineProperties(FreshRequestContext.prototype, {
   config: { enumerable: true },
   url: { enumerable: true },
+  request: { enumerable: true },
   req: { enumerable: true },
   params: { enumerable: true },
   state: { enumerable: true },

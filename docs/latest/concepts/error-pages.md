@@ -33,7 +33,7 @@ This can be achieved with `ctx.renderNotFound`.
 import { Handlers, PageProps } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  async GET(req, ctx) {
+  async GET(request, ctx) {
     const blogpost = await fetchBlogpost(ctx.params.slug);
     if (!blogpost) {
       return ctx.renderNotFound({
@@ -61,7 +61,7 @@ passing specific data to your 404 page:
 import { Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  GET(_req, _ctx) {
+  GET(_request, _ctx) {
     throw new Deno.errors.NotFound();
   },
 };

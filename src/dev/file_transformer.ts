@@ -46,7 +46,7 @@ export interface ProcessedFile {
   inputFiles: string[];
 }
 
-interface TransformReq {
+interface TransformRequest {
   newFile: boolean;
   filePath: string;
   content: Uint8Array;
@@ -95,7 +95,7 @@ export class FreshFileTransformer {
       throw err;
     }
 
-    const queue: TransformReq[] = [{
+    const queue: TransformRequest[] = [{
       newFile: false,
       content,
       filePath,
@@ -106,10 +106,10 @@ export class FreshFileTransformer {
 
     const seen = new Set<string>();
 
-    let req: TransformReq | undefined = undefined;
-    while ((req = queue.pop()) !== undefined) {
-      if (seen.has(req.filePath)) continue;
-      seen.add(req.filePath);
+    let request: TransformRequest | undefined = undefined;
+    while ((request = queue.pop()) !== undefined) {
+      if (seen.has(request.filePath)) continue;
+      seen.add(request.filePath);
 
       let transformed = false;
       for (let i = 0; i < this.#transformers.length; i++) {
@@ -117,17 +117,17 @@ export class FreshFileTransformer {
 
         const { options, fn } = transformer;
         options.filter.lastIndex = 0;
-        if (!options.filter.test(req.filePath)) {
+        if (!options.filter.test(request.filePath)) {
           continue;
         }
 
         const result = await fn({
-          path: req.filePath,
+          path: request.filePath,
           mode,
           target,
-          content: req!.content,
+          content: request!.content,
           get text() {
-            return new TextDecoder().decode(req!.content);
+            return new TextDecoder().decode(request!.content);
           },
         });
 
@@ -151,23 +151,23 @@ export class FreshFileTransformer {
                   : item.map
                 : null;
 
-              if (req.filePath === item.path) {
-                if (req.content === outContent && req.map === outMap) {
+              if (request.filePath === item.path) {
+                if (request.content === outContent && request.map === outMap) {
                   continue;
                 }
 
                 transformed = true;
-                req.content = outContent;
-                req.map = outMap;
+                request.content = outContent;
+                request.map = outMap;
               } else {
                 let found = false;
                 for (let i = 0; i < queue.length; i++) {
-                  const req = queue[i];
-                  if (req.filePath === item.path) {
+                  const request = queue[i];
+                  if (request.filePath === item.path) {
                     found = true;
                     transformed = true;
-                    req.content = outContent;
-                    req.map = outMap;
+                    request.content = outContent;
+                    request.map = outMap;
                   }
                 }
 
@@ -177,7 +177,7 @@ export class FreshFileTransformer {
                     filePath: item.path,
                     content: outContent,
                     map: outMap,
-                    inputFiles: req.inputFiles.slice(),
+                    inputFiles: request.inputFiles.slice(),
                   });
                 }
               }
@@ -193,25 +193,25 @@ export class FreshFileTransformer {
                 : result.map
               : null;
 
-            if (req.content === outContent && req.map === outMap) {
+            if (request.content === outContent && request.map === outMap) {
               continue;
             }
 
             transformed = true;
-            req.content = outContent;
-            req.map = outMap;
-            req.filePath = result.path ?? req.filePath;
+            request.content = outContent;
+            request.map = outMap;
+            request.filePath = result.path ?? request.filePath;
           }
         }
       }
 
       // TODO: Keep transforming until no one processes anymore
-      if (transformed || req.newFile) {
+      if (transformed || request.newFile) {
         outFiles.push({
-          content: req.content,
-          map: req.map,
-          path: req.filePath,
-          inputFiles: req.inputFiles,
+          content: request.content,
+          map: request.map,
+          path: request.filePath,
+          inputFiles: request.inputFiles,
         });
       }
     }

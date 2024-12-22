@@ -13,8 +13,8 @@ through
 import { Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  async POST(req) {
-    const form = await req.formData();
+  async POST(request) {
+    const form = await request.formData();
 
     // Processing something
 
@@ -59,11 +59,11 @@ Deno.test("HTTP assert test.", async (t) => {
   await t.step("#2 POST /", async () => {
     const formData = new FormData();
     formData.append("text", "Deno!");
-    const req = new Request("http://127.0.0.1/", {
+    const request = new Request("http://127.0.0.1/", {
       method: "POST",
       body: formData,
     });
-    const resp = await handler(req, CONN_INFO);
+    const resp = await handler(request, CONN_INFO);
     assertEquals(resp.status, 303);
   });
 
@@ -98,7 +98,7 @@ export async function createHandler(
   manifest: Manifest,
   config: FreshConfig = {},
 ): Promise<
-  (req: Request, connInfo?: ServeHandlerInfo) => Promise<Response>
+  (request: Request, connInfo?: ServeHandlerInfo) => Promise<Response>
 ```
 
 When you're using it, you'll likely be importing the manifest from your project.
