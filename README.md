@@ -9,8 +9,9 @@
 framework, built for speed, reliability, and simplicity. This fork replaces
 abbreviations like `req` and `ctx` with the actual words. Besides these
 replacements, the changed package scope (`@fresh` -> `@unabbreviated-fresh`),
-this paragraph and the title of this readme, the rest of the contents of this
-repository is identical to and will be kept up to date with the original.
+the deletion of two redundant GitHub workflows, this paragraph and the title of
+this readme, the rest of the contents of this repository is identical to and
+will be kept up to date with the original.
 
 Some stand-out features:
 
