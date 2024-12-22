@@ -36,7 +36,7 @@ export interface FreshContext<State = unknown> {
   readonly state: State;
   /** The original incoming `Request` object` */
   readonly request: Request;
-  /** The original incoming `Request` object` */
+  /** @deprecated use {@link request} */
   readonly req: Request;
   /**
    * The request url parsed into an `URL` instance. This is typically used
@@ -95,6 +95,7 @@ export class FreshRequestContext<State>
   config: ResolvedFreshConfig;
   url: URL;
   request: Request;
+  /** @deprecated use {@link request} */
   req: Request;
   params: Record<string, string>;
   state: State = {} as State;
