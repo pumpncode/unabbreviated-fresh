@@ -208,7 +208,7 @@ export class App<State> {
         : DEFAULT_NOT_FOUND;
 
       const { params, handlers, pattern } = matched;
-      const ctx = new FreshRequestContext<State>(
+      const context = new FreshRequestContext<State>(
         request,
         url,
         conn,
@@ -227,9 +227,9 @@ export class App<State> {
 
       try {
         if (handlers.length === 1 && handlers[0].length === 1) {
-          return handlers[0][0](ctx);
+          return handlers[0][0](context);
         }
-        return await runMiddlewares(handlers, ctx);
+        return await runMiddlewares(handlers, context);
       } catch (err) {
         if (err instanceof HttpError) {
           if (err.status >= 500) {

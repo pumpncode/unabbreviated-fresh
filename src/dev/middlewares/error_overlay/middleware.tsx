@@ -5,16 +5,16 @@ import { FreshScripts } from "../../../runtime/server/preact_hooks.tsx";
 import { ErrorOverlay } from "./overlay.tsx";
 
 export function devErrorOverlay<T>(): MiddlewareFn<T> {
-  return async (ctx) => {
-    const { config, url } = ctx;
+  return async (context) => {
+    const { config, url } = context;
     if (url.pathname === config.basePath + DEV_ERROR_OVERLAY_URL) {
-      return ctx.render(<ErrorOverlay url={url} />);
+      return context.render(<ErrorOverlay url={url} />);
     }
 
     try {
-      return await ctx.next();
+      return await context.next();
     } catch (err) {
-      if (ctx.request.headers.get("accept")?.includes("text/html")) {
+      if (context.request.headers.get("accept")?.includes("text/html")) {
         let init: ResponseInit | undefined;
         if (err instanceof HttpError) {
           if (err.status < 500) throw err;
@@ -25,7 +25,7 @@ export function devErrorOverlay<T>(): MiddlewareFn<T> {
         // deno-lint-ignore no-console
         console.error(err);
 
-        return ctx.render(<FreshScripts />, init);
+        return context.render(<FreshScripts />, init);
       }
       throw err;
     }

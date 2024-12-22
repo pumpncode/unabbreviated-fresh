@@ -5,26 +5,26 @@ import type { MiddlewareFn } from "./mod.ts";
 
 Deno.test("runMiddleware", async () => {
   const middlewares: MiddlewareFn<{ text: string }>[] = [
-    (ctx) => {
-      ctx.state.text = "A";
-      return ctx.next();
+    (context) => {
+      context.state.text = "A";
+      return context.next();
     },
-    (ctx) => {
-      ctx.state.text += "B";
-      return ctx.next();
+    (context) => {
+      context.state.text += "B";
+      return context.next();
     },
-    async (ctx) => {
-      const res = await ctx.next();
-      ctx.state.text += "C"; // This should not show up
+    async (context) => {
+      const res = await context.next();
+      context.state.text += "C"; // This should not show up
       return res;
     },
-    (ctx) => {
-      return new Response(ctx.state.text);
+    (context) => {
+      return new Response(context.state.text);
     },
   ];
 
-  const server = serveMiddleware<{ text: string }>((ctx) =>
-    runMiddlewares([middlewares], ctx)
+  const server = serveMiddleware<{ text: string }>((context) =>
+    runMiddlewares([middlewares], context)
   );
 
   const res = await server.get("/");
@@ -32,19 +32,19 @@ Deno.test("runMiddleware", async () => {
 });
 
 Deno.test("runMiddleware - middlewares should only be called once", async () => {
-  const A: MiddlewareFn<{ count: number }> = (ctx) => {
-    if (ctx.state.count === undefined) {
-      ctx.state.count = 0;
+  const A: MiddlewareFn<{ count: number }> = (context) => {
+    if (context.state.count === undefined) {
+      context.state.count = 0;
     } else {
-      ctx.state.count++;
+      context.state.count++;
     }
-    return ctx.next();
+    return context.next();
   };
 
-  const server = serveMiddleware<{ count: number }>((ctx) =>
+  const server = serveMiddleware<{ count: number }>((context) =>
     runMiddlewares(
-      [[A, (ctx) => new Response(String(ctx.state.count))]],
-      ctx,
+      [[A, (context) => new Response(String(context.state.count))]],
+      context,
     )
   );
 
@@ -54,31 +54,31 @@ Deno.test("runMiddleware - middlewares should only be called once", async () => 
 
 Deno.test("runMiddleware - runs multiple stacks", async () => {
   type State = { text: string };
-  const A: MiddlewareFn<State> = (ctx) => {
-    ctx.state.text += "A";
-    return ctx.next();
+  const A: MiddlewareFn<State> = (context) => {
+    context.state.text += "A";
+    return context.next();
   };
-  const B: MiddlewareFn<State> = (ctx) => {
-    ctx.state.text += "B";
-    return ctx.next();
+  const B: MiddlewareFn<State> = (context) => {
+    context.state.text += "B";
+    return context.next();
   };
-  const C: MiddlewareFn<State> = (ctx) => {
-    ctx.state.text += "C";
-    return ctx.next();
+  const C: MiddlewareFn<State> = (context) => {
+    context.state.text += "C";
+    return context.next();
   };
-  const D: MiddlewareFn<State> = (ctx) => {
-    ctx.state.text += "D";
-    return ctx.next();
+  const D: MiddlewareFn<State> = (context) => {
+    context.state.text += "D";
+    return context.next();
   };
 
-  const server = serveMiddleware<State>((ctx) => {
-    ctx.state.text = "";
+  const server = serveMiddleware<State>((context) => {
+    context.state.text = "";
     return runMiddlewares(
       [
         [A, B],
-        [C, D, (ctx) => new Response(String(ctx.state.text))],
+        [C, D, (context) => new Response(String(context.state.text))],
       ],
-      ctx,
+      context,
     );
   });
 
@@ -92,25 +92,25 @@ Deno.test("runMiddleware - throws errors", async () => {
   let thrownC: unknown = null;
 
   const middlewares: MiddlewareFn<{ text: string }>[] = [
-    async (ctx) => {
+    async (context) => {
       try {
-        return await ctx.next();
+        return await context.next();
       } catch (err) {
         thrownA = err;
         throw err;
       }
     },
-    async (ctx) => {
+    async (context) => {
       try {
-        return await ctx.next();
+        return await context.next();
       } catch (err) {
         thrownB = err;
         throw err;
       }
     },
-    async (ctx) => {
+    async (context) => {
       try {
-        return await ctx.next();
+        return await context.next();
       } catch (err) {
         thrownC = err;
         throw err;
@@ -121,8 +121,8 @@ Deno.test("runMiddleware - throws errors", async () => {
     },
   ];
 
-  const server = serveMiddleware<{ text: string }>((ctx) =>
-    runMiddlewares([middlewares], ctx)
+  const server = serveMiddleware<{ text: string }>((context) =>
+    runMiddlewares([middlewares], context)
   );
 
   try {

@@ -407,17 +407,17 @@ export const app = new App<State>();
 app.use(staticFiles());
 
 // this is the same as the /api/:name route defined via a file. feel free to delete this!
-app.get("/api2/:name", (ctx) => {
-  const name = ctx.params.name;
+app.get("/api2/:name", (context) => {
+  const name = context.params.name;
   return new Response(
     \`Hello, \${name.charAt(0).toUpperCase() + name.slice(1)}!\`,
   );
 });
 
 // this can also be defined via a file. feel free to delete this!
-const exampleLoggerMiddleware = define.middleware((ctx) => {
-  console.log(\`\${ctx.request.method} \${ctx.request.url}\`);
-  return ctx.next();
+const exampleLoggerMiddleware = define.middleware((context) => {
+  console.log(\`\${context.request.method} \${context.request.url}\`);
+  return context.next();
 });
 app.use(exampleLoggerMiddleware);
 
@@ -510,8 +510,8 @@ export default function App({ Component }: PageProps) {
   const API_NAME = `import { define } from "../../utils.ts";
 
 export const handler = define.handlers({
-  GET(ctx) {
-    const name = ctx.params.name;
+  GET(context) {
+    const name = context.params.name;
     return new Response(
       \`Hello, \${name.charAt(0).toUpperCase() + name.slice(1)}!\`,
     );

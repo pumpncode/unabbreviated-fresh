@@ -45,8 +45,8 @@ interface Page extends TableOfContentsEntry {
 const pattern = new URLPattern({ pathname: "/:version/:page*" });
 
 export const handler = define.handlers<Data>({
-  async GET(ctx) {
-    const slug = ctx.params.slug;
+  async GET(context) {
+    const slug = context.params.slug;
 
     // Check if the slug is the index page of a version tag
     if (TABLE_OF_CONTENTS[slug]) {
@@ -123,11 +123,11 @@ export const handler = define.handlers<Data>({
     const fileContent = await Deno.readTextFile(url);
     const { body, attrs } = frontMatter<Record<string, unknown>>(fileContent);
 
-    ctx.state.title = `${entry.title ?? "Not Found"} | Fresh docs`;
-    ctx.state.description = attrs?.description
+    context.state.title = `${entry.title ?? "Not Found"} | Fresh docs`;
+    context.state.description = attrs?.description
       ? String(attrs.description)
       : "Fresh Document";
-    ctx.state.ogImage = new URL(asset("/og-image.webp"), ctx.url).href;
+    context.state.ogImage = new URL(asset("/og-image.webp"), context.url).href;
 
     return page({
       page: {

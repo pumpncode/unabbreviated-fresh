@@ -133,7 +133,7 @@ export const CUSTOM_PARSER: CustomParser = {
   },
 };
 
-export function createReviveCtx(): ReviveContext {
+export function createReviveContext(): ReviveContext {
   return {
     roots: [],
     stack: [],
@@ -146,8 +146,8 @@ export function boot(
   initialIslands: Record<string, ComponentType>,
   islandProps: string,
 ) {
-  const ctx = createReviveCtx();
-  _walkInner(ctx, document.body);
+  const context = createReviveContext();
+  _walkInner(context, document.body);
 
   const keys = Object.keys(initialIslands);
   for (let i = 0; i < keys.length; i++) {
@@ -160,8 +160,8 @@ export function boot(
     CUSTOM_PARSER,
   );
 
-  for (let i = 0; i < ctx.roots.length; i++) {
-    const root = ctx.roots[i];
+  for (let i = 0; i < context.roots.length; i++) {
+    const root = context.roots[i];
 
     const container = createRootFragment(
       // deno-lint-ignore no-explicit-any
@@ -174,7 +174,7 @@ export function boot(
       const props = allProps[root.propsIdx].props;
       const component = ISLAND_REGISTRY.get(root.name)!;
 
-      revive(props, component, container, ctx.slots, allProps);
+      revive(props, component, container, context.slots, allProps);
     } else if (root.kind === RootKind.Partial) {
       const props: Record<string, unknown> = {
         name: root.name,
@@ -186,7 +186,7 @@ export function boot(
       props.children = domRoot.props.children;
 
       // deno-lint-ignore no-explicit-any
-      revive(props, PartialComp as any, container, ctx.slots, allProps);
+      revive(props, PartialComp as any, container, context.slots, allProps);
     }
   }
 }
@@ -217,7 +217,7 @@ export function maybeHideMarker(marker: Comment): Comment | Text {
 }
 
 function _walkInner(
-  ctx: ReviveContext,
+  context: ReviveContext,
   node: Node | Comment,
 ) {
   if (isElementNode(node)) {
@@ -226,14 +226,14 @@ function _walkInner(
     // We'll parse slots later when the island is revived.
     if (
       node.nodeName === "SCRIPT" || node.nodeName === "STYLE" ||
-      ctx.slotIdStack.length > 0
+      context.slotIdStack.length > 0
     ) {
       return;
     }
 
     for (let i = 0; i < node.childNodes.length; i++) {
       const child = node.childNodes[i];
-      _walkInner(ctx, child);
+      _walkInner(context, child);
     }
   } else if (isCommentNode(node)) {
     const comment = node.data;
@@ -253,15 +253,15 @@ function _walkInner(
           start: node as Comment,
           end: null,
         };
-        if (ctx.stack.length === 0) {
-          ctx.roots.push(found);
+        if (context.stack.length === 0) {
+          context.roots.push(found);
         }
-        ctx.stack.push(found);
+        context.stack.push(found);
       } else if (kind === "slot") {
         const id = +parts[2];
         const slotName = parts[3];
-        ctx.slotIdStack.push(id);
-        ctx.slots.set(id, {
+        context.slotIdStack.push(id);
+        context.slots.set(id, {
           name: slotName,
           start: node as Comment,
           end: null,
@@ -276,22 +276,22 @@ function _walkInner(
           start: node as Comment,
           end: null,
         };
-        if (ctx.stack.length === 0) {
-          ctx.roots.push(found);
+        if (context.stack.length === 0) {
+          context.roots.push(found);
         }
-        ctx.stack.push(found);
+        context.stack.push(found);
       }
     } else if (comment === "/frsh:island" || comment === "/frsh:partial") {
       node = maybeHideMarker(node);
-      const item = ctx.stack.pop();
+      const item = context.stack.pop();
       if (item !== undefined) {
         item.end = node as Comment;
       }
     } else if (comment === "/frsh:slot") {
       node = maybeHideMarker(node);
-      const item = ctx.slotIdStack.pop();
+      const item = context.slotIdStack.pop();
       if (item !== undefined) {
-        ctx.slots.get(item)!.end = node as Comment;
+        context.slots.get(item)!.end = node as Comment;
       }
     }
   }

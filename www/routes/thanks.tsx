@@ -4,8 +4,8 @@ import { DemoBox } from "../components/homepage/DemoBox.tsx";
 import { define } from "../utils/state.ts";
 
 export const handler = define.handlers({
-  GET(ctx) {
-    const search = new URLSearchParams(ctx.url.search);
+  GET(context) {
+    const search = new URLSearchParams(context.url.search);
     const vote = search.get("vote");
     return page({ vote });
   },

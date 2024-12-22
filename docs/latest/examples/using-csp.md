@@ -163,7 +163,7 @@ styles the response.
 ```tsx routes/noCSP.tsx
 import { RouteContext } from "$fresh/server.ts";
 
-export default function Home(request: Request, ctx: RouteContext) {
+export default function Home(request: Request, context: RouteContext) {
   return (
     <>
       <h1>This page doesn't use CSP at all. Styles will be applied.</h1>
@@ -190,7 +190,7 @@ status when the browser tries to request this resource.
 import { RouteConfig, RouteContext } from "$fresh/server.ts";
 import { useCSP } from "$fresh/runtime.ts";
 
-export default function Home(request: Request, ctx: RouteContext) {
+export default function Home(request: Request, context: RouteContext) {
   useCSP((csp) => {
     if (!csp.directives.styleSrc) {
       csp.directives.styleSrc = [];
@@ -225,7 +225,7 @@ correctly here.
 import { RouteConfig, RouteContext } from "$fresh/server.ts";
 import { useCSP } from "$fresh/runtime.ts";
 
-export default function Home(request: Request, ctx: RouteContext) {
+export default function Home(request: Request, context: RouteContext) {
   useCSP((csp) => {
     if (!csp.directives.styleSrc) {
       csp.directives.styleSrc = [];
@@ -259,7 +259,7 @@ What happens if we forget to use a `RouteConfig` in our route?
 import { RouteContext } from "$fresh/server.ts";
 import { useCSP } from "$fresh/runtime.ts";
 
-export default function Home(request: Request, ctx: RouteContext) {
+export default function Home(request: Request, context: RouteContext) {
   useCSP((csp) => {
     if (!csp.directives.styleSrc) {
       csp.directives.styleSrc = [];
@@ -298,7 +298,7 @@ then the browser will ignore the CSP headers and log any issues to the
 import { RouteConfig, RouteContext } from "$fresh/server.ts";
 import { useCSP } from "$fresh/runtime.ts";
 
-export default function Home(request: Request, ctx: RouteContext) {
+export default function Home(request: Request, context: RouteContext) {
   useCSP((csp) => {
     csp.reportOnly = true;
     if (!csp.directives.styleSrc) {
@@ -327,7 +327,7 @@ export const config: RouteConfig = {
 import { FreshContext } from "$fresh/server.ts";
 
 export const handler = {
-  async POST(request: Request, _ctx: FreshContext) {
+  async POST(request: Request, _context: FreshContext) {
     const body = await request.json();
     const report = JSON.stringify(body, null, 2);
 

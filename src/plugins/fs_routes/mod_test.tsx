@@ -150,13 +150,17 @@ Deno.test("fsRoutes - serve index", async () => {
 
 Deno.test("fsRoutes - add middleware for function handler", async () => {
   const server = await createServer<{ text: string }>({
-    "routes/[id].ts": { handler: (ctx) => new Response(ctx.state.text) },
-    "routes/index.ts": { handler: (ctx) => new Response(ctx.state.text) },
-    "routes/none.ts": { default: (ctx) => <div>{ctx.state.text}</div> },
+    "routes/[id].ts": {
+      handler: (context) => new Response(context.state.text),
+    },
+    "routes/index.ts": {
+      handler: (context) => new Response(context.state.text),
+    },
+    "routes/none.ts": { default: (context) => <div>{context.state.text}</div> },
     "routes/_middleware.ts": {
-      handler(ctx) {
-        ctx.state.text = "ok";
-        return ctx.next();
+      handler(context) {
+        context.state.text = "ok";
+        return context.next();
       },
     },
   });
@@ -174,11 +178,13 @@ Deno.test("fsRoutes - add middleware for function handler", async () => {
 
 Deno.test("fsRoutes - middleware", async () => {
   const server = await createServer<{ text: string }>({
-    "routes/index.ts": { handler: (ctx) => new Response(ctx.state.text) },
+    "routes/index.ts": {
+      handler: (context) => new Response(context.state.text),
+    },
     "routes/_middleware.ts": {
-      default: ((ctx: FreshContext<{ text: string }>) => {
-        ctx.state.text = "ok";
-        return ctx.next();
+      default: ((context: FreshContext<{ text: string }>) => {
+        context.state.text = "ok";
+        return context.next();
         // deno-lint-ignore no-explicit-any
       }) as any,
     },
@@ -192,18 +198,20 @@ Deno.test("fsRoutes - middleware", async () => {
 Deno.test("fsRoutes - nested middlewares", async () => {
   const server = await createServer<{ text: string }>({
     "routes/_middleware.ts": {
-      handler: (ctx) => {
-        ctx.state.text = "A";
-        return ctx.next();
+      handler: (context) => {
+        context.state.text = "A";
+        return context.next();
       },
     },
     "routes/foo/_middleware.ts": {
-      handler: (ctx) => {
-        ctx.state.text += "B";
-        return ctx.next();
+      handler: (context) => {
+        context.state.text += "B";
+        return context.next();
       },
     },
-    "routes/foo/index.ts": { default: (ctx) => <div>{ctx.state.text}</div> },
+    "routes/foo/index.ts": {
+      default: (context) => <div>{context.state.text}</div>,
+    },
   });
 
   const res = await server.get("/foo");
@@ -215,23 +223,25 @@ Deno.test("fsRoutes - middleware array", async () => {
   const server = await createServer<{ text: string }>({
     "routes/_middleware.ts": {
       handler: [
-        (ctx) => {
-          ctx.state.text = "A";
-          return ctx.next();
+        (context) => {
+          context.state.text = "A";
+          return context.next();
         },
-        (ctx) => {
-          ctx.state.text += "B";
-          return ctx.next();
+        (context) => {
+          context.state.text += "B";
+          return context.next();
         },
       ],
     },
     "routes/foo/_middleware.ts": {
-      handler: (ctx) => {
-        ctx.state.text += "C";
-        return ctx.next();
+      handler: (context) => {
+        context.state.text += "C";
+        return context.next();
       },
     },
-    "routes/foo/index.ts": { default: (ctx) => <div>{ctx.state.text}</div> },
+    "routes/foo/index.ts": {
+      default: (context) => <div>{context.state.text}</div>,
+    },
   });
 
   const res = await server.get("/foo");
@@ -242,18 +252,18 @@ Deno.test("fsRoutes - middleware array", async () => {
 Deno.test("fsRoutes - combined", async () => {
   const server = await createServer<{ text: string }>({
     "routes/foo/bar.ts": {
-      default: (ctx) => <div>{ctx.state.text}</div>,
+      default: (context) => <div>{context.state.text}</div>,
     },
     "routes/foo/_middleware.ts": {
-      handler: (ctx) => {
-        ctx.state.text = "ok";
-        return ctx.next();
+      handler: (context) => {
+        context.state.text = "ok";
+        return context.next();
       },
     },
     "routes/_middleware.ts": {
-      handler: (ctx) => {
-        ctx.state.text = "ok";
-        return ctx.next();
+      handler: (context) => {
+        context.state.text = "ok";
+        return context.next();
       },
     },
   });
@@ -272,9 +282,9 @@ Deno.test("fsRoutes - prepend _app", async () => {
       default: () => <>foo</>,
     },
     "routes/_app.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <div>
-          app/<ctx.Component />
+          app/<context.Component />
         </div>
       ),
     },
@@ -298,16 +308,16 @@ Deno.test("fsRoutes - prepend _layout", async () => {
       default: () => <>foo</>,
     },
     "routes/_layout.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <>
-          layout/<ctx.Component />
+          layout/<context.Component />
         </>
       ),
     },
     "routes/_app.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <div>
-          app/<ctx.Component />
+          app/<context.Component />
         </div>
       ),
     },
@@ -331,23 +341,23 @@ Deno.test("fsRoutes - nested _layout", async () => {
       default: () => <>foo</>,
     },
     "routes/foo/_layout.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <>
-          layout_foo_bar/<ctx.Component />
+          layout_foo_bar/<context.Component />
         </>
       ),
     },
     "routes/_layout.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <>
-          layout/<ctx.Component />
+          layout/<context.Component />
         </>
       ),
     },
     "routes/_app.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <div>
-          app/<ctx.Component />
+          app/<context.Component />
         </div>
       ),
     },
@@ -370,9 +380,9 @@ Deno.test("fsRoutes - _layout skip if not present", async () => {
       default: () => <>foo_bar_baz</>,
     },
     "routes/foo/_layout.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <div>
-          layout_foo/<ctx.Component />
+          layout_foo/<context.Component />
         </div>
       ),
     },
@@ -389,9 +399,9 @@ Deno.test("fsRoutes - _layout file types", async () => {
       default: () => <>js</>,
     },
     "routes/js/_layout.js": {
-      default: (ctx) => (
+      default: (context) => (
         <div>
-          layout_js/<ctx.Component />
+          layout_js/<context.Component />
         </div>
       ),
     },
@@ -399,9 +409,9 @@ Deno.test("fsRoutes - _layout file types", async () => {
       default: () => <>jsx</>,
     },
     "routes/jsx/_layout.jsx": {
-      default: (ctx) => (
+      default: (context) => (
         <div>
-          layout_jsx/<ctx.Component />
+          layout_jsx/<context.Component />
         </div>
       ),
     },
@@ -409,9 +419,9 @@ Deno.test("fsRoutes - _layout file types", async () => {
       default: () => <>ts</>,
     },
     "routes/ts/_layout.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <div>
-          layout_ts/<ctx.Component />
+          layout_ts/<context.Component />
         </div>
       ),
     },
@@ -419,9 +429,9 @@ Deno.test("fsRoutes - _layout file types", async () => {
       default: () => <>tsx</>,
     },
     "routes/tsx/_layout.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <div>
-          layout_tsx/<ctx.Component />
+          layout_tsx/<context.Component />
         </div>
       ),
     },
@@ -441,16 +451,16 @@ Deno.test("fsRoutes - _layout disable _app", async () => {
       config: {
         skipAppWrapper: true,
       },
-      default: (ctx) => (
+      default: (context) => (
         <>
-          layout/<ctx.Component />
+          layout/<context.Component />
         </>
       ),
     },
     "routes/_app.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <div>
-          app/<ctx.Component />
+          app/<context.Component />
         </div>
       ),
     },
@@ -469,9 +479,9 @@ Deno.test(
         default: () => <>sub_sub2</>,
       },
       "routes/sub/sub2/_layout.tsx": {
-        default: (ctx) => (
+        default: (context) => (
           <>
-            layout_sub_sub2/<ctx.Component />
+            layout_sub_sub2/<context.Component />
           </>
         ),
       },
@@ -480,23 +490,23 @@ Deno.test(
           skipAppWrapper: true,
           skipInheritedLayouts: true,
         },
-        default: (ctx) => (
+        default: (context) => (
           <>
-            layout_sub/<ctx.Component />
+            layout_sub/<context.Component />
           </>
         ),
       },
       "routes/_layout.tsx": {
-        default: (ctx) => (
+        default: (context) => (
           <>
-            layout/<ctx.Component />
+            layout/<context.Component />
           </>
         ),
       },
       "routes/_app.tsx": {
-        default: (ctx) => (
+        default: (context) => (
           <div>
-            app/<ctx.Component />
+            app/<context.Component />
           </div>
         ),
       },
@@ -519,9 +529,9 @@ Deno.test("fsRoutes - route overrides _layout", async () => {
       default: () => <>route</>,
     },
     "routes/_layout.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <div>
-          layout/<ctx.Component />
+          layout/<context.Component />
         </div>
       ),
     },
@@ -541,9 +551,9 @@ Deno.test("fsRoutes - route overrides _app", async () => {
       default: () => <>route</>,
     },
     "routes/_app.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <div>
-          app/<ctx.Component />
+          app/<context.Component />
         </div>
       ),
     },
@@ -564,9 +574,9 @@ Deno.test("fsRoutes - handler return data", async () => {
       handler: () => {
         return page("foo", { status: 404 });
       },
-      default: (ctx) => {
+      default: (context) => {
         // deno-lint-ignore no-explicit-any
-        return <p>{ctx.data as any}</p>;
+        return <p>{context.data as any}</p>;
       },
     },
   });
@@ -641,8 +651,8 @@ Deno.test("fsRoutes - _error nested", async () => {
       },
     },
     "routes/foo/_error.tsx": {
-      handlers: (ctx) => {
-        return new Response((ctx.error as Error).message);
+      handlers: (context) => {
+        return new Response((context.error as Error).message);
       },
     },
     "routes/foo/index.tsx": {
@@ -659,8 +669,8 @@ Deno.test("fsRoutes - _error nested", async () => {
 Deno.test("fsRoutes - _error nested throw", async () => {
   const server = await createServer({
     "routes/_error.tsx": {
-      handlers: (ctx) => {
-        return new Response((ctx.error as Error).message);
+      handlers: (context) => {
+        return new Response((context.error as Error).message);
       },
     },
     "routes/foo/_error.tsx": {
@@ -682,8 +692,8 @@ Deno.test("fsRoutes - _error nested throw", async () => {
 Deno.test("fsRoutes - _error render component", async () => {
   const server = await createServer({
     "routes/_error.tsx": {
-      default: (ctx) => {
-        return <div>{(ctx.error as Error).message}</div>;
+      default: (context) => {
+        return <div>{(context.error as Error).message}</div>;
       },
     },
     "routes/foo/_error.tsx": {
@@ -708,16 +718,16 @@ Deno.test("fsRoutes - _error render on 404", async () => {
   let error: any = null;
   const server = await createServer({
     "routes/_error.tsx": {
-      default: (ctx) => {
+      default: (context) => {
         // deno-lint-ignore no-explicit-any
-        error = ctx.error as any;
+        error = context.error as any;
         return <p>ok</p>;
       },
     },
     "routes/foo/_error.tsx": {
-      default: (ctx) => {
+      default: (context) => {
         // deno-lint-ignore no-explicit-any
-        error = ctx.error as any;
+        error = context.error as any;
         return <p>ok foo</p>;
       },
     },
@@ -759,9 +769,9 @@ Deno.test("fsRoutes - skip _error component in non-error", async () => {
 Deno.test("fsRoutes - route group resolve index", async () => {
   const server = await createServer<{ text: string }>({
     "routes/(foo)/_layout.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <div>
-          layout/<ctx.Component />
+          layout/<context.Component />
         </div>
       ),
     },
@@ -796,16 +806,16 @@ Deno.test("fsRoutes - route group specific templates", async () => {
       default: () => <div>fail foo</div>,
     },
     "routes/(foo)/_layout.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <div>
-          {ctx.state.text}/(foo)_layout/<ctx.Component />
+          {context.state.text}/(foo)_layout/<context.Component />
         </div>
       ),
     },
     "routes/(foo)/_middleware.tsx": {
-      handlers: (ctx) => {
-        ctx.state.text = "(foo)_middleware";
-        return ctx.next();
+      handlers: (context) => {
+        context.state.text = "(foo)_middleware";
+        return context.next();
       },
     },
     "routes/(foo)/foo.tsx": {
@@ -820,16 +830,16 @@ Deno.test("fsRoutes - route group specific templates", async () => {
       default: () => <div>fail bar</div>,
     },
     "routes/(bar)/_layout.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <div>
-          {ctx.state.text}/(bar)_layout/<ctx.Component />
+          {context.state.text}/(bar)_layout/<context.Component />
         </div>
       ),
     },
     "routes/(bar)/_middleware.tsx": {
-      handlers: (ctx) => {
-        ctx.state.text = "(bar)_middleware";
-        return ctx.next();
+      handlers: (context) => {
+        context.state.text = "(bar)_middleware";
+        return context.next();
       },
     },
     "routes/(bar)/bar.tsx": {
@@ -905,11 +915,11 @@ Deno.test("fsRoutes - async route components", async () => {
       },
     },
     "routes/_layout.tsx": {
-      default: async (ctx) => {
+      default: async (context) => {
         await delay(1);
         return (
           <div>
-            {ctx.state.text}/_layout/<ctx.Component />
+            {context.state.text}/_layout/<context.Component />
           </div>
         );
       },
@@ -940,35 +950,35 @@ Deno.test("fsRoutes - async route components", async () => {
 Deno.test("fsRoutes - async route components returning response", async () => {
   const server = await createServer<{ text: string }>({
     "routes/_app.tsx": {
-      default: async (ctx) => {
+      default: async (context) => {
         await delay(1);
-        if (ctx.url.searchParams.has("app")) {
+        if (context.url.searchParams.has("app")) {
           return new Response("_app");
         }
         return (
           <div>
-            _app/<ctx.Component />
+            _app/<context.Component />
           </div>
         );
       },
     },
     "routes/_layout.tsx": {
-      default: async (ctx) => {
+      default: async (context) => {
         await delay(1);
-        if (ctx.url.searchParams.has("layout")) {
+        if (context.url.searchParams.has("layout")) {
           return new Response("_layout");
         }
         return (
           <div>
-            _layout/<ctx.Component />
+            _layout/<context.Component />
           </div>
         );
       },
     },
     "routes/index.tsx": {
-      default: async (ctx) => {
+      default: async (context) => {
         await delay(1);
-        if (ctx.url.searchParams.has("index")) {
+        if (context.url.searchParams.has("index")) {
           return new Response("index");
         }
         return <div>index</div>;
@@ -998,10 +1008,10 @@ Deno.test(
   async () => {
     const server = await createServer<{ text: string }>({
       "routes/_app.tsx": {
-        default: (ctx) => {
+        default: (context) => {
           return (
             <div>
-              _app/<ctx.Component />
+              _app/<context.Component />
             </div>
           );
         },
@@ -1043,8 +1053,8 @@ Deno.test(
   async () => {
     const server = await createServer<{ text: string }>({
       "routes/index.tsx": {
-        handler: (ctx) => {
-          return ctx.render(<h1>hello</h1>, {
+        handler: (context) => {
+          return context.render(<h1>hello</h1>, {
             headers: { "X-Foo": "123" },
             status: 418,
             statusText: "I'm a fresh teapot",
@@ -1067,9 +1077,9 @@ Deno.test("fsRoutes - set request init from handler #2", async () => {
       handler: () => {
         return page("foo", { status: 404, headers: { "X-Foo": "123" } });
       },
-      default: (ctx) => {
+      default: (context) => {
         // deno-lint-ignore no-explicit-any
-        return <p>{ctx.data as any}</p>;
+        return <p>{context.data as any}</p>;
       },
     },
   });
@@ -1167,8 +1177,8 @@ Deno.test("fsRoutes - sortRoutePaths", () => {
 Deno.test("fsRoutes - registers default GET route for component without GET handler", async () => {
   const server = await createServer<{ value: boolean }>({
     "routes/noGetHandler.tsx": {
-      default: (ctx) => {
-        return <h1>{ctx.state.value ? "true" : "false"}</h1>;
+      default: (context) => {
+        return <h1>{context.state.value ? "true" : "false"}</h1>;
       },
       handlers: {
         POST: () => new Response("POST"),
@@ -1196,13 +1206,13 @@ Deno.test("fsRoutes - registers default GET route for component without GET hand
 Deno.test("fsRoutes - default GET route doesn't override existing handler", async () => {
   const server = await createServer<{ value: boolean }>({
     "routes/withGetHandler.tsx": {
-      default: (ctx) => {
-        return <h1>{ctx.state.value ? "true" : "false"}</h1>;
+      default: (context) => {
+        return <h1>{context.state.value ? "true" : "false"}</h1>;
       },
       handlers: {
         POST: () => new Response("POST"),
-        GET: (ctx) => {
-          ctx.state.value = true;
+        GET: (context) => {
+          context.state.value = true;
           return page();
         },
       },

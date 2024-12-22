@@ -30,14 +30,14 @@ export function renderMiddleware<State>(
   handler: HandlerFn<unknown, State> | undefined,
   init?: ResponseInit | undefined,
 ): MiddlewareFn<State> {
-  return async (ctx) => {
+  return async (context) => {
     let result: PageResponse<unknown> | undefined;
     if (handler !== undefined) {
       const res = await tracer.startActiveSpan("handler", {
         attributes: { "fresh.span_type": "fs_routes/handler" },
       }, async (span) => {
         try {
-          const res = await handler(ctx);
+          const res = await handler(context);
           span.setAttribute(
             "fresh.handler_response",
             res instanceof Response ? "http" : "data",
@@ -69,7 +69,7 @@ export function renderMiddleware<State>(
       throw new Error(`Did not receive any components to render.`);
     }
 
-    const props = ctx as FreshRequestContext<State>;
+    const props = context as FreshRequestContext<State>;
     props.data = result?.data;
 
     let vnode: VNode | null = null;
@@ -119,18 +119,18 @@ export function renderMiddleware<State>(
 
     let status: number | undefined = init?.status ?? result?.status;
     if (
-      ctx.error !== null && ctx.error !== undefined
+      context.error !== null && context.error !== undefined
     ) {
       if (
-        ctx.error instanceof HttpError
+        context.error instanceof HttpError
       ) {
-        status = ctx.error.status;
+        status = context.error.status;
       } else {
         status = 500;
       }
     }
 
-    return ctx.render(vnode!, {
+    return context.render(vnode!, {
       status,
       statusText: init?.statusText,
       headers: init?.headers ?? result?.headers,

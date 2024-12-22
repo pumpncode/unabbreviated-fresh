@@ -52,30 +52,30 @@ export interface FreshContext<State = unknown> {
    * preferred way to do redirects in Fresh.
    *
    * ```ts
-   * ctx.redirect("/foo/bar") // redirect user to "<yoursite>/foo/bar"
+   * context.redirect("/foo/bar") // redirect user to "<yoursite>/foo/bar"
    *
    * // Disallows protocol relative URLs for improved security. This
    * // redirects the user to `<yoursite>/evil.com` which is safe,
    * // instead of redirecting to `http://evil.com`.
-   * ctx.redirect("//evil.com/");
+   * context.redirect("//evil.com/");
    * ```
    */
   redirect(path: string, status?: number): Response;
   /**
    * Call the next middleware.
    * ```ts
-   * const myMiddleware: Middleware = (ctx) => {
+   * const myMiddleware: Middleware = (context) => {
    *   // do something
    *
    *   // Call the next middleware
-   *   return ctx.next();
+   *   return context.next();
    * }
    *
-   * const myMiddleware2: Middleware = async (ctx) => {
+   * const myMiddleware2: Middleware = async (context) => {
    *   // do something before the next middleware
    *   doSomething()
    *
-   *   const res = await ctx.next();
+   *   const res = await context.next();
    *
    *   // do something after the middleware
    *   doSomethingAfter()
@@ -88,7 +88,7 @@ export interface FreshContext<State = unknown> {
   render(vnode: VNode, init?: ResponseInit): Response | Promise<Response>;
 }
 
-export let getBuildCache: (ctx: FreshContext<unknown>) => BuildCache;
+export let getBuildCache: (context: FreshContext<unknown>) => BuildCache;
 
 export class FreshRequestContext<State>
   implements FreshContext<State>, PageProps<unknown, State> {
@@ -111,7 +111,8 @@ export class FreshRequestContext<State>
   Component!: FunctionComponent;
 
   static {
-    getBuildCache = (ctx) => (ctx as FreshRequestContext<unknown>).#buildCache;
+    getBuildCache = (context) =>
+      (context as FreshRequestContext<unknown>).#buildCache;
   }
 
   constructor(
@@ -166,9 +167,9 @@ export class FreshRequestContext<State>
     init: ResponseInit | undefined = {},
   ): Response | Promise<Response> {
     if (arguments.length === 0) {
-      throw new Error(`No arguments passed to: ctx.render()`);
+      throw new Error(`No arguments passed to: context.render()`);
     } else if (vnode !== null && !isValidElement(vnode)) {
-      throw new Error(`Non-JSX element passed to: ctx.render()`);
+      throw new Error(`Non-JSX element passed to: context.render()`);
     }
 
     const headers = init.headers !== undefined
@@ -234,13 +235,13 @@ Object.defineProperties(FreshRequestContext.prototype, {
 
 function preactRender<State, Data>(
   vnode: VNode,
-  ctx: PageProps<Data, State>,
+  context: PageProps<Data, State>,
   islandRegistry: ServerIslandRegistry,
   buildCache: BuildCache,
   partialId: string,
   headers: Headers,
 ) {
-  const state = new RenderState(ctx, islandRegistry, buildCache, partialId);
+  const state = new RenderState(context, islandRegistry, buildCache, partialId);
   setRenderState(state);
   try {
     let res = renderToString(vnode);
@@ -248,7 +249,9 @@ function preactRender<State, Data>(
     // comment markers in the right place in the DOM.
     if (!state.renderedHtmlBody) {
       let scripts = "";
-      if (ctx.url.pathname !== ctx.config.basePath + DEV_ERROR_OVERLAY_URL) {
+      if (
+        context.url.pathname !== context.config.basePath + DEV_ERROR_OVERLAY_URL
+      ) {
         scripts = renderToString(h(FreshScripts, null));
       }
       res = `<body>${res}${scripts}</body>`;
@@ -263,7 +266,7 @@ function preactRender<State, Data>(
     return `<!DOCTYPE html>${res}`;
   } finally {
     // Add preload headers
-    const basePath = ctx.config.basePath;
+    const basePath = context.config.basePath;
     const runtimeUrl = `${basePath}/_fresh/js/${BUILD_ID}/fresh-runtime.js`;
     let link = `<${encodeURI(runtimeUrl)}>; rel="modulepreload"; as="script"`;
     state.islands.forEach((island) => {

@@ -33,14 +33,14 @@ Deno.test("renderMiddleware - chain components", async () => {
   const server = await serveMiddleware(
     renderMiddleware(
       [
-        (ctx) => (
+        (context) => (
           <div>
-            c1<ctx.Component />
+            c1<context.Component />
           </div>
         ),
-        (ctx) => (
+        (context) => (
           <>
-            c2<ctx.Component />
+            c2<context.Component />
           </>
         ),
         () => <>c3</>,
@@ -60,19 +60,19 @@ Deno.test("renderMiddleware - chain async components", async () => {
   const server = await serveMiddleware(
     renderMiddleware(
       [
-        async (ctx) => {
+        async (context) => {
           await delay(1);
           return (
             <div>
-              c1<ctx.Component />
+              c1<context.Component />
             </div>
           );
         },
-        async (ctx) => {
+        async (context) => {
           await delay(1);
           return (
             <>
-              c2<ctx.Component />
+              c2<context.Component />
             </>
           );
         },
@@ -96,11 +96,11 @@ Deno.test("renderMiddleware - async components Response bail out", async () => {
   const server = await serveMiddleware(
     renderMiddleware(
       [
-        async (ctx) => {
+        async (context) => {
           await delay(1);
           return (
             <div>
-              c1<ctx.Component />
+              c1<context.Component />
             </div>
           );
         },

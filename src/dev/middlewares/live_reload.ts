@@ -5,8 +5,8 @@ import { ALIVE_URL } from "../../constants.ts";
 export function liveReload<T>(): MiddlewareFn<T> {
   const revision = Date.now();
 
-  return (ctx) => {
-    const { config, request, url } = ctx;
+  return (context) => {
+    const { config, request, url } = context;
 
     const aliveUrl = config.basePath + ALIVE_URL;
 
@@ -34,6 +34,6 @@ export function liveReload<T>(): MiddlewareFn<T> {
       return response;
     }
 
-    return ctx.next();
+    return context.next();
   };
 }

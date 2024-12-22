@@ -51,15 +51,15 @@ Deno.test({
   name: "partials - updates content",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Partial name="foo">
             <p class="output">partial update</p>
           </Partial>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -85,9 +85,9 @@ Deno.test({
   name: "partials - revive island not seen before",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
+      .get("/partial", (context) => {
         // FIXME: Add outer document
-        return ctx.render(
+        return context.render(
           <Doc>
             <Partial name="foo">
               <SelfCounter />
@@ -95,8 +95,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -128,8 +128,8 @@ Deno.test({
   name: "partials - warn on missing partial",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="bar">
               <p class="ready">bar</p>
@@ -137,8 +137,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -170,8 +170,8 @@ Deno.test({
   name: "partials - errors on duplicate partial name",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -211,8 +211,8 @@ Deno.test({
   name: "partials - should not be able to override __FRSH_STATE",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <SelfCounter />
@@ -221,8 +221,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -255,8 +255,8 @@ Deno.test({
   name: "partials - finds partial nested in response",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <div>
               <div>
@@ -268,8 +268,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -295,8 +295,8 @@ Deno.test({
   name: "partials - throws when instantiated inside island",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <PartialInIsland />
@@ -330,8 +330,8 @@ Deno.test({
   name: "partials - unmounts island",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <p>done</p>
@@ -339,8 +339,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -372,8 +372,8 @@ Deno.test({
   name: "partials - keeps island state",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <p class="partial-update">partial update</p>
@@ -382,8 +382,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -418,8 +418,8 @@ Deno.test({
   name: "partials - replaces island",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <p class="partial-update">partial update</p>
@@ -428,8 +428,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -466,8 +466,8 @@ Deno.test({
   name: "partials - only updates inner partial",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="inner">
               <p class="inner-update">inner update</p>
@@ -475,8 +475,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -507,8 +507,8 @@ Deno.test({
   name: "partials - updates sibling partials",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="sib-1">
               <p class="sib-1-update">sib-1 update</p>
@@ -522,8 +522,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -560,8 +560,8 @@ Deno.test({
   name: "partials - reconcile keyed islands in update",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <p key="p" class="done">done</p>
@@ -572,8 +572,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -621,8 +621,8 @@ Deno.test({
   name: "partials - reconcile keyed partials",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="outer">
               <p key="p" class="done">done</p>
@@ -639,8 +639,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -695,8 +695,8 @@ Deno.test({
   name: "partials - reconcile keyed div inside partials",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="outer">
               <p key="p" class="done">done</p>
@@ -713,8 +713,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -773,8 +773,8 @@ Deno.test({
     }
 
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="outer">
               <p key="p" class="done">done</p>
@@ -785,8 +785,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -836,8 +836,8 @@ Deno.test({
   name: "partials - skip key serialization if outside root",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <p key="outside" class="init">outside</p>
             <Partial name="outer">
@@ -860,9 +860,9 @@ Deno.test({
   fn: async () => {
     let i = 0;
     const app = testApp()
-      .get("/partial", (ctx) => {
+      .get("/partial", (context) => {
         const id = i++;
-        return ctx.render(
+        return context.render(
           <Doc>
             <Partial name="outer" mode="replace">
               <p class={`done-${id}`}>{id}</p>
@@ -870,8 +870,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -906,9 +906,9 @@ Deno.test({
   fn: async () => {
     let i = 0;
     const app = testApp()
-      .get("/partial", (ctx) => {
+      .get("/partial", (context) => {
         const id = i++;
-        return ctx.render(
+        return context.render(
           <Doc>
             <Partial name="outer">
               <Partial name="inner" mode="replace">
@@ -918,8 +918,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -956,9 +956,9 @@ Deno.test({
   fn: async () => {
     let i = 0;
     const app = testApp()
-      .get("/partial", (ctx) => {
+      .get("/partial", (context) => {
         const id = i++;
-        return ctx.render(
+        return context.render(
           <Doc>
             <Partial name="outer" mode="append">
               <p class={`done-${id}`}>{id}</p>
@@ -966,8 +966,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -1004,9 +1004,9 @@ Deno.test({
   fn: async () => {
     let i = 0;
     const app = testApp()
-      .get("/partial", (ctx) => {
+      .get("/partial", (context) => {
         const id = i++;
-        return ctx.render(
+        return context.render(
           <Doc>
             <Partial name="outer">
               <Partial name="inner" mode="append">
@@ -1016,8 +1016,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -1055,9 +1055,9 @@ Deno.test({
   fn: async () => {
     let i = 0;
     const app = testApp()
-      .get("/partial", (ctx) => {
+      .get("/partial", (context) => {
         const id = i++;
-        return ctx.render(
+        return context.render(
           <Doc>
             <Partial name="outer" mode="prepend">
               <p class={`done-${id}`}>{id}</p>
@@ -1065,8 +1065,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -1102,9 +1102,9 @@ Deno.test({
   fn: async () => {
     let i = 0;
     const app = testApp()
-      .get("/partial", (ctx) => {
+      .get("/partial", (context) => {
         const id = i++;
-        return ctx.render(
+        return context.render(
           <Doc>
             <Partial name="outer">
               <Partial name="inner" mode="prepend">
@@ -1114,8 +1114,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -1152,8 +1152,8 @@ Deno.test({
   name: "partials - navigate",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <p class="done">done</p>
@@ -1162,8 +1162,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <a href="/partial" class="update">update</a>
@@ -1210,8 +1210,8 @@ Deno.test({
   name: "partials - uses f-partial instead",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <p class="done">done</p>
@@ -1220,8 +1220,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <a href="/foo" f-partial="/partial" class="update">update</a>
@@ -1267,8 +1267,8 @@ Deno.test({
   name: "partials - with SVG in link",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <p class="done">done</p>
@@ -1277,8 +1277,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <a href="/foo" f-partial="/partial">
@@ -1353,8 +1353,8 @@ Deno.test({
   name: "partials - with SVG in button",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <p class="done">done</p>
@@ -1363,8 +1363,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial">
@@ -1440,8 +1440,8 @@ Deno.test({
   ignore: true, // TODO: test is flaky
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <h1 class="fail">Fail</h1>
@@ -1449,8 +1449,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/foo", (ctx) =>
-        ctx.render(
+      .get("/foo", (context) =>
+        context.render(
           <Doc>
             <Partial name="foo">
               <h1 class="done">done</h1>
@@ -1458,8 +1458,8 @@ Deno.test({
             </Partial>
           </Doc>,
         ))
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <a
@@ -1508,8 +1508,8 @@ Deno.test({
   ignore: true, // TODO: test is flaky
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <h1 class="fail">Fail</h1>
@@ -1517,8 +1517,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/foo", (ctx) =>
-        ctx.render(
+      .get("/foo", (context) =>
+        context.render(
           <Doc>
             <Partial name="foo">
               <h1 class="done">done</h1>
@@ -1526,8 +1526,8 @@ Deno.test({
             </Partial>
           </Doc>,
         ))
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <div>
@@ -1575,8 +1575,8 @@ Deno.test({
   name: "partials - opt out of partial navigation in island",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <h1 class="fail">Fail</h1>
@@ -1584,8 +1584,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/foo", (ctx) =>
-        ctx.render(
+      .get("/foo", (context) =>
+        context.render(
           <Doc>
             <Partial name="foo">
               <h1 class="done">done</h1>
@@ -1593,8 +1593,8 @@ Deno.test({
             </Partial>
           </Doc>,
         ))
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <div>
@@ -1637,8 +1637,8 @@ Deno.test({
   name: "partials - restore scroll position",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <h1 class="partial-content">foo</h1>
@@ -1646,8 +1646,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <Partial name="foo">
@@ -1695,10 +1695,10 @@ Deno.test({
   name: "partials - submit form",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        const name = ctx.url.searchParams.get("name")!;
-        const submitter = ctx.url.searchParams.get("submitter")!;
-        return ctx.render(
+      .get("/partial", (context) => {
+        const name = context.url.searchParams.get("name")!;
+        const submitter = context.url.searchParams.get("submitter")!;
+        return context.render(
           <Doc>
             <Partial name="foo">
               <p class={`done-${name}-${submitter}`}>done</p>
@@ -1706,8 +1706,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <form action="/partial">
@@ -1744,10 +1744,10 @@ Deno.test({
   name: "partials - submit form f-partial",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        const name = ctx.url.searchParams.get("name")!;
-        const submitter = ctx.url.searchParams.get("submitter")!;
-        return ctx.render(
+      .get("/partial", (context) => {
+        const name = context.url.searchParams.get("name")!;
+        const submitter = context.url.searchParams.get("submitter")!;
+        return context.render(
           <Doc>
             <Partial name="foo">
               <p class={`done-${name}-${submitter}`}>done</p>
@@ -1755,8 +1755,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <form action="/foo" f-partial="/partial">
@@ -1796,11 +1796,11 @@ Deno.test({
   name: "partials - submit form POST",
   fn: async () => {
     const app = testApp()
-      .post("/partial", async (ctx) => {
-        const data = await ctx.request.formData();
+      .post("/partial", async (context) => {
+        const data = await context.request.formData();
         const name = data.get("name");
         const submitter = data.get("submitter");
-        return ctx.render(
+        return context.render(
           <Doc>
             <Partial name="foo">
               <p class={`done-${name}-${submitter}`}>done</p>
@@ -1808,8 +1808,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <form action="/partial" method="post">
@@ -1846,8 +1846,8 @@ Deno.test({
   name: "partials - submit form redirecct",
   fn: async () => {
     const app = testApp()
-      .get("/done", (ctx) => {
-        return ctx.render(
+      .get("/done", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <h1 class="done">success</h1>
@@ -1855,8 +1855,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .post("/partial", async (ctx) => {
-        const data = await ctx.request.formData();
+      .post("/partial", async (context) => {
+        const data = await context.request.formData();
         const name = String(data.get("name"));
 
         return new Response(null, {
@@ -1864,8 +1864,8 @@ Deno.test({
           headers: { Location: `/done?name=${encodeURIComponent(name)}` },
         });
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <form action="/partial" method="post">
@@ -1902,11 +1902,11 @@ Deno.test({
   name: "partials - submit form via external submitter",
   fn: async () => {
     const app = testApp()
-      .post("/partial", async (ctx) => {
-        const data = await ctx.request.formData();
+      .post("/partial", async (context) => {
+        const data = await context.request.formData();
         const name = data.get("name");
         const submitter = data.get("submitter");
-        return ctx.render(
+        return context.render(
           <Doc>
             <Partial name="foo">
               <p class={`done-${name}-${submitter}`}>done</p>
@@ -1914,8 +1914,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <form action="/foo" id="foo">
@@ -1963,11 +1963,11 @@ Deno.test({
   name: "partials - submit form via external submitter f-partial",
   fn: async () => {
     const app = testApp()
-      .post("/partial", async (ctx) => {
-        const data = await ctx.request.formData();
+      .post("/partial", async (context) => {
+        const data = await context.request.formData();
         const name = data.get("name");
         const submitter = data.get("submitter");
-        return ctx.render(
+        return context.render(
           <Doc>
             <Partial name="foo">
               <p class={`done-${name}-${submitter}`}>done</p>
@@ -1975,8 +1975,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <form action="/foo" id="foo">
@@ -2026,11 +2026,11 @@ Deno.test({
     "partials - don't apply partials when submitter has client nav disabled",
   fn: async () => {
     const app = testApp()
-      .post("/partial", async (ctx) => {
-        const data = await ctx.request.formData();
+      .post("/partial", async (context) => {
+        const data = await context.request.formData();
         const name = data.get("name");
         const submitter = data.get("submitter");
-        return ctx.render(
+        return context.render(
           <Doc>
             <Partial name="foo">
               <p class={`done-${name}-${submitter}`}>done</p>
@@ -2038,8 +2038,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <form action="/foo" id="foo">
@@ -2095,9 +2095,9 @@ Deno.test({
   name: "partials - form submit multiple values",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        const values = ctx.url.searchParams.getAll("name");
-        return ctx.render(
+      .get("/partial", (context) => {
+        const values = context.url.searchParams.getAll("name");
+        return context.render(
           <Doc>
             <Partial name="foo">
               <p class={`done-${values.join("-")}`}>done</p>
@@ -2105,8 +2105,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <form action="/partial" method="get">
@@ -2155,8 +2155,8 @@ Deno.test({
   name: "partials - fragment nav should not cause infinite loop",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <h1 id="foo">Same nav</h1>
@@ -2185,8 +2185,8 @@ Deno.test({
   name: "partials - fragment navigation should not scroll to top",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               {new Array(10).fill(0).map(() => {
@@ -2222,14 +2222,14 @@ Deno.test({
   name: "partials - throws an error when response contains no partials",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) =>
-        ctx.render(
+      .get("/partial", (context) =>
+        context.render(
           <Doc>
             <p class="status-append">append content</p>
           </Doc>,
         ))
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <Partial name="body">
@@ -2275,8 +2275,8 @@ Deno.test({
             "Content-Type": "text/css",
           },
         }))
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <html>
             <head>
               {charset}
@@ -2299,8 +2299,8 @@ Deno.test({
           </html>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <html>
             <head>
               {charset}
@@ -2373,8 +2373,8 @@ Deno.test({
             "Content-Type": "text/css",
           },
         }))
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <html>
             <head>
               {charset}
@@ -2400,8 +2400,8 @@ Deno.test({
           </html>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <html>
             <head>
               {charset}
@@ -2456,9 +2456,9 @@ Deno.test({
   name: "partials - supports relative links",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        const { searchParams } = ctx.url;
-        return ctx.render(
+      .get("/", (context) => {
+        const { searchParams } = context.url;
+        return context.render(
           <Doc>
             <div f-client-nav>
               <Partial name="body">
@@ -2498,8 +2498,8 @@ Deno.test({
   name: "partials - update stateful inner partials",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="inner">
               <p class="done">done</p>
@@ -2508,8 +2508,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -2551,8 +2551,8 @@ Deno.test({
   name: "partials - with redirects",
   fn: async () => {
     const app = testApp()
-      .get("/a", (ctx) => {
-        return ctx.render(
+      .get("/a", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <h1 class="done">foo update</h1>
@@ -2560,9 +2560,9 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/partial", (ctx) => ctx.redirect("/a"))
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => context.redirect("/a"))
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -2589,8 +2589,8 @@ Deno.test({
   name: "partials - render 404 partial",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -2601,8 +2601,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/*", (ctx) => {
-        return ctx.render(
+      .get("/*", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <h1 class="error-404">404</h1>
@@ -2626,8 +2626,8 @@ Deno.test({
   name: "partials - render with new title",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc title="after update">
             <Partial name="foo">
               <h1 class="done">foo update</h1>
@@ -2635,8 +2635,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <button f-partial="/partial" class="update">update</button>
@@ -2666,8 +2666,8 @@ Deno.test({
   name: "partials - backwards navigation should keep URLs",
   fn: async () => {
     const app = testApp()
-      .get("/other", (ctx) => {
-        return ctx.render(
+      .get("/other", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <h1 class="done">other</h1>
@@ -2676,8 +2676,8 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <a href="/other">other</a>

@@ -182,17 +182,21 @@ export type PluginMiddlewareState = {
 const twoPointlessMiddlewares = [
   async (
     _request: Request,
-    ctx: MiddlewareHandlerContext<PluginMiddlewareState>,
+    context: MiddlewareHandlerContext<PluginMiddlewareState>,
   ) => {
-    ctx.state.num = ctx.state.num === undefined ? 1 : ctx.state.num + 1;
-    return await ctx.next();
+    context.state.num = context.state.num === undefined
+      ? 1
+      : context.state.num + 1;
+    return await context.next();
   },
   async (
     _request: Request,
-    ctx: MiddlewareHandlerContext<PluginMiddlewareState>,
+    context: MiddlewareHandlerContext<PluginMiddlewareState>,
   ) => {
-    ctx.state.num = ctx.state.num === undefined ? 1 : ctx.state.num + 1;
-    return await ctx.next();
+    context.state.num = context.state.num === undefined
+      ? 1
+      : context.state.num + 1;
+    return await context.next();
   },
 ];
 

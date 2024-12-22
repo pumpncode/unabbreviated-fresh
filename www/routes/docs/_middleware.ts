@@ -6,17 +6,17 @@ const REDIRECTS: Record<string, string> = {
 };
 
 export async function handler(
-  ctx: FreshContext,
+  context: FreshContext,
 ) {
   // Redirect from old doc URLs to new ones
-  const redirect = REDIRECTS[ctx.url.pathname];
+  const redirect = REDIRECTS[context.url.pathname];
   if (redirect) {
-    const url = new URL(redirect, ctx.url.origin);
+    const url = new URL(redirect, context.url.origin);
     return new Response("", {
       status: 307,
       headers: { location: url.href },
     });
   }
 
-  return await ctx.next();
+  return await context.next();
 }

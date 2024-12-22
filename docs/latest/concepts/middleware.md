@@ -9,13 +9,13 @@ handler. This allows modifying or checking requests and responses. Common
 use-cases for this are logging, authentication, and performance monitoring.
 
 Each middleware gets passed a `next` function in the context argument that is
-used to trigger child handlers. The `ctx` also has a `state` property that can
-be used to pass arbitrary data to downstream (or upstream) handlers. This
+used to trigger child handlers. The `context` also has a `state` property that
+can be used to pass arbitrary data to downstream (or upstream) handlers. This
 `state` is included in `PageProps` by default, which is available to both the
 special [\_app](/docs/concepts/app-wrapper.md) wrapper and normal
-[routes](/docs/concepts/routes.md). `ctx.state` is normally set by modifying its
-properties, e.g. `ctx.state.loggedIn = true`, but you can also replace the
-entire object like `ctx.state = { loggedIn: true }`.
+[routes](/docs/concepts/routes.md). `context.state` is normally set by modifying
+its properties, e.g. `context.state.loggedIn = true`, but you can also replace
+the entire object like `context.state = { loggedIn: true }`.
 
 ```ts routes/_middleware.ts
 import { FreshContext } from "$fresh/server.ts";
@@ -26,10 +26,10 @@ interface State {
 
 export async function handler(
   request: Request,
-  ctx: FreshContext<State>,
+  context: FreshContext<State>,
 ) {
-  ctx.state.data = "myData";
-  const resp = await ctx.next();
+  context.state.data = "myData";
+  const resp = await context.next();
   resp.headers.set("server", "fresh server");
   return resp;
 }
@@ -37,8 +37,8 @@ export async function handler(
 
 ```ts routes/myHandler.ts
 export const handler: Handlers<any, { data: string }> = {
-  GET(_request, ctx) {
-    return new Response(`middleware data is ${ctx.state.data}`);
+  GET(_request, context) {
+    return new Response(`middleware data is ${context.state.data}`);
   },
 };
 ```
@@ -63,21 +63,21 @@ For example, take a project with the following routes:
 For a request to `/` the request will flow like this:
 
 1. The `routes/_middleware.ts` middleware is invoked.
-2. Calling `ctx.next()` will invoke the `routes/index.ts` handler.
+2. Calling `context.next()` will invoke the `routes/index.ts` handler.
 
 For a request to `/admin` the request flows like this:
 
 1. The `routes/_middleware.ts` middleware is invoked.
-2. Calling `ctx.next()` will invoke the `routes/admin/_middleware.ts`
+2. Calling `context.next()` will invoke the `routes/admin/_middleware.ts`
    middleware.
-3. Calling `ctx.next()` will invoke the `routes/admin/index.ts` handler.
+3. Calling `context.next()` will invoke the `routes/admin/index.ts` handler.
 
 For a request to `/admin/signin` the request flows like this:
 
 1. The `routes/_middleware.ts` middleware is invoked.
-2. Calling `ctx.next()` will invoke the `routes/admin/_middleware.ts`
+2. Calling `context.next()` will invoke the `routes/admin/_middleware.ts`
    middleware.
-3. Calling `ctx.next()` will invoke the `routes/admin/signin.ts` handler.
+3. Calling `context.next()` will invoke the `routes/admin/signin.ts` handler.
 
 A single middleware file can also define multiple middlewares (all for the same
 route) by exporting an array of handlers instead of a single handler. For
@@ -85,13 +85,13 @@ example:
 
 ```ts routes/_middleware.ts
 export const handler = [
-  async function middleware1(request, ctx) {
+  async function middleware1(request, context) {
     // do something
-    return ctx.next();
+    return context.next();
   },
-  async function middleware2(request, ctx) {
+  async function middleware2(request, context) {
     // do something
-    return ctx.next();
+    return context.next();
   },
 ];
 ```
@@ -102,10 +102,10 @@ running a fictitious `routes/[tenant]/admin/_middleware.ts` like this:
 ```ts routes/[tenant]/admin/_middleware.ts
 import { FreshContext } from "$fresh/server.ts";
 
-export async function handler(_request: Request, ctx: FreshContext) {
-  const currentTenant = ctx.params.tenant;
+export async function handler(_request: Request, context: FreshContext) {
+  const currentTenant = context.params.tenant;
   // do something with the tenant
-  const resp = await ctx.next();
+  const resp = await context.next();
   return resp;
 }
 ```
@@ -150,10 +150,10 @@ create a `_middleware.ts` file in the `routes` folder like this:
 ```ts routes/_middleware.ts
 import { FreshContext } from "$fresh/server.ts";
 
-export async function handler(request: Request, ctx: FreshContext) {
-  console.log(ctx.destination);
+export async function handler(request: Request, context: FreshContext) {
+  console.log(context.destination);
   console.log(request.url);
-  const resp = await ctx.next();
+  const resp = await context.next();
   return resp;
 }
 ```
@@ -196,8 +196,8 @@ http://localhost:8000/_frsh/js/3c7400558fc00915df88cb181036c0dbf73ab7f5/chunk-RC
 
 That first `route` request is for when `Fresh` responds with the root level
 `index.tsx` route. The rest, as you can see, are either `internal` or `static`
-requests. You can use `ctx.destination` to filter these out if your middleware
-is only supposed to deal with routes.
+requests. You can use `context.destination` to filter these out if your
+middleware is only supposed to deal with routes.
 
 ## Middleware Redirects
 

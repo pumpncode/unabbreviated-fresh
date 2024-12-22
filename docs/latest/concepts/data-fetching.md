@@ -4,9 +4,9 @@ description: |
 ---
 
 Server side data fetching in Fresh is accomplished through asynchronous handler
-functions. These handler functions can call a `ctx.render()` function with the
-data to be rendered as an argument. This data can then be retrieved by the page
-component through the `data` property on the `props`.
+functions. These handler functions can call a `context.render()` function with
+the data to be rendered as an argument. This data can then be retrieved by the
+page component through the `data` property on the `props`.
 
 Here is an example:
 
@@ -17,14 +17,14 @@ interface Project {
 }
 
 export const handler: Handlers<Project> = {
-  async GET(_request, ctx) {
-    const project = await db.projects.findOne({ id: ctx.params.id });
+  async GET(_request, context) {
+    const project = await db.projects.findOne({ id: context.params.id });
     if (!project) {
-      return ctx.renderNotFound({
+      return context.renderNotFound({
         message: "Project does not exist",
       });
     }
-    return ctx.render(project);
+    return context.render(project);
   },
 };
 
@@ -56,9 +56,9 @@ interface Project {
   stars: number;
 }
 
-export default async function ProjectPage(_request, ctx: FreshContext) {
+export default async function ProjectPage(_request, context: FreshContext) {
   const project: Project | null = await db.projects.findOne({
-    id: ctx.params.id,
+    id: context.params.id,
   });
 
   if (!project) {

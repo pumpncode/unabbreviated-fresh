@@ -48,9 +48,9 @@ Deno.test({
     const app = testApp()
       .use(staticFiles())
       .island(counterIsland, "Counter", Counter)
-      .get("/", (ctx) => {
+      .get("/", (context) => {
         const sig = signal(3);
-        return ctx.render(
+        return context.render(
           <Doc>
             <Counter count={sig} />
           </Doc>,
@@ -77,8 +77,8 @@ Deno.test({
       .use(staticFiles())
       .island(multipleIslands, "Multiple1", Multiple1)
       .island(multipleIslands, "Multiple2", Multiple2)
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <Multiple1 id="multiple-1" />
             <Multiple2 id="multiple-2" />
@@ -108,9 +108,9 @@ Deno.test({
     const app = testApp()
       .use(staticFiles())
       .island(counterIsland, "Counter", Counter)
-      .get("/", (ctx) => {
+      .get("/", (context) => {
         const sig = signal(0);
-        return ctx.render(
+        return context.render(
           <Doc>
             <Counter id="counter-1" count={sig} />
             <Counter id="counter-2" count={sig} />
@@ -139,8 +139,8 @@ Deno.test({
     const app = testApp()
       .use(staticFiles())
       .island(jsonIsland, "JsonIsland", Counter)
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <JsonIsland />
           </Doc>,
@@ -169,8 +169,8 @@ Deno.test({
     const app = testApp()
       .use(staticFiles())
       .island(nullIsland, "NullIsland", NullIsland)
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <NullIsland />
           </Doc>,
@@ -196,8 +196,8 @@ Deno.test({
       .use(staticFiles())
       .island(counter, "Counter", Counter)
       .island(islandInIsland, "IslandInIsland", IslandInIsland)
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <IslandInIsland />
           </Doc>,
@@ -226,8 +226,8 @@ Deno.test({
     const app = testApp()
       .use(staticFiles())
       .island(jsxIsland, "JsxIsland", JsxIsland)
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <JsxIsland jsx={null}>{null}</JsxIsland>
           </Doc>,
@@ -256,8 +256,8 @@ Deno.test({
     const app = testApp()
       .use(staticFiles())
       .island(jsxIsland, "JsxIsland", JsxIsland)
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <JsxIsland jsx={<p>foo</p>}>
               <p>bar</p>
@@ -288,8 +288,8 @@ Deno.test({
     const app = testApp()
       .use(staticFiles())
       .island(jsxChildrenIsland, "JsxChildrenIsland", JsxChildrenIsland)
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <JsxChildrenIsland>
               foobar
@@ -327,8 +327,8 @@ Deno.test({
       .use(staticFiles())
       .island(passThrough, "PassThrough", PassThrough)
       .island(selfCounter, "SelfCounter", SelfCounter)
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <PassThrough>
               <div>
@@ -361,8 +361,8 @@ Deno.test({
       .use(staticFiles())
       .island(counterWithSlots, "CounterWithSlots", CounterWithSlots)
       .island(selfCounter, "SelfCounter", SelfCounter)
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <CounterWithSlots
               jsx={
@@ -406,8 +406,8 @@ Deno.test({
       .use(staticFiles())
       .island(passThrough, "PassThrough", PassThrough)
       .island(selfCounter, "SelfCounter", SelfCounter)
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <PassThrough>
               <PassThrough>
@@ -450,8 +450,8 @@ Deno.test({
       .use(staticFiles())
       .island(jsxConditional, "JsxConditional", JsxConditional)
       .island(selfCounter, "SelfCounter", SelfCounter)
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <JsxConditional
               jsx={
@@ -493,8 +493,8 @@ Deno.test({
     const app = testApp()
       .use(staticFiles())
       .island(jsxConditional, "JsxConditional", JsxConditional)
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <JsxConditional>
               <div class="foo">
@@ -571,8 +571,8 @@ Deno.test({
       .use(staticFiles())
       .island(fragmentIsland, "FragmentIsland", FragmentIsland)
       .island(fnIsland, "FnIsland", FnIsland)
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <FnIsland />
           </Doc>,
@@ -601,8 +601,8 @@ Deno.test({
     const app = testApp()
       .use(staticFiles())
       .island(escapeIsland, "EscapeIsland", EscapeIsland)
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <EscapeIsland str={`"foo"asdf`} />
           </Doc>,
@@ -632,8 +632,8 @@ Deno.test({
     const app = testApp()
       .use(staticFiles())
       .island(nodeProcess, "NodeProcess", NodeProcess)
-      .get("/", (ctx) =>
-        ctx.render(
+      .get("/", (context) =>
+        context.render(
           <Doc>
             <NodeProcess />
           </Doc>,
@@ -662,8 +662,8 @@ Deno.test({
     const app = testApp({ basePath: "/foo" })
       .use(staticFiles())
       .island(selfCounter, "SelfCounter", SelfCounter)
-      .get("/", (ctx) =>
-        ctx.render(
+      .get("/", (context) =>
+        context.render(
           <Doc>
             <SelfCounter />
           </Doc>,
@@ -689,8 +689,8 @@ Deno.test({
     const app = testApp()
       .use(staticFiles())
       .island(freshAttrs, "FreshAttrs", FreshAttrs)
-      .get("/", (ctx) =>
-        ctx.render(
+      .get("/", (context) =>
+        context.render(
           <Doc>
             <FreshAttrs />
           </Doc>,
@@ -751,8 +751,8 @@ Deno.test({
     const app = testApp()
       .use(staticFiles())
       .island(selfCounter, "SelfCounter", SelfCounter)
-      .get("/", (ctx) =>
-        ctx.render(
+      .get("/", (context) =>
+        context.render(
           <Doc>
             <SelfCounter />
           </Doc>,

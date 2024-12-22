@@ -62,7 +62,7 @@ const DEFAULT_CONFIG: ResolvedFreshConfig = {
 };
 
 export function serveMiddleware<T>(
-  middleware: (ctx: FreshRequestContext<T>) => Response | Promise<Response>,
+  middleware: (context: FreshRequestContext<T>) => Response | Promise<Response>,
   options: {
     config?: ResolvedFreshConfig;
     buildCache?: BuildCache;
@@ -76,7 +76,7 @@ export function serveMiddleware<T>(
     const buildCache = options.buildCache ??
       new ProdBuildCache(config, new Map(), new Map(), true);
 
-    const ctx = new FreshRequestContext<T>(
+    const context = new FreshRequestContext<T>(
       request,
       new URL(request.url),
       DEFAULT_CONN_INFO,
@@ -86,7 +86,7 @@ export function serveMiddleware<T>(
       new Map(),
       buildCache,
     );
-    return await middleware(ctx);
+    return await middleware(context);
   });
 }
 

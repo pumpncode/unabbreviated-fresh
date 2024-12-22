@@ -2,8 +2,8 @@ import { App } from "../../../src/app.ts";
 
 const app = new App({ staticDir: "./static" }).get(
   "/",
-  (ctx) =>
-    ctx.render(
+  (context) =>
+    context.render(
       <html>
         <head>
           <meta charset="utf-8" />

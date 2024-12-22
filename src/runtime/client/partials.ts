@@ -295,7 +295,7 @@ async function fetchPartials(
   await applyPartials(res);
 }
 
-interface PartialReviveCtx {
+interface PartialReviveContext {
   foundPartials: number;
 }
 
@@ -333,7 +333,7 @@ export async function applyPartials(res: Response): Promise<void> {
     await Promise.all(promises);
   }
 
-  const ctx: PartialReviveCtx = {
+  const context: PartialReviveContext = {
     foundPartials: 0,
   };
 
@@ -404,9 +404,9 @@ export async function applyPartials(res: Response): Promise<void> {
     }
   });
 
-  revivePartials(ctx, allProps, doc.body);
+  revivePartials(context, allProps, doc.body);
 
-  if (ctx.foundPartials === 0) {
+  if (context.foundPartials === 0) {
     throw new NoPartialsError(
       `Found no partials in HTML response. Please make sure to render at least one partial. Requested url: ${res.url}`,
     );
@@ -414,7 +414,7 @@ export async function applyPartials(res: Response): Promise<void> {
 }
 
 function revivePartials(
-  ctx: PartialReviveCtx,
+  context: PartialReviveContext,
   allProps: DeserializedProps,
   node: Element,
 ) {
@@ -440,7 +440,7 @@ function revivePartials(
           partialKey = parts[4];
         }
       } else if (comment === "/frsh:partial") {
-        ctx.foundPartials++;
+        context.foundPartials++;
 
         // Skip hydrating nested partials, only hydrate the outer one
         if (--partialCount > 0) {
@@ -507,7 +507,7 @@ function revivePartials(
       }
     } else if (partialCount === 0 && isElementNode(sib)) {
       // Do not recurse if we know that we are inisde a partial
-      revivePartials(ctx, allProps, sib);
+      revivePartials(context, allProps, sib);
     }
 
     sib = sib.nextSibling;

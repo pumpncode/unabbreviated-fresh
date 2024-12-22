@@ -85,7 +85,7 @@ export class RenderState {
   hasRuntimeScript = false;
 
   constructor(
-    public ctx: PageProps<unknown, unknown>,
+    public context: PageProps<unknown, unknown>,
     public islandRegistry: ServerIslandRegistry,
     public buildCache: BuildCache,
     public partialId: string,
@@ -113,7 +113,7 @@ options[OptionsType.VNODE] = (vnode) => {
   if (RENDER_STATE !== null) {
     RENDER_STATE.owners.set(vnode, RENDER_STATE!.ownerStack.at(-1)!);
     if (vnode.type === "a") {
-      setActiveUrl(vnode, RENDER_STATE.ctx.url.pathname);
+      setActiveUrl(vnode, RENDER_STATE.context.url.pathname);
     }
   }
   assetHashingHook(vnode, BUILD_ID);
@@ -422,13 +422,13 @@ export interface PartialStateJson {
 }
 
 function FreshRuntimeScript() {
-  const { islands, nonce, ctx, islandProps, partialId, buildCache } =
+  const { islands, nonce, context, islandProps, partialId, buildCache } =
     RENDER_STATE!;
-  const basePath = ctx.config.basePath;
+  const basePath = context.config.basePath;
 
   const islandArr = Array.from(islands);
 
-  if (ctx.url.searchParams.has("fresh-partial")) {
+  if (context.url.searchParams.has("fresh-partial")) {
     const islands = islandArr.map((island) => {
       const chunk = buildCache.getIslandChunkName(island.name);
       if (chunk === null) {
@@ -491,7 +491,7 @@ function FreshRuntimeScript() {
             __html: scriptContent,
           }}
         />
-        {ctx.config.mode === "development" ? <ShowErrorOverlay /> : null}
+        {context.config.mode === "development" ? <ShowErrorOverlay /> : null}
       </>
     );
   }
@@ -500,8 +500,8 @@ function FreshRuntimeScript() {
 export function ShowErrorOverlay() {
   if (RENDER_STATE === null) return null;
 
-  const { ctx } = RENDER_STATE;
-  const error = ctx.error;
+  const { context } = RENDER_STATE;
+  const error = context.error;
 
   if (error === null || error === undefined) return null;
 
@@ -510,7 +510,7 @@ export function ShowErrorOverlay() {
     return null;
   }
 
-  const basePath = ctx.config.basePath;
+  const basePath = context.config.basePath;
 
   const searchParams = new URLSearchParams();
 
@@ -521,7 +521,7 @@ export function ShowErrorOverlay() {
 
     if ("stack" in error && typeof error.stack === "string") {
       searchParams.append("stack", error.stack);
-      const codeFrame = getCodeFrame(error.stack, ctx.config.root);
+      const codeFrame = getCodeFrame(error.stack, context.config.root);
       if (codeFrame !== undefined) {
         searchParams.append("code-frame", colors.stripAnsiCode(codeFrame));
       }

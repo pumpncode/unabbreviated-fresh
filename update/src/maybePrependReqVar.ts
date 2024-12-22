@@ -23,7 +23,7 @@ export function maybePrependRequestVar(
     hasRequestVar = params.length > 1 || paramName === "request";
     if (hasRequestVar || paramName === "_request") {
       if (hasRequestVar && params.length === 1) {
-        params[0].replaceWithText("ctx");
+        params[0].replaceWithText("context");
         if (!hasInferredTypes) {
           newImports.core.add("FreshContext");
           params[0].setType("FreshContext");
@@ -64,7 +64,7 @@ export function maybePrependRequestVar(
         declarationKind: tsmorph.VariableDeclarationKind.Const,
         declarations: [{
           name: paramName,
-          initializer: "ctx.request",
+          initializer: "context.request",
         }],
       });
     }

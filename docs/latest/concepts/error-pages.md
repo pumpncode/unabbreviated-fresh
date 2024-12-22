@@ -27,20 +27,20 @@ export default function NotFoundPage({ url }: PageProps) {
 The `_404.tsx` file will be invoked automatically when no route matches the URL.
 In some cases, one needs to manually trigger the rendering of the 404 page, for
 example when the route did match, but the requested resource does not exist.
-This can be achieved with `ctx.renderNotFound`.
+This can be achieved with `context.renderNotFound`.
 
 ```tsx routes/blog/[slug].tsx
 import { Handlers, PageProps } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  async GET(request, ctx) {
-    const blogpost = await fetchBlogpost(ctx.params.slug);
+  async GET(request, context) {
+    const blogpost = await fetchBlogpost(context.params.slug);
     if (!blogpost) {
-      return ctx.renderNotFound({
+      return context.renderNotFound({
         custom: "prop",
       });
     }
-    return ctx.render({ blogpost });
+    return context.render({ blogpost });
   },
 };
 
@@ -61,7 +61,7 @@ passing specific data to your 404 page:
 import { Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  GET(_request, _ctx) {
+  GET(_request, _context) {
     throw new Deno.errors.NotFound();
   },
 };

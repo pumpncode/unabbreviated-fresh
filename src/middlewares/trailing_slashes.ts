@@ -13,17 +13,17 @@ import type { MiddlewareFn } from "./mod.ts";
 export function trailingSlashes<State>(
   mode: "always" | "never",
 ): MiddlewareFn<State> {
-  return function trailingSlashesMiddleware(ctx) {
-    const url = ctx.url;
+  return function trailingSlashesMiddleware(context) {
+    const url = context.url;
     if (url.pathname !== "/") {
       if (mode === "always" && !url.pathname.endsWith("/")) {
-        return ctx.redirect(`${url.pathname}/${url.search}`);
+        return context.redirect(`${url.pathname}/${url.search}`);
       } else if (
         mode === "never" && url.pathname.endsWith("/")
       ) {
-        return ctx.redirect(`${url.pathname.slice(0, -1)}${url.search}`);
+        return context.redirect(`${url.pathname.slice(0, -1)}${url.search}`);
       }
     }
-    return ctx.next();
+    return context.next();
   };
 }

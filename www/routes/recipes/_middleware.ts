@@ -1,6 +1,6 @@
 import { define } from "../../utils/state.ts";
 
-export const handler = define.middleware((ctx) => {
-  ctx.state.noIndex = true;
-  return ctx.next();
+export const handler = define.middleware((context) => {
+  context.state.noIndex = true;
+  return context.next();
 });

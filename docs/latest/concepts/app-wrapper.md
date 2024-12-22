@@ -42,7 +42,7 @@ instance and the second one is the `FreshContext`.
 ```tsx routes/_app.tsx
 import { FreshContext } from "$fresh/server.ts";
 
-export default async function App(request: Request, ctx: FreshContext) {
+export default async function App(request: Request, context: FreshContext) {
   const data = await loadData();
 
   return (
@@ -54,7 +54,7 @@ export default async function App(request: Request, ctx: FreshContext) {
       </head>
       <body>
         <h1>Hello {data.name}</h1>
-        <ctx.Component />
+        <context.Component />
       </body>
     </html>
   );
@@ -69,7 +69,7 @@ helper which already infers the correct types for you.
 ```tsx routes/_app.tsx
 import { defineApp } from "$fresh/server.ts";
 
-export default defineApp(async (request, ctx) => {
+export default defineApp(async (request, context) => {
   const data = await loadData();
 
   return (
@@ -81,7 +81,7 @@ export default defineApp(async (request, ctx) => {
       </head>
       <body>
         <h1>Hello {data.name}</h1>
-        <ctx.Component />
+        <context.Component />
       </body>
     </html>
   );

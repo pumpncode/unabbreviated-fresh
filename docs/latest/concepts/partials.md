@@ -81,8 +81,8 @@ documentation (marked green here).
 The code for such a page (excluding styling) might look like this:
 
 ```tsx routes/docs/[id].tsx
-export default defineRoute(async (request, ctx) => {
-  const content = await loadContent(ctx.params.id);
+export default defineRoute(async (request, context) => {
+  const content = await loadContent(context.params.id);
 
   return (
     <div>
@@ -113,8 +113,8 @@ export const config: RouteConfig = {
   skipInheritedLayouts: true,
 };
 
-export default defineRoute(async (request, ctx) => {
-  const content = await loadContent(ctx.params.id);
+export default defineRoute(async (request, context) => {
+  const content = await loadContent(context.params.id);
 
   // Only render the new content
   return (

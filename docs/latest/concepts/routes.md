@@ -29,7 +29,7 @@ Let's look at a basic route that returns a plain text string:
 import { FreshContext, Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  GET(_request: Request, _ctx: FreshContext) {
+  GET(_request: Request, _context: FreshContext) {
     return new Response("Hello World");
   },
 };
@@ -71,8 +71,8 @@ response after rendering the page component.
 import { HandlerContext, Handlers, PageProps } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  async GET(_request: Request, ctx: HandlerContext) {
-    const resp = await ctx.render();
+  async GET(_request: Request, context: HandlerContext) {
+    const resp = await context.render();
     resp.headers.set("X-Custom-Header", "Hello World");
     return resp;
   },
@@ -88,7 +88,7 @@ export default function Page(props: PageProps) {
 Having a separate route handler and component function is nice, when you want to
 test these in isolation, but can become a bit cumbersome to maintain. They
 require some additional indirection of declaring an interface for the component
-`Data` when you're passing it around through `ctx.render()`.
+`Data` when you're passing it around through `context.render()`.
 
 ```tsx routes/page.tsx
 interface Data {
@@ -96,9 +96,9 @@ interface Data {
 }
 
 export const handler: Handlers<Data> = {
-  async GET(request, ctx) {
+  async GET(request, context) {
     const value = await loadFooValue();
-    return ctx.render({ foo: value });
+    return context.render({ foo: value });
   },
 };
 
@@ -113,7 +113,7 @@ avoid having to create the `Data` interface boilerplate.
 
 ```tsx routes/page.tsx
 // Async route component
-export default async function MyPage(request: Request, ctx: RouteContext) {
+export default async function MyPage(request: Request, context: RouteContext) {
   const value = await loadFooValue();
   return <p>foo is: {value}</p>;
 }
@@ -131,7 +131,7 @@ export const handler: Handlers = {
   },
 };
 
-export default async function MyPage(request: Request, ctx: RouteContext) {
+export default async function MyPage(request: Request, context: RouteContext) {
   const value = await loadFooValue();
   return <p>foo is: {value}</p>;
 }
@@ -144,12 +144,12 @@ in another manner. This can be done by returning a `Response` object.
 
 ```tsx route/page.tsx
 // Async route component
-export default async function MyPage(request: Request, ctx: RouteContext) {
+export default async function MyPage(request: Request, context: RouteContext) {
   const value = await loadFooValue();
 
   // Return 404 if `value` is null
   if (value === null) {
-    return ctx.renderNotFound();
+    return context.renderNotFound();
   }
 
   // Returning a response object directly works too
@@ -175,7 +175,7 @@ function arguments.
 ```tsx
 import { defineRoute } from "$fresh/server.ts";
 
-export default defineRoute(async (request, ctx) => {
+export default defineRoute(async (request, context) => {
   const data = await loadData();
 
   return (

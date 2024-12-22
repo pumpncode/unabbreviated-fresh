@@ -332,12 +332,12 @@ function errorMiddleware<State>(
   handler: HandlerFn<unknown, State> | undefined,
 ): MiddlewareFn<State> {
   const mid = renderMiddleware<State>(components, handler);
-  return async function errorMiddleware(ctx) {
+  return async function errorMiddleware(context) {
     try {
-      return await ctx.next();
+      return await context.next();
     } catch (err) {
-      (ctx as FreshRequestContext<State>).error = err;
-      return mid(ctx);
+      (context as FreshRequestContext<State>).error = err;
+      return mid(context);
     }
   };
 }
@@ -347,12 +347,12 @@ function notFoundMiddleware<State>(
   handler: HandlerFn<unknown, State> | undefined,
 ): MiddlewareFn<State> {
   const mid = renderMiddleware<State>(components, handler);
-  return async function notFoundMiddleware(ctx) {
+  return async function notFoundMiddleware(context) {
     try {
-      return await ctx.next();
+      return await context.next();
     } catch (err) {
       if (err instanceof HttpError && err.status === 404) {
-        return mid(ctx);
+        return mid(context);
       }
       throw err;
     }

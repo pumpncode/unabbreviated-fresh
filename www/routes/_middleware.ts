@@ -88,13 +88,13 @@ function ga4(
 }
 
 export async function handler(
-  ctx: FreshContext,
+  context: FreshContext,
 ): Promise<Response> {
   let err;
   let res: Response;
   const start = performance.now();
   try {
-    const resp = await ctx.next();
+    const resp = await context.next();
     const headers = new Headers(resp.headers);
     res = new Response(resp.body, { status: resp.status, headers });
     return res;
@@ -106,8 +106,8 @@ export async function handler(
     throw e;
   } finally {
     ga4(
-      ctx.request,
-      ctx,
+      context.request,
+      context,
       res!,
       start,
       err,

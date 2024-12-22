@@ -18,9 +18,9 @@ doing the following:
 ```ts routes/_middleware.ts
 import { FreshContext } from "$fresh/server.ts";
 
-export async function handler(request: Request, ctx: FreshContext) {
+export async function handler(request: Request, context: FreshContext) {
   const origin = request.headers.get("Origin") || "*";
-  const resp = await ctx.next();
+  const resp = await context.next();
   const headers = resp.headers;
 
   headers.set("Access-Control-Allow-Origin", origin);
@@ -47,7 +47,7 @@ deal with "preflight requests". Let's imagine you're trying to support a
 ```ts routes/_middleware.ts
 import { FreshContext } from "$fresh/server.ts";
 
-export async function handler(request: Request, ctx: FreshContext) {
+export async function handler(request: Request, context: FreshContext) {
   if (request.method == "OPTIONS") {
     const resp = new Response(null, {
       status: 204,
@@ -59,7 +59,7 @@ export async function handler(request: Request, ctx: FreshContext) {
     return resp;
   }
   const origin = request.headers.get("Origin") || "*";
-  const resp = await ctx.next();
+  const resp = await context.next();
   const headers = resp.headers;
 
   headers.set("Access-Control-Allow-Origin", origin);

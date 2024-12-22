@@ -31,8 +31,8 @@ then adds a custom header to the response before returning it:
 import { Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  async GET(_request, ctx) {
-    const resp = await ctx.render();
+  async GET(_request, context) {
+    const resp = await context.render();
     resp.headers.set("X-Custom-Header", "Hello");
     return resp;
   },
@@ -48,9 +48,9 @@ export default function AboutPage() {
 }
 ```
 
-Note that handlers do not need to call `ctx.render()`. This feature can be used
-to create API routes. Here is an API route that returns a random UUID as a JSON
-response:
+Note that handlers do not need to call `context.render()`. This feature can be
+used to create API routes. Here is an API route that returns a random UUID as a
+JSON response:
 
 ```ts routes/api/random-uuid.ts
 import { Handlers } from "$fresh/server.ts";

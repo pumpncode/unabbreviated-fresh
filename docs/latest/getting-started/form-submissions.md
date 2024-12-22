@@ -24,7 +24,7 @@ data, which then responds with a new page to render.
 Fresh can handle both `GET` and `POST` requests through the
 [custom handlers][custom-handlers] feature of routes. The handlers can perform
 any necessary processing on the form data, and then pass data to the
-`ctx.render()` call to render a new page.
+`context.render()` call to render a new page.
 
 Here is an example implementing a search form that filters an array of names
 server side:
@@ -40,11 +40,11 @@ interface Data {
 }
 
 export const handler: Handlers<Data> = {
-  GET(request, ctx) {
+  GET(request, context) {
     const url = new URL(request.url);
     const query = url.searchParams.get("q") || "";
     const results = NAMES.filter((name) => name.includes(query));
-    return ctx.render({ results, query });
+    return context.render({ results, query });
   },
 };
 

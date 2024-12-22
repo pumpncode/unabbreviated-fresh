@@ -135,29 +135,29 @@ The `<Head>` component was used in Fresh 1.x to add additional tags to the
 removed in preparation and due to performance concerns as it required a complex
 machinery in the background to work.
 
-Instead, passing head-related data is best done via `ctx.state`
+Instead, passing head-related data is best done via `context.state`
 
 ```tsx
 // about.tsx
 export const handler = {
-  GET(ctx) {
+  GET(context) {
     // Set a route specific data in a handler
-    ctx.state.title = "About Me";
+    context.state.title = "About Me";
     return page();
   },
 };
 
 // Render that in _app.tsx
-export default function AppWrapper(ctx: FreshContext) {
+export default function AppWrapper(context: FreshContext) {
   return (
     <html lang="en">
       <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        {ctx.state.title ? <title>{ctx.state.title}</title> : null}
+        {context.state.title ? <title>{context.state.title}</title> : null}
       </head>
       <body>
-        <ctx.Component />
+        <context.Component />
       </body>
     </html>
   );
@@ -196,19 +196,19 @@ have a trailing slash at the end or that they will never have one.
 
 Middleware, handler and route component signatures have been unified to all look
 the same. Instead of receiving two arguments, they receive one. The `Request`
-object is stored on the context object as `ctx.request`.
+object is stored on the context object as `context.request`.
 
 ```diff
-- const middleware = (request, ctx) => new Response("ok");
-+ const middleware = (ctx) => new Response("ok");
+- const middleware = (request, context) => new Response("ok");
++ const middleware = (context) => new Response("ok");
 ```
 
 Same is true for handlers:
 
 ```diff
   export const handler = {
--   GET(request, ctx) {
-+   GET(ctx) {
+-   GET(request, context) {
++   GET(context) {
       return new Response("ok");
     },
   };
@@ -217,7 +217,7 @@ Same is true for handlers:
 ...and async route components:
 
 ```diff
--  export default async function MyPage(request: Request, ctx: RouteContext) {
+-  export default async function MyPage(request: Request, context: RouteContext) {
 +  export default async function MyPage(props: PageProps) {
     const value = await loadFooValue();
     return <p>foo is: {value}</p>;
@@ -232,16 +232,16 @@ All the various context interfaces have been consolidated and simplified:
 
 ### Context methods
 
-The `ctx.renderNotFound()` method has been removed in favor of throwing an
+The `context.renderNotFound()` method has been removed in favor of throwing an
 `HttpError` instance. This allows all middlewares to optionally participate in
 error handling. Other properties have been moved or renamed to make it easier to
 re-use existing objects internally as a minor performance optimization.
 
-| Fresh 1.x              | Fresh 2.x                  |
-| ---------------------- | -------------------------- |
-| `ctx.renderNotFound()` | `throw new HttpError(404)` |
-| `ctx.basePath`         | `ctx.config.basePath`      |
-| `ctx.remoteAddr`       | `ctx.info.remoteAddr`      |
+| Fresh 1.x                  | Fresh 2.x                  |
+| -------------------------- | -------------------------- |
+| `context.renderNotFound()` | `throw new HttpError(404)` |
+| `context.basePath`         | `context.config.basePath`  |
+| `context.remoteAddr`       | `context.info.remoteAddr`  |
 
 ## Getting help
 

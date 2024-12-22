@@ -26,17 +26,17 @@ interface Page {
 }
 
 export const handler: Handlers<Page> = {
-  async GET(_request, ctx) {
+  async GET(_request, context) {
     let rawMarkdown = "";
-    if (ctx.params.slug === "remote") {
+    if (context.params.slug === "remote") {
       const resp = await fetch(
         `https://raw.githubusercontent.com/denoland/fresh/main/docs/latest/introduction/index.md`,
       );
       if (resp.status !== 200) {
-        return ctx.render(undefined);
+        return context.render(undefined);
       }
       rawMarkdown = await resp.text();
-    } else if (ctx.params.slug === "string") {
+    } else if (context.params.slug === "string") {
       rawMarkdown = `---
 description: test
 ---
@@ -46,13 +46,13 @@ description: test
 Look, it's working. _This is in italics._
       
       `;
-    } else if (ctx.params.slug === "file") {
+    } else if (context.params.slug === "file") {
       rawMarkdown = await Deno.readTextFile("text.md");
     } else {
-      return ctx.render(undefined);
+      return context.render(undefined);
     }
     const { attrs, body } = extract(rawMarkdown);
-    return ctx.render({ markdown: body, data: attrs });
+    return context.render({ markdown: body, data: attrs });
   },
 };
 

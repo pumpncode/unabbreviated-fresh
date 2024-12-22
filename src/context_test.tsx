@@ -29,8 +29,8 @@ Deno.test("FreshRequestContext.prototype.redirect", () => {
 
 Deno.test("render asset()", async () => {
   const app = new App()
-    .get("/", (ctx) =>
-      ctx.render(
+    .get("/", (context) =>
+      context.render(
         <>
           <p class="raw">{asset("/foo")}</p>
           <img src="/foo" srcset="/foo-bar" />
@@ -48,10 +48,10 @@ Deno.test("render asset()", async () => {
   expect(doc.querySelector("source")!.src).toContain(BUILD_ID);
 });
 
-Deno.test("ctx.render - throw with no arguments", async () => {
+Deno.test("context.render - throw with no arguments", async () => {
   const app = new App()
     // deno-lint-ignore no-explicit-any
-    .get("/", (ctx) => (ctx as any).render());
+    .get("/", (context) => (context as any).render());
   const server = new FakeServer(await app.handler());
   const res = await server.get("/");
 
@@ -59,10 +59,10 @@ Deno.test("ctx.render - throw with no arguments", async () => {
   expect(res.status).toEqual(500);
 });
 
-Deno.test("ctx.render - throw with invalid first arg", async () => {
+Deno.test("context.render - throw with invalid first arg", async () => {
   const app = new App()
     // deno-lint-ignore no-explicit-any
-    .get("/", (ctx) => (ctx as any).render({}));
+    .get("/", (context) => (context as any).render({}));
   const server = new FakeServer(await app.handler());
   const res = await server.get("/");
 

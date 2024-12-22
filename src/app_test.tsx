@@ -5,15 +5,15 @@ import { ProdBuildCache } from "./build_cache.ts";
 
 Deno.test("FreshApp - .use()", async () => {
   const app = new App<{ text: string }>()
-    .use((ctx) => {
-      ctx.state.text = "A";
-      return ctx.next();
+    .use((context) => {
+      context.state.text = "A";
+      return context.next();
     })
-    .use((ctx) => {
-      ctx.state.text += "B";
-      return ctx.next();
+    .use((context) => {
+      context.state.text += "B";
+      return context.next();
     })
-    .get("/", (ctx) => new Response(ctx.state.text));
+    .get("/", (context) => new Response(context.state.text));
 
   const server = new FakeServer(await app.handler());
 
@@ -221,12 +221,12 @@ Deno.test("FreshApp - wrong method match", async () => {
 
 Deno.test("FreshApp - methods with middleware", async () => {
   const app = new App<{ text: string }>()
-    .use((ctx) => {
-      ctx.state.text = "A";
-      return ctx.next();
+    .use((context) => {
+      context.state.text = "A";
+      return context.next();
     })
-    .get("/", (ctx) => new Response(ctx.state.text))
-    .post("/", (ctx) => new Response(ctx.state.text));
+    .get("/", (context) => new Response(context.state.text))
+    .post("/", (context) => new Response(context.state.text));
 
   const server = new FakeServer(await app.handler());
 
@@ -239,12 +239,12 @@ Deno.test("FreshApp - methods with middleware", async () => {
 
 Deno.test("FreshApp - .mountApp() compose apps", async () => {
   const innerApp = new App<{ text: string }>()
-    .use((ctx) => {
-      ctx.state.text = "A";
-      return ctx.next();
+    .use((context) => {
+      context.state.text = "A";
+      return context.next();
     })
-    .get("/", (ctx) => new Response(ctx.state.text))
-    .post("/", (ctx) => new Response(ctx.state.text));
+    .get("/", (context) => new Response(context.state.text))
+    .post("/", (context) => new Response(context.state.text));
 
   const app = new App<{ text: string }>()
     .get("/", () => new Response("ok"))
@@ -264,12 +264,12 @@ Deno.test("FreshApp - .mountApp() compose apps", async () => {
 
 Deno.test("FreshApp - .mountApp() self mount, no middleware", async () => {
   const innerApp = new App<{ text: string }>()
-    .use((ctx) => {
-      ctx.state.text = "A";
-      return ctx.next();
+    .use((context) => {
+      context.state.text = "A";
+      return context.next();
     })
-    .get("/foo", (ctx) => new Response(ctx.state.text))
-    .post("/foo", (ctx) => new Response(ctx.state.text));
+    .get("/foo", (context) => new Response(context.state.text))
+    .post("/foo", (context) => new Response(context.state.text));
 
   const app = new App<{ text: string }>()
     .get("/", () => new Response("ok"))
@@ -291,17 +291,17 @@ Deno.test(
   "FreshApp - .mountApp() self mount, with middleware",
   async () => {
     const innerApp = new App<{ text: string }>()
-      .use(function B(ctx) {
-        ctx.state.text += "B";
-        return ctx.next();
+      .use(function B(context) {
+        context.state.text += "B";
+        return context.next();
       })
-      .get("/foo", (ctx) => new Response(ctx.state.text))
-      .post("/foo", (ctx) => new Response(ctx.state.text));
+      .get("/foo", (context) => new Response(context.state.text))
+      .post("/foo", (context) => new Response(context.state.text));
 
     const app = new App<{ text: string }>()
-      .use(function A(ctx) {
-        ctx.state.text = "A";
-        return ctx.next();
+      .use(function A(context) {
+        context.state.text = "A";
+        return context.next();
       })
       .get("/", () => new Response("ok"))
       .mountApp("/", innerApp);
@@ -323,17 +323,17 @@ Deno.test(
   "FreshApp - .mountApp() self mount, different order",
   async () => {
     const innerApp = new App<{ text: string }>()
-      .get("/foo", (ctx) => new Response(ctx.state.text))
-      .use(function B(ctx) {
-        ctx.state.text += "B";
-        return ctx.next();
+      .get("/foo", (context) => new Response(context.state.text))
+      .use(function B(context) {
+        context.state.text += "B";
+        return context.next();
       })
-      .post("/foo", (ctx) => new Response(ctx.state.text));
+      .post("/foo", (context) => new Response(context.state.text));
 
     const app = new App<{ text: string }>()
-      .use(function A(ctx) {
-        ctx.state.text = "A";
-        return ctx.next();
+      .use(function A(context) {
+        context.state.text = "A";
+        return context.next();
       })
       .get("/", () => new Response("ok"))
       .mountApp("/", innerApp);
@@ -353,11 +353,11 @@ Deno.test(
 
 Deno.test("FreshApp - .mountApp() self mount empty", async () => {
   const innerApp = new App<{ text: string }>()
-    .use((ctx) => {
-      ctx.state.text = "A";
-      return ctx.next();
+    .use((context) => {
+      context.state.text = "A";
+      return context.next();
     })
-    .get("/foo", (ctx) => new Response(ctx.state.text));
+    .get("/foo", (context) => new Response(context.state.text));
 
   const app = new App<{ text: string }>()
     .mountApp("/", innerApp);
@@ -372,16 +372,16 @@ Deno.test(
   "FreshApp - .mountApp() self mount with middleware",
   async () => {
     const innerApp = new App<{ text: string }>()
-      .use(function Inner(ctx) {
-        ctx.state.text += "_Inner";
-        return ctx.next();
+      .use(function Inner(context) {
+        context.state.text += "_Inner";
+        return context.next();
       })
-      .get("/", (ctx) => new Response(ctx.state.text));
+      .get("/", (context) => new Response(context.state.text));
 
     const app = new App<{ text: string }>()
-      .use(function Outer(ctx) {
-        ctx.state.text = "Outer";
-        return ctx.next();
+      .use(function Outer(context) {
+        context.state.text = "Outer";
+        return context.next();
       })
       .mountApp("/", innerApp);
 
@@ -395,10 +395,10 @@ Deno.test(
 Deno.test("FreshApp - catches errors", async () => {
   let thrownErr: unknown | null = null;
   const app = new App<{ text: string }>()
-    .use(async (ctx) => {
-      ctx.state.text = "A";
+    .use(async (context) => {
+      context.state.text = "A";
       try {
-        return await ctx.next();
+        return await context.next();
       } catch (err) {
         thrownErr = err;
         throw err;
@@ -418,8 +418,8 @@ Deno.test("FreshApp - catches errors", async () => {
 // TODO: Find a better way to test this
 Deno.test.ignore("FreshApp - finish setup", async () => {
   const app = new App<{ text: string }>()
-    .get("/", (ctx) => {
-      return ctx.render(<div>ok</div>);
+    .get("/", (context) => {
+      return context.render(<div>ok</div>);
     });
 
   setBuildCache(
@@ -442,19 +442,19 @@ Deno.test.ignore("FreshApp - finish setup", async () => {
 Deno.test("FreshApp - sets error on context", async () => {
   const thrown: [unknown, unknown][] = [];
   const app = new App()
-    .use(async (ctx) => {
+    .use(async (context) => {
       try {
-        return await ctx.next();
+        return await context.next();
       } catch (err) {
-        thrown.push([err, ctx.error]);
+        thrown.push([err, context.error]);
         throw err;
       }
     })
-    .use(async (ctx) => {
+    .use(async (context) => {
       try {
-        return await ctx.next();
+        return await context.next();
       } catch (err) {
-        thrown.push([err, ctx.error]);
+        thrown.push([err, context.error]);
         throw err;
       }
     })
@@ -471,10 +471,10 @@ Deno.test("FreshApp - sets error on context", async () => {
   expect(thrown[1][0]).toEqual(thrown[1][1]);
 });
 
-Deno.test("FreshApp - support setting request init in ctx.render()", async () => {
+Deno.test("FreshApp - support setting request init in context.render()", async () => {
   const app = new App<{ text: string }>()
-    .get("/", (ctx) => {
-      return ctx.render(<div>ok</div>, {
+    .get("/", (context) => {
+      return context.render(<div>ok</div>, {
         status: 416,
         headers: { "X-Foo": "foo" },
       });

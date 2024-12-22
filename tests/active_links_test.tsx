@@ -59,11 +59,11 @@ Deno.test({
     }
 
     const app = testApp()
-      .get("/active_nav/foo", (ctx) => {
-        return ctx.render(<View />);
+      .get("/active_nav/foo", (context) => {
+        return context.render(<View />);
       })
-      .get("/active_nav", (ctx) => {
-        return ctx.render(<View />);
+      .get("/active_nav", (context) => {
+        return context.render(<View />);
       });
 
     const server = new FakeServer(await app.handler());
@@ -124,11 +124,11 @@ Deno.test({
     }
 
     const app = testApp()
-      .get("/active_nav_partial/foo", (ctx) => {
-        return ctx.render(<PartialPage />);
+      .get("/active_nav_partial/foo", (context) => {
+        return context.render(<PartialPage />);
       })
-      .get("/active_nav_partial", (ctx) => {
-        return ctx.render(<PartialPage />);
+      .get("/active_nav_partial", (context) => {
+        return context.render(<PartialPage />);
       });
 
     await withBrowserApp(app, async (page, address) => {

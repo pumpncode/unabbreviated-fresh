@@ -36,7 +36,7 @@ full files are available at the bottom for reference.
 
 ```tsx routes/api/users/index.ts
 export const handler: Handlers<User | null> = {
-  async POST(request, _ctx) {
+  async POST(request, _context) {
     const user = (await request.json()) as User;
     const userKey = ["user", user.id];
     const ok = await kv.atomic().set(userKey, user).commit();
@@ -70,8 +70,8 @@ method. You can use `GET` to fetch database content, markdown, or static files.
 
 ```tsx routes/api/users/[id].ts
 export const handler: Handlers<User | null> = {
-  async GET(_request, ctx) {
-    const id = ctx.params.id;
+  async GET(_request, context) {
+    const id = context.params.id;
     const key = ["user", id];
     const user = (await kv.get<User>(key)).value!;
     return new Response(JSON.stringify(user));
@@ -100,8 +100,8 @@ An example of an update endpoint using `PUT`:
 
 ```tsx routes/api/users/[id].ts
 export const handler: Handlers<User | null> = {
-  async PUT(request, ctx) {
-    const id = ctx.params.id;
+  async PUT(request, context) {
+    const id = context.params.id;
     const user = (await request.json()) as User;
     const userKey = ["user", id];
     const userRes = await kv.get(userKey);
@@ -146,8 +146,8 @@ No need to send in the id in this case.
 
 ```tsx routes/api/users/[id].ts
 export const handler: Handlers<User | null> = {
-  async DELETE(_request, ctx) {
-    const id = ctx.params.id;
+  async DELETE(_request, context) {
+    const id = context.params.id;
     const userKey = ["user", id];
     const userRes = await kv.get(userKey);
     if (!userRes.value) return new Response(`no user with id ${id} found`);
@@ -187,14 +187,14 @@ type User = {
 const kv = await Deno.openKv();
 
 export const handler: Handlers<User | null> = {
-  async GET(_request, ctx) {
-    const id = ctx.params.id;
+  async GET(_request, context) {
+    const id = context.params.id;
     const key = ["user", id];
     const user = (await kv.get<User>(key)).value!;
     return new Response(JSON.stringify(user));
   },
-  async DELETE(_request, ctx) {
-    const id = ctx.params.id;
+  async DELETE(_request, context) {
+    const id = context.params.id;
     const userKey = ["user", id];
     const userRes = await kv.get(userKey);
     if (!userRes.value) return new Response(`no user with id ${id} found`);
@@ -202,8 +202,8 @@ export const handler: Handlers<User | null> = {
     if (!ok) throw new Error("Something went wrong.");
     return new Response(`user ${id} deleted`);
   },
-  async PUT(request, ctx) {
-    const id = ctx.params.id;
+  async PUT(request, context) {
+    const id = context.params.id;
     const user = (await request.json()) as User;
     const userKey = ["user", id];
     const userRes = await kv.get(userKey);
@@ -231,14 +231,14 @@ type User = {
 const kv = await Deno.openKv();
 
 export const handler: Handlers<User | null> = {
-  async GET(_request, _ctx) {
+  async GET(_request, _context) {
     const users = [];
     for await (const res of kv.list({ prefix: ["user"] })) {
       users.push(res.value);
     }
     return new Response(JSON.stringify(users));
   },
-  async POST(request, _ctx) {
+  async POST(request, _context) {
     const user = (await request.json()) as User;
     const userKey = ["user", user.id];
     const ok = await kv.atomic().set(userKey, user).commit();

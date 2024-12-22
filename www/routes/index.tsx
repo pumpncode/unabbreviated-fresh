@@ -15,8 +15,8 @@ import { DenoSection } from "../components/homepage/DenoSection.tsx";
 import { define } from "../utils/state.ts";
 
 export const handler = define.handlers({
-  GET(ctx) {
-    const { request } = ctx;
+  GET(context) {
+    const { request } = context;
     const accept = request.headers.get("accept");
     const userAgent = request.headers.get("user-agent");
     if (userAgent?.includes("Deno/") && !accept?.includes("text/html")) {
@@ -27,17 +27,17 @@ export const handler = define.handlers({
       });
     }
 
-    ctx.state.title =
+    context.state.title =
       "Fresh - The simple, approachable, productive web framework.";
-    ctx.state.description =
+    context.state.description =
       "Fresh features just-in-time edge rendering, island based interactivity, and zero-configuration TypeScript support. Fast to write; fast to run.";
-    ctx.state.ogImage = new URL(asset("/og-image.webp"), ctx.url).href;
+    context.state.ogImage = new URL(asset("/og-image.webp"), context.url).href;
 
     return page();
   },
-  async POST(ctx) {
+  async POST(context) {
     const headers = new Headers();
-    const form = await ctx.request.formData();
+    const form = await context.request.formData();
     const treat = form.get("treat");
     headers.set("location", `/thanks?vote=${treat}`);
     return new Response(null, {

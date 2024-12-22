@@ -17,10 +17,10 @@ const contentTypes = new Map([
 ]);
 
 export const handler = define.handlers({
-  async GET(ctx) {
-    const accept = ctx.request.headers.get("Accept");
+  async GET(context) {
+    const accept = context.request.headers.get("Accept");
     const isHTML = accept?.includes("text/html");
-    const { version, path } = ctx.params;
+    const { version, path } = context.params;
 
     const semver = parse(version);
     if (!semver) {

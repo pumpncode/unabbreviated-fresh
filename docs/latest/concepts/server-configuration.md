@@ -46,7 +46,7 @@ And for completeness here are the remaining two types:
 
 ```ts
 export type RenderFunction = (
-  ctx: RenderContext,
+  context: RenderContext,
   render: InnerRenderFunction,
 ) => void | Promise<void>;
 

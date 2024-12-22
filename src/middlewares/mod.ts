@@ -6,7 +6,7 @@ import type { Define as _Define } from "../define.ts";
  * A middleware function is the basic building block of Fresh. It allows you
  * to respond to an incoming request in any way you want. You can redirect
  * routes, serve files, create APIs and much more. Middlewares can be chained by
- * calling {@linkcode FreshContext.next|ctx.next()} inside of the function.
+ * calling {@linkcode FreshContext.next|context.next()} inside of the function.
  *
  * Middlewares can be synchronous or asynchronous. If a middleware returns a
  * {@linkcode Response} object, the response will be sent back to the client. If
@@ -40,10 +40,10 @@ import type { Define as _Define } from "../define.ts";
  * // `define.middleware` method is optional, but it can be useful for type
  * // checking and code completion. It does not register the middleware with the
  * // app.
- * const loggerMiddleware = define.middleware((ctx) => {
- *   console.log(`${ctx.request.method} ${ctx.request.url}`);
+ * const loggerMiddleware = define.middleware((context) => {
+ *   console.log(`${context.request.method} ${context.request.url}`);
  *   // Call the next middleware
- *   return ctx.next();
+ *   return context.next();
  * });
  *
  * // To register the middleware to the app, use `app.use`.
@@ -58,13 +58,13 @@ import type { Define as _Define } from "../define.ts";
  * ```ts
  * // Any request to a URL that starts with "/legacy/" will be redirected to
  * // "/modern".
- * const redirectMiddleware = define.middleware((ctx) => {
- *   if (ctx.url.pathname.startsWith("/legacy/")) {
- *     return ctx.redirect("/modern");
+ * const redirectMiddleware = define.middleware((context) => {
+ *   if (context.url.pathname.startsWith("/legacy/")) {
+ *     return context.redirect("/modern");
  *   }
  *
  *   // Otherwise call the next middleware
- *   return ctx.next();
+ *   return context.next();
  * });
  *
  * // Again, register the middleware with the app.
@@ -72,7 +72,7 @@ import type { Define as _Define } from "../define.ts";
  * ```
  */
 export type MiddlewareFn<State> = (
-  ctx: FreshContext<State>,
+  context: FreshContext<State>,
 ) => Response | Promise<Response>;
 
 /**
@@ -83,9 +83,9 @@ export type Middleware<State> = MiddlewareFn<State> | MiddlewareFn<State>[];
 
 export function runMiddlewares<State>(
   middlewares: MiddlewareFn<State>[][],
-  ctx: FreshRequestContext<State>,
+  context: FreshRequestContext<State>,
 ): Promise<Response> {
-  let fn = ctx.next;
+  let fn = context.next;
   let i = middlewares.length;
   while (i--) {
     const stack = middlewares[i];
@@ -94,11 +94,11 @@ export function runMiddlewares<State>(
       const local = fn;
       const next = stack[j];
       fn = async () => {
-        ctx.next = local;
+        context.next = local;
         try {
-          return await next(ctx);
+          return await next(context);
         } catch (err) {
-          ctx.error = err;
+          context.error = err;
           throw err;
         }
       };

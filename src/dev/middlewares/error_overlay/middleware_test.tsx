@@ -63,11 +63,11 @@ Deno.test(
     app.use(devErrorOverlay());
     app.config.mode = "development";
     app
-      .use(async (ctx) => {
+      .use(async (context) => {
         try {
-          return await ctx.next();
+          return await context.next();
         } catch {
-          return ctx.render(<p>ok</p>);
+          return context.render(<p>ok</p>);
         }
       })
       .get("/", () => {

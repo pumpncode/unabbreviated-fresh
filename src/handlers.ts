@@ -14,7 +14,7 @@ export interface PageResponse<T> {
  *
  * ```ts
  * export const handlers = define.handlers({
- *   GET: (ctx) => {
+ *   GET: (context) => {
  *     return page({ message: "Hello, world!" }, {
  *       headers: { "Cache-Control": "public, max-age=3600" },
  *       status: 201,
@@ -64,10 +64,10 @@ export function page<T>(data?: T, options?: {
  *
  * ```ts
  * export const handlers = define.handlers({
- *   GET: (ctx) => {
+ *   GET: (context) => {
  *     return new Response("Hello from a GET request!");
  *   },
- *   POST: (ctx) => {
+ *   POST: (context) => {
  *     return new Response("Hello from a POST request!");
  *   }
  * });
@@ -88,8 +88,8 @@ export function page<T>(data?: T, options?: {
  * This function will be called for all requests, regardless of the method.
  *
  * ```ts
- * export const handlers = define.handlers((ctx) => {
- *   return new Response(`Hello from a ${ctx.request.method} request!`);
+ * export const handlers = define.handlers((context) => {
+ *   return new Response(`Hello from a ${context.request.method} request!`);
  * });
  * ```
  */
@@ -119,7 +119,7 @@ export function isHandlerByMethod<D, S>(
  * to redirect the client to another URL.
  *
  * ```ts
- * export const handler = define.handlers((ctx) => {
+ * export const handler = define.handlers((context) => {
  *   return new Response("Hello, world!");
  * });
  * ```
@@ -130,7 +130,7 @@ export function isHandlerByMethod<D, S>(
  * will be passed to the page component, where it can be rendered into HTML.
  *
  * ```ts
- * export const handler = define.handlers((ctx) => {
+ * export const handler = define.handlers((context) => {
  *   return { data: { message: "Hello, world!" } };
  * });
  *
@@ -145,7 +145,7 @@ export function isHandlerByMethod<D, S>(
  * code, or a list of elements to include in the `<head>`.
  *
  * ```tsx
- * export const handler = define.handlers((ctx) => {
+ * export const handler = define.handlers((context) => {
  *   return {
  *     data: { message: "Hello, world!" },
  *     headers: { "Cache-Control": "public, max-age=3600" },
@@ -162,7 +162,7 @@ export function isHandlerByMethod<D, S>(
  * operation before returning a response.
  *
  * ```ts
- * export const handler = define.handlers(async (ctx) => {
+ * export const handler = define.handlers(async (context) => {
  *   const resp = await fetch("https://api.example.com/data").;
  *   if (!resp.ok) {
  *     throw new Error("Failed to fetch data");
@@ -178,7 +178,7 @@ export function isHandlerByMethod<D, S>(
  * multiple operations concurrently.
  *
  * ```ts
- * export const handler = define.handlers(async (ctx) => {
+ * export const handler = define.handlers(async (context) => {
  *   const [resp1, resp2] = await Promise.all([
  *     fetch("https://api.example.com/data1")
  *       .then((resp) => resp.json()),
@@ -190,7 +190,7 @@ export function isHandlerByMethod<D, S>(
  * ```
  */
 export interface HandlerFn<Data, State> {
-  (ctx: FreshContext<State>):
+  (context: FreshContext<State>):
     | Response
     | PageResponse<Data>
     | Promise<Response | PageResponse<Data>>;

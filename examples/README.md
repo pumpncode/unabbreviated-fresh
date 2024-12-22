@@ -27,7 +27,7 @@ app.island(
 );
 
 // Use the island somewhere in your components
-app.get("/", (ctx) => ctx.render(<DemoIsland />));
+app.get("/", (context) => context.render(<DemoIsland />));
 
 await app.listen();
 ```

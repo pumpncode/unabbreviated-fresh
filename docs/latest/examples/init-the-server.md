@@ -64,14 +64,14 @@ export class Context {
 
 export async function handler(
   _request: Request,
-  ctx: FreshContext<State>,
+  context: FreshContext<State>,
 ) {
-  ctx.state.context = Context.instance();
-  if (ctx.destination === "route") {
+  context.state.context = Context.instance();
+  if (context.destination === "route") {
     console.log("i'm logged during a request!");
-    console.log(ctx.state.context);
+    console.log(context.state.context);
   }
-  const resp = await ctx.next();
+  const resp = await context.next();
   return resp;
 }
 ```

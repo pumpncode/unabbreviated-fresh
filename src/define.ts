@@ -20,8 +20,8 @@ export interface Define<State> {
    * ```ts
    * import { define } from "../utils.ts";
    *
-   * export const handler = define.handlers((ctx) => {
-   *   ctx.url; // ctx is inferred to be a FreshContext object, so this is a URL
+   * export const handler = define.handlers((context) => {
+   *   context.url; // context is inferred to be a FreshContext object, so this is a URL
    *   return new Response("Hello, world!");
    * });
    * ```
@@ -38,14 +38,14 @@ export interface Define<State> {
    * import { define } from "../utils.ts";
    *
    * export const handler = define.handlers<{ slug: string }>({
-   *   async GET(ctx) {
-   *     const slug = ctx.params.slug; // slug is inferred to be a string
+   *   async GET(context) {
+   *     const slug = context.params.slug; // slug is inferred to be a string
    *     return page({ slug });
    *   },
    *
    *   // This method will cause a type error because the data object is missing
    *   // the required `slug` property.
-   *   async POST(ctx) {
+   *   async POST(context) {
    *     return page({ });
    *   },
    * });
@@ -84,8 +84,8 @@ export interface Define<State> {
    * import { define } from "../utils.ts";
    *
    * export const handler = define.handlers({
-   *   async GET(ctx) {
-   *     const slug = ctx.params.slug; // slug is inferred to be a string
+   *   async GET(context) {
+   *     const slug = context.params.slug; // slug is inferred to be a string
    *     return page({ slug });
    *  },
    * });
@@ -121,9 +121,9 @@ export interface Define<State> {
    * ```ts
    * import { define } from "../utils.ts";
    *
-   * export const middleware = define.middleware((ctx) => {
-   *   ctx.url; // ctx is inferred to be a FreshContext object, so this is a URL
-   *   return ctx.next();
+   * export const middleware = define.middleware((context) => {
+   *   context.url; // context is inferred to be a FreshContext object, so this is a URL
+   *   return context.next();
    * });
    * ```
    *

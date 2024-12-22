@@ -118,7 +118,7 @@ import { FreshContext, Handlers } from "$fresh/server.ts";
 import { createSupabaseClient } from "lib/supabase.ts";
 
 export const handler: Handlers = {
-  async POST(request: Request, _ctx: FreshContext) {
+  async POST(request: Request, _context: FreshContext) {
     const form = await request.formData();
     const email = form.get("email");
     const password = form.get("password");
@@ -233,7 +233,7 @@ import { FreshContext } from "$fresh/server.ts";
 import { createSupabaseClient } from "lib/supabase.ts";
 
 export const handler = [
-  async function authMiddleware(request: Request, ctx: FreshContext) {
+  async function authMiddleware(request: Request, context: FreshContext) {
     const url = new URL(request.url);
     const headers = new Headers();
     headers.set("location", "/");
@@ -251,9 +251,9 @@ export const handler = [
       return new Response(null, { status: 303, headers });
     }
 
-    ctx.state.user = user;
+    context.state.user = user;
 
-    return ctx.next();
+    return context.next();
   },
 ];
 ```

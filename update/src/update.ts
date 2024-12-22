@@ -148,7 +148,7 @@ async function updateFile(sourceFile: tsmorph.SourceFile): Promise<void> {
                   const body = property.getBody();
                   if (body !== undefined) {
                     const stmts = body.getDescendantStatements();
-                    rewriteCtxMethods(stmts);
+                    rewriteContextMethods(stmts);
                   }
 
                   maybePrependRequestVar(property, newImports, true);
@@ -163,7 +163,7 @@ async function updateFile(sourceFile: tsmorph.SourceFile): Promise<void> {
                   const body = init.getBody();
                   if (body !== undefined) {
                     const stmts = body.getDescendantStatements();
-                    rewriteCtxMethods(stmts);
+                    rewriteContextMethods(stmts);
                   }
 
                   maybePrependRequestVar(init, newImports, true);
@@ -175,7 +175,7 @@ async function updateFile(sourceFile: tsmorph.SourceFile): Promise<void> {
           const body = node.getBody();
           if (body !== undefined) {
             const stmts = body.getDescendantStatements();
-            rewriteCtxMethods(stmts);
+            rewriteContextMethods(stmts);
           }
 
           maybePrependRequestVar(node, newImports, false);
@@ -200,7 +200,7 @@ async function updateFile(sourceFile: tsmorph.SourceFile): Promise<void> {
                   const body = first.getBody();
                   if (body !== undefined) {
                     const stmts = body.getDescendantStatements();
-                    rewriteCtxMethods(stmts);
+                    rewriteContextMethods(stmts);
                   }
 
                   maybePrependRequestVar(first, newImports, false);
@@ -212,7 +212,7 @@ async function updateFile(sourceFile: tsmorph.SourceFile): Promise<void> {
           const body = caller.getBody();
           if (body !== undefined) {
             const stmts = body.getDescendantStatements();
-            rewriteCtxMethods(stmts);
+            rewriteContextMethods(stmts);
           }
 
           maybePrependRequestVar(caller, newImports, false);
@@ -324,7 +324,7 @@ function maybePrependRequestVar(
     hasRequestVar = params.length > 1 || paramName === "request";
     if (hasRequestVar || paramName === "_request") {
       if (hasRequestVar && params.length === 1) {
-        params[0].replaceWithText("ctx");
+        params[0].replaceWithText("context");
         if (!hasInferredTypes) {
           newImports.core.add("FreshContext");
           params[0].setType("FreshContext");
@@ -365,7 +365,7 @@ function maybePrependRequestVar(
         declarationKind: tsmorph.VariableDeclarationKind.Const,
         declarations: [{
           name: paramName,
-          initializer: "ctx.request",
+          initializer: "context.request",
         }],
       });
     }
@@ -404,18 +404,18 @@ function maybePrependRequestVar(
   }
 }
 
-function rewriteCtxMethods(
+function rewriteContextMethods(
   nodes: (tsmorph.Node<tsmorph.ts.Node>)[],
 ) {
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
 
     if (node.isKind(SyntaxKind.PropertyAccessExpression)) {
-      rewriteCtxMemberName(node);
+      rewriteContextMemberName(node);
     } else if (node.isKind(SyntaxKind.ReturnStatement)) {
       const expr = node.getExpression();
       if (expr !== undefined) {
-        rewriteCtxMethods([expr]);
+        rewriteContextMethods([expr]);
       }
     } else if (node.isKind(SyntaxKind.VariableStatement)) {
       const decls = node.getDeclarations();
@@ -423,7 +423,7 @@ function rewriteCtxMethods(
         const decl = decls[i];
         const init = decl.getInitializer();
         if (init !== undefined) {
-          rewriteCtxMethods([init]);
+          rewriteContextMethods([init]);
         }
       }
     } else if (
@@ -432,21 +432,21 @@ function rewriteCtxMethods(
       node.isKind(SyntaxKind.CallExpression)
     ) {
       const expr = node.getExpression();
-      rewriteCtxMethods([expr]);
+      rewriteContextMethods([expr]);
     } else if (node.isKind(SyntaxKind.BinaryExpression)) {
-      rewriteCtxMethods([node.getLeft()]);
-      rewriteCtxMethods([node.getRight()]);
+      rewriteContextMethods([node.getLeft()]);
+      rewriteContextMethods([node.getRight()]);
     } else if (
       !node.isKind(SyntaxKind.ExpressionStatement) &&
       node.getKindName().endsWith("Statement")
     ) {
       const inner = node.getDescendantStatements();
-      rewriteCtxMethods(inner);
+      rewriteContextMethods(inner);
     }
   }
 }
 
-function rewriteCtxMemberName(
+function rewriteContextMemberName(
   node: tsmorph.PropertyAccessExpression,
 ) {
   const children = node.getChildren();
@@ -454,10 +454,10 @@ function rewriteCtxMemberName(
   const last = children[children.length - 1];
 
   if (
-    node.getExpression().getText() === "ctx" &&
+    node.getExpression().getText() === "context" &&
     node.getName() === "remoteAddr"
   ) {
-    node.getExpression().replaceWithText("ctx.info.remoteAddr");
+    node.getExpression().replaceWithText("context.info.remoteAddr");
   } else if (last.getText() === "renderNotFound") {
     last.replaceWithText("throw");
     const caller = node.getParentIfKind(SyntaxKind.CallExpression);
@@ -465,6 +465,6 @@ function rewriteCtxMemberName(
       caller.addArgument("404");
     }
   } else if (children[0].isKind(SyntaxKind.PropertyAccessExpression)) {
-    rewriteCtxMemberName(children[0]);
+    rewriteContextMemberName(children[0]);
   }
 }

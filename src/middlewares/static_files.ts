@@ -14,9 +14,9 @@ import { tracer } from "../otel.ts";
  * ```
  */
 export function staticFiles<T>(): MiddlewareFn<T> {
-  return async function freshStaticFiles(ctx) {
-    const { request, url, config } = ctx;
-    const buildCache = getBuildCache(ctx);
+  return async function freshStaticFiles(context) {
+    const { request, url, config } = context;
+    const buildCache = getBuildCache(context);
 
     let pathname = decodeURIComponent(url.pathname);
     if (config.basePath) {
@@ -33,7 +33,7 @@ export function staticFiles<T>(): MiddlewareFn<T> {
       if (pathname === "/favicon.ico") {
         return new Response(null, { status: 404 });
       }
-      return ctx.next();
+      return context.next();
     }
 
     if (request.method !== "GET" && request.method !== "HEAD") {
@@ -84,10 +84,10 @@ export function staticFiles<T>(): MiddlewareFn<T> {
       }
 
       if (
-        ctx.config.mode !== "development" &&
+        context.config.mode !== "development" &&
         (BUILD_ID === cacheKey ||
           url.pathname.startsWith(
-            `${ctx.config.basePath}/_fresh/js/${BUILD_ID}/`,
+            `${context.config.basePath}/_fresh/js/${BUILD_ID}/`,
           ))
       ) {
         span.setAttribute("fresh.cache", "immutable");
