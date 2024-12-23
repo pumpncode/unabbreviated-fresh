@@ -4,7 +4,7 @@ import type { WalkEntry } from "@std/fs/walk";
 import * as path from "@std/path";
 import type { RouteConfig } from "../../types.ts";
 import type { RouteHandler } from "../../handlers.ts";
-import type { MiddlewareFn } from "../../middlewares/mod.ts";
+import type { Middleware, MiddlewareFn } from "../../middlewares/mod.ts";
 import {
   type AsyncAnyComponent,
   renderMiddleware,
@@ -35,8 +35,7 @@ export interface FreshFsItem<State> {
   default?:
     | AnyComponent<PageProps<unknown, State>>
     | AsyncAnyComponent<PageProps<unknown, State>>
-    | ((ctx: FreshReqContext<{ text: string }>) => Promise<Response>)
-    | ((ctx: FreshReqContext<{ text: string }>) => Promise<Response>)[];
+    | Middleware<State>;
 }
 
 // deno-lint-ignore no-explicit-any
