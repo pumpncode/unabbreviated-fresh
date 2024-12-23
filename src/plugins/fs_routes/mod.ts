@@ -43,7 +43,9 @@ function isFreshFile<State>(mod: any): mod is FreshFsItem<State> {
       typeof mod.default === "function" ||
     typeof mod.config === "object" || typeof mod.handlers === "object" ||
     typeof mod.handlers === "function" || typeof mod.handler === "object" ||
-    typeof mod.handler === "function";
+    typeof mod.handler === "function" ||
+    (Array.isArray(mod.default) && mod.default.length > 0 &&
+      mod.default.every((item: unknown) => typeof item === "function"));
 }
 
 export interface FsRoutesOptions {
