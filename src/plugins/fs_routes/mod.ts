@@ -34,7 +34,9 @@ export interface FreshFsItem<State> {
   handlers?: RouteHandler<unknown, State>;
   default?:
     | AnyComponent<PageProps<unknown, State>>
-    | AsyncAnyComponent<PageProps<unknown, State>>;
+    | AsyncAnyComponent<PageProps<unknown, State>>
+    | ((ctx: FreshReqContext<{ text: string }>) => Promise<Response>)
+    | ((ctx: FreshReqContext<{ text: string }>) => Promise<Response>)[];
 }
 
 // deno-lint-ignore no-explicit-any
