@@ -259,7 +259,7 @@ export async function fsRoutes<State>(
           : typeof handlers === "function"
           ? handlers
           : ((ctx) => {
-            const { method } = ctx.req;
+            const { method } = ctx.request;
             if (!Array.isArray(handlers)) {
               const maybeFn = handlers[method as Method];
               if (maybeFn !== undefined) {
@@ -295,7 +295,7 @@ export async function fsRoutes<State>(
           : typeof handlers === "function"
           ? handlers
           : ((ctx) => {
-            const { method } = ctx.req;
+            const { method } = ctx.request;
             if (!Array.isArray(handlers)) {
               const maybeFn = handlers[method as Method];
               if (maybeFn !== undefined) {

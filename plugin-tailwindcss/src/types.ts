@@ -1,4 +1,4 @@
-import type { OnTransformOptions } from "@fresh/core/dev";
+import type { OnTransformOptions } from "@unabbreviated-fresh/core/dev";
 
 export interface AutoprefixerOptions {
   /** environment for `Browserslist` */
