@@ -4,13 +4,13 @@ import type { MiddlewareFn } from "./mod.ts";
 import { ASSET_CACHE_BUST_KEY } from "../runtime/shared_internal.tsx";
 import { BUILD_ID } from "../runtime/build_id.ts";
 import { getBuildCache } from "../context.ts";
-import { tracer } from "../otel.ts";
+import { trace, tracer } from "../otel.ts";
 
 /**
  * Fresh middleware to enable file-system based routing.
  * ```ts
  * // Enable Fresh static file serving
- * app.use(freshStaticFles());
+ * app.use(staticFiles());
  * ```
  */
 export function staticFiles<T>(): MiddlewareFn<T> {
@@ -39,6 +39,12 @@ export function staticFiles<T>(): MiddlewareFn<T> {
     if (request.method !== "GET" && request.method !== "HEAD") {
       file.close();
       return new Response("Method Not Allowed", { status: 405 });
+    }
+
+    const parentSpan = trace.getActiveSpan();
+    if (parentSpan) {
+      parentSpan.updateName(`${req.method} /*`);
+      parentSpan.setAttribute("http.route", "/*");
     }
 
     const span = tracer.startSpan("static file", {

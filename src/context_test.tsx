@@ -38,7 +38,7 @@ Deno.test("render asset()", async () => {
         </>,
       ));
 
-  const server = new FakeServer(await app.handler());
+  const server = new FakeServer(app.handler());
   const res = await server.get("/");
   const doc = parseHtml(await res.text());
 
@@ -52,7 +52,7 @@ Deno.test("context.render - throw with no arguments", async () => {
   const app = new App()
     // deno-lint-ignore no-explicit-any
     .get("/", (context) => (context as any).render());
-  const server = new FakeServer(await app.handler());
+  const server = new FakeServer(app.handler());
   const res = await server.get("/");
 
   await res.body?.cancel();
@@ -63,7 +63,7 @@ Deno.test("context.render - throw with invalid first arg", async () => {
   const app = new App()
     // deno-lint-ignore no-explicit-any
     .get("/", (context) => (context as any).render({}));
-  const server = new FakeServer(await app.handler());
+  const server = new FakeServer(app.handler());
   const res = await server.get("/");
 
   await res.body?.cancel();

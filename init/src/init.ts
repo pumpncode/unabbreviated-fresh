@@ -2,10 +2,10 @@ import * as colors from "@std/fmt/colors";
 import * as path from "@std/path";
 
 // Keep these as is, as we replace these version in our release script
-const FRESH_VERSION = "2.0.0-alpha.29";
+const FRESH_VERSION = "2.0.0-alpha.34";
 const FRESH_TAILWIND_VERSION = "0.0.1-alpha.7";
-const PREACT_VERSION = "10.25.4";
-const PREACT_SIGNALS_VERSION = "2.0.1";
+const PREACT_VERSION = "10.26.6";
+const PREACT_SIGNALS_VERSION = "2.0.4";
 
 export const enum InitStep {
   ProjectName = "ProjectName",
@@ -215,6 +215,7 @@ export default {
     await writeFile("tailwind.config.ts", TAILWIND_CONFIG_TS);
   }
 
+  // deno-fmt-ignore
   const GRADIENT_CSS = css`.fresh-gradient {
   background-color: rgb(134, 239, 172);
   background-image: linear-gradient(
@@ -224,7 +225,7 @@ export default {
     rgb(254, 249, 195)
   );
 }`;
-
+  // deno-fmt-ignore
   const NO_TAILWIND_STYLES = css`*,
 *::before,
 *::after {
@@ -375,6 +376,7 @@ html {
 
 ${GRADIENT_CSS}`;
 
+  // deno-fmt-ignore
   const TAILWIND_CSS = css`@tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -404,6 +406,7 @@ ${GRADIENT_CSS}`;
 import { define, type State } from "./utils.ts";
 
 export const app = new App<State>();
+
 app.use(staticFiles());
 
 // this is the same as the /api/:name route defined via a file. feel free to delete this!
@@ -422,7 +425,6 @@ const exampleLoggerMiddleware = define.middleware((context) => {
 app.use(exampleLoggerMiddleware);
 
 await fsRoutes(app, {
-  dir: "./",
   loadIsland: (path) => import(\`./islands/\${path}\`),
   loadRoute: (path) => import(\`./routes/\${path}\`),
 });
@@ -558,7 +560,8 @@ if (Deno.args.includes("build")) {
   const denoJson = {
     tasks: {
       check:
-        "deno fmt --check && deno lint && deno check **/*.ts && deno check **/*.tsx",
+        // Revert once https://github.com/denoland/deno/issues/28923 is fixed
+        "deno fmt --check . && deno lint . && deno check **/*.ts && deno check **/*.tsx",
       dev: "deno run -A --watch=static/,routes/ dev.ts",
       build: "deno run -A dev.ts build",
       start: "deno run -A main.ts",
@@ -605,7 +608,8 @@ Started" guide here: https://fresh.deno.dev/docs/getting-started
 
 ### Usage
 
-Make sure to install Deno: https://deno.land/manual/getting_started/installation
+Make sure to install Deno:
+https://docs.deno.com/runtime/getting_started/installation
 
 Then start the project in development mode:
 

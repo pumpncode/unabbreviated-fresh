@@ -31,6 +31,7 @@ jobs:
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
+          cache: true
           deno-version: ${{ matrix.deno }}
 
       - name: Verify formatting
@@ -50,3 +51,6 @@ jobs:
 
       - name: Run tests
         run: deno task test
+
+      - name: Check docs
+        run: deno task check:docs

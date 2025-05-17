@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "preact/hooks";
+import { useEffect, useRef } from "preact/hooks";
 import type { MarkdownHeading } from "../utils/markdown.ts";
+import { useSignal } from "@preact/signals";
 
 export interface TableOfContentsProps {
   headings: MarkdownHeading[];
@@ -33,7 +34,7 @@ function setActiveLink(
 export function TableOfContents({ headings }: TableOfContentsProps) {
   const ref = useRef<HTMLDivElement>(null);
   const refMarker = useRef<HTMLDivElement>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const isOpen = useSignal(false);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -103,9 +104,10 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
         <>
           <div class="xl:hidden mx-4 md:mx-0 mt-4 md:mt-0">
             <button
+              type="button"
               id="toc-outline-btn"
-              onClick={() => setIsOpen((v) => !v)}
-              class="bg-gray-100 py-2 px-4 rounded border border-gray-300 flex items-center hover:border-green-600 transition-colors text-sm"
+              onClick={() => isOpen.value = !isOpen.value}
+              class="bg-background-primary py-2 px-4 rounded border border-foreground-secondary/30 flex items-center hover:border-fresh-green/80 transition-colors text-sm"
             >
               On this page
               <svg
@@ -117,7 +119,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
               </svg>
             </button>
             {isOpen && (
-              <div class="mt-2 pl-4 border-l border-gray-250 text-[13px] leading-7">
+              <div class="mt-2 pl-4 border-l border-foreground-primary/20 text-[13px] leading-7">
                 <nav aria-labelledby="toc-outline-btn">
                   <ul>
                     {headings.map((heading) => {
@@ -126,6 +128,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                           <a
                             href={`#${heading.id}`}
                             class="block truncatetext-gray-600"
+                            // deno-lint-ignore react-no-danger
                             dangerouslySetInnerHTML={{ __html: heading.html }}
                           />
                         </li>
@@ -142,7 +145,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                 ref={refMarker}
                 class="marker w-[2px] bg-green-400 h-5 absolute top-0 opacity-0 transition-all"
               />
-              <div class="pl-4 border-l border-gray-250 text-[13px] leading-7">
+              <div class="pl-4 border-l border-foreground-secondary/20 text-[13px] leading-7">
                 <div role="heading" aria-level={2} class="font-semibold">
                   On this page
                 </div>
@@ -164,6 +167,7 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
                                 heading.id,
                               );
                             }}
+                            // deno-lint-ignore react-no-danger
                             dangerouslySetInnerHTML={{ __html: heading.html }}
                           />
                         </li>
