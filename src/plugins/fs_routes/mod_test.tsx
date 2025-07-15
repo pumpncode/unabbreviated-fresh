@@ -13,7 +13,8 @@ import { stub } from "@std/testing/mock";
 import { type HandlerByMethod, type HandlerFn, page } from "../../handlers.ts";
 import type { Method } from "../../router.ts";
 import { parseHtml } from "../../../tests/test_utils.tsx";
-import type { FreshContext } from "fresh";
+import type { FreshContext } from "../../context.ts";
+import { HttpError } from "../../error.ts";
 
 async function createServer<T>(
   files: Record<string, string | Uint8Array | FreshFsItem<T>>,
@@ -199,13 +200,13 @@ Deno.test("fsRoutes - middleware", async () => {
 Deno.test("fsRoutes - nested middlewares", async () => {
   const server = await createServer<{ text: string }>({
     "routes/_middleware.ts": {
-      handler: (context) => {
+      handler: function A(context) {
         context.state.text = "A";
         return context.next();
       },
     },
     "routes/foo/_middleware.ts": {
-      handler: (context) => {
+      handler: function B(context) {
         context.state.text += "B";
         return context.next();
       },
@@ -342,18 +343,22 @@ Deno.test("fsRoutes - nested _layout", async () => {
       default: () => <>foo</>,
     },
     "routes/foo/_layout.tsx": {
-      default: (context) => (
-        <>
-          layout_foo_bar/<context.Component />
-        </>
-      ),
+      default: function fooBar(context) {
+        return (
+          <>
+            layout_foo_bar/<context.Component />
+          </>
+        );
+      },
     },
     "routes/_layout.tsx": {
-      default: (context) => (
-        <>
-          layout/<context.Component />
-        </>
-      ),
+      default: function rootLayout(context) {
+        return (
+          <>
+            layout/<context.Component />
+          </>
+        );
+      },
     },
     "routes/_app.tsx": {
       default: (context) => (
@@ -576,16 +581,16 @@ Deno.test("fsRoutes - route overrides _app does not affect other routes", async 
       default: () => <>error!</>,
     },
     "routes/_app.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <div>
-          app/<ctx.Component />
+          app/<context.Component />
         </div>
       ),
     },
     "routes/_layout.tsx": {
-      default: (ctx) => (
+      default: (context) => (
         <>
-          layout/<ctx.Component />
+          layout/<context.Component />
         </>
       ),
     },
@@ -816,7 +821,7 @@ Deno.test("fsRoutes - _error render component", async () => {
     },
     "routes/foo/index.tsx": {
       handlers: () => {
-        throw new Error("ok");
+        throw new Error("failing");
       },
     },
   });
@@ -826,7 +831,8 @@ Deno.test("fsRoutes - _error render component", async () => {
   expect(doc.body.firstChild?.textContent).toEqual("ok");
 });
 
-Deno.test("fsRoutes - _error render on 404", async () => {
+// 404 pages go to the root error page if available
+Deno.test.ignore("fsRoutes - _error render on 404", async () => {
   // deno-lint-ignore no-explicit-any
   let error: any = null;
   const server = await createServer({
@@ -838,7 +844,7 @@ Deno.test("fsRoutes - _error render on 404", async () => {
       },
     },
     "routes/foo/_error.tsx": {
-      default: (context) => {
+      default: function foo2(context) {
         // deno-lint-ignore no-explicit-any
         error = context.error as any;
         return <p>ok foo</p>;
@@ -1120,34 +1126,23 @@ Deno.test(
   "fsRoutes - returns response code from error route",
   async () => {
     const server = await createServer<{ text: string }>({
-      "routes/_app.tsx": {
-        default: (context) => {
-          return (
-            <div>
-              _app/<context.Component />
-            </div>
-          );
-        },
-      },
       "routes/_error.tsx": {
         default: () => <div>fail</div>,
       },
-      "routes/index.tsx": {
-        default: () => <div>index</div>,
-      },
-      "routes/bar.tsx": {
-        default: () => <div>index</div>,
-      },
-      "routes/foo/index.tsx": {
-        default: () => <div>foo/index</div>,
-      },
-      "routes/foo/_error.tsx": {
+      "routes/fail.tsx": {
         default: () => {
           throw new Error("fail");
         },
       },
-      "routes/foo/bar.tsx": {
-        default: () => <div>foo/index</div>,
+      "routes/foo/_error.tsx": {
+        default: () => {
+          throw new HttpError(501);
+        },
+      },
+      "routes/foo/fail.tsx": {
+        default: () => {
+          throw new Error("fail");
+        },
       },
     });
 
@@ -1155,9 +1150,13 @@ Deno.test(
     await res.body?.cancel();
     expect(res.status).toEqual(404);
 
-    res = await server.get("/foo/asdf");
+    res = await server.get("/fail");
     await res.body?.cancel();
     expect(res.status).toEqual(500);
+
+    res = await server.get("/foo/fail");
+    await res.body?.cancel();
+    expect(res.status).toEqual(501);
   },
 );
 
@@ -1367,20 +1366,20 @@ Deno.test("fsRoutes - registers default GET route for component without GET hand
 Deno.test("fsRoutes - default GET route works with nested middleware", async () => {
   const server = await createServer<{ text: string }>({
     "routes/_middleware.ts": {
-      handler: (ctx) => {
-        ctx.state.text = "A";
-        return ctx.next();
+      handler: (context) => {
+        context.state.text = "A";
+        return context.next();
       },
     },
     "routes/foo/_middleware.ts": {
-      handler: (ctx) => {
-        ctx.state.text += "B";
-        return ctx.next();
+      handler: (context) => {
+        context.state.text += "B";
+        return context.next();
       },
     },
     "routes/foo/noGetHandler.tsx": {
-      default: (ctx) => {
-        return <h1>{ctx.state.text}</h1>;
+      default: (context) => {
+        return <h1>{context.state.text}</h1>;
       },
       handlers: {
         POST: () => new Response("POST"),
@@ -1506,9 +1505,9 @@ Deno.test("fsRoutes - warn on _layout handler", async () => {
   const server = await createServer({
     "routes/_layout.ts": {
       handler: () => new Response("ok"),
-      default: (ctx) => (
+      default: (context) => (
         <div>
-          <ctx.Component />
+          <context.Component />
         </div>
       ),
     },

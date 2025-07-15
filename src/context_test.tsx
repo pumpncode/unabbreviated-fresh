@@ -1,29 +1,29 @@
 import { expect } from "@std/expect";
-import { FreshRequestContext } from "./context.ts";
+import { Context } from "./context.ts";
 import { App } from "fresh";
 import { asset } from "fresh/runtime";
 import { FakeServer } from "./test_utils.ts";
 import { BUILD_ID } from "./runtime/build_id.ts";
 import { parseHtml } from "../tests/test_utils.tsx";
 
-Deno.test("FreshRequestContext.prototype.redirect", () => {
-  let res = FreshRequestContext.prototype.redirect("/");
+Deno.test("FreshReqContext.prototype.redirect", () => {
+  let res = Context.prototype.redirect("/");
   expect(res.status).toEqual(302);
   expect(res.headers.get("Location")).toEqual("/");
 
-  res = FreshRequestContext.prototype.redirect("//evil.com");
+  res = Context.prototype.redirect("//evil.com");
   expect(res.status).toEqual(302);
   expect(res.headers.get("Location")).toEqual("/evil.com");
 
-  res = FreshRequestContext.prototype.redirect("//evil.com/foo//bar");
+  res = Context.prototype.redirect("//evil.com/foo//bar");
   expect(res.status).toEqual(302);
   expect(res.headers.get("Location")).toEqual("/evil.com/foo/bar");
 
-  res = FreshRequestContext.prototype.redirect("https://deno.com");
+  res = Context.prototype.redirect("https://deno.com");
   expect(res.status).toEqual(302);
   expect(res.headers.get("Location")).toEqual("https://deno.com");
 
-  res = FreshRequestContext.prototype.redirect("/", 307);
+  res = Context.prototype.redirect("/", 307);
   expect(res.status).toEqual(307);
 });
 
@@ -68,4 +68,19 @@ Deno.test("context.render - throw with invalid first arg", async () => {
 
   await res.body?.cancel();
   expect(res.status).toEqual(500);
+});
+
+Deno.test("ctx.isPartial - should indicate whether request is partial or not", async () => {
+  const isPartials: boolean[] = [];
+  const app = new App()
+    .get("/", (ctx) => {
+      isPartials.push(ctx.isPartial);
+      return new Response("ok");
+    });
+  const server = new FakeServer(app.handler());
+
+  await server.get("/");
+  await server.get("/?fresh-partial");
+
+  expect(isPartials).toEqual([false, true]);
 });

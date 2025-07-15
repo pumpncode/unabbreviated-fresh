@@ -24,7 +24,7 @@ Deno.test("runMiddleware", async () => {
   ];
 
   const server = serveMiddleware<{ text: string }>((context) =>
-    runMiddlewares([middlewares], context)
+    runMiddlewares(middlewares, context)
   );
 
   const res = await server.get("/");
@@ -43,7 +43,7 @@ Deno.test("runMiddleware - middlewares should only be called once", async () => 
 
   const server = serveMiddleware<{ count: number }>((context) =>
     runMiddlewares(
-      [[A, (context) => new Response(String(context.state.count))]],
+      [A, (context) => new Response(String(context.state.count))],
       context,
     )
   );
@@ -75,8 +75,11 @@ Deno.test("runMiddleware - runs multiple stacks", async () => {
     context.state.text = "";
     return runMiddlewares(
       [
-        [A, B],
-        [C, D, (context) => new Response(String(context.state.text))],
+        A,
+        B,
+        C,
+        D,
+        (context) => new Response(String(context.state.text)),
       ],
       context,
     );
@@ -122,7 +125,7 @@ Deno.test("runMiddleware - throws errors", async () => {
   ];
 
   const server = serveMiddleware<{ text: string }>((context) =>
-    runMiddlewares([middlewares], context)
+    runMiddlewares(middlewares, context)
   );
 
   try {

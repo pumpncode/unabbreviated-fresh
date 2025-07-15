@@ -1,4 +1,4 @@
-import { App, staticFiles } from "fresh";
+import { App } from "fresh";
 import { Partial } from "fresh/runtime";
 import {
   allIslandApp,
@@ -40,8 +40,7 @@ function testApp<T>(): App<T> {
     .island(selfCounter, "SelfCounter", SelfCounter)
     .island(partialInIsland, "PartialInIsland", PartialInIsland)
     .island(jsonIsland, "JsonIsland", JsonIsland)
-    .island(optOutPartialLink, "OptOutPartialLink", OptOutPartialLink)
-    .use(staticFiles());
+    .island(optOutPartialLink, "OptOutPartialLink", OptOutPartialLink);
 
   setBuildCache(app, getBuildCache(allIslandApp));
   return app;
@@ -2709,6 +2708,38 @@ Deno.test({
       const rawUrl = await page.evaluate(() => window.location.href);
       const url = new URL(rawUrl);
       expect(`${url.pathname}${url.search}`).toEqual("/");
+    });
+  },
+});
+
+Deno.test({
+  name: "partials - independent user popstate",
+  fn: async () => {
+    const app = testApp()
+      .get("/", (ctx) => {
+        return ctx.render(
+          <Doc>
+            <div class="container">
+            </div>
+          </Doc>,
+        );
+      });
+
+    await withBrowserApp(app, async (page, address) => {
+      await page.goto(address, { waitUntil: "load" });
+      await page.locator<HTMLDivElement>(".container").evaluate((el) => {
+        const dynamicContent = document.createElement("span");
+        dynamicContent.classList.add("dynamic-content");
+        el.appendChild(dynamicContent);
+      });
+      await page.evaluate(() => {
+        window.history.replaceState({ custom: true }, "", "#");
+        window.history.pushState({ custom: true }, "", "#custom");
+      });
+      // Fresh partials popstate gets called on back navigation and
+      // should exit early/avoid reload due to custom user history entries
+      await page.evaluate(() => window.history.go(-1));
+      await page.locator(".dynamic-content").wait();
     });
   },
 });

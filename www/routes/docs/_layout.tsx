@@ -1,4 +1,4 @@
-import type { PageProps } from "../../../src/context.ts";
+import type { PageProps } from "@unabbreviated-fresh/core";
 
 export default function Layout({ Component }: PageProps) {
   return (
