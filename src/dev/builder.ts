@@ -72,9 +72,9 @@ export class Builder implements FreshBuilder {
       .use(devErrorOverlay())
       .use(automaticWorkspaceFolders(app.config.root))
       // Wait for island chunks to be ready before attempting to serve them
-      .use(async (ctx) => {
+      .use(async (context) => {
         await this.#chunksReady.promise;
-        return await ctx.next();
+        return await context.next();
       })
       .mountApp("/*", app);
 

@@ -90,8 +90,8 @@ export function segmentToMiddlewares<State>(
     const seg = stack[i];
     const { layout, app, errorRoute } = seg;
 
-    result.push(async function segmentMiddleware(ctx) {
-      const internals = getInternals(ctx);
+    result.push(async function segmentMiddleware(context) {
+      const internals = getInternals(context);
 
       const prevApp = internals.app;
       const prevLayouts = internals.layouts;
@@ -114,15 +114,15 @@ export function segmentToMiddlewares<State>(
       }
 
       try {
-        return await ctx.next();
+        return await context.next();
       } catch (err) {
         const status = err instanceof HttpError ? err.status : 500;
         if (root.notFound !== null && status === 404) {
-          return await root.notFound(ctx);
+          return await root.notFound(context);
         }
 
         if (errorRoute !== null) {
-          return await renderRoute(ctx, errorRoute, status);
+          return await renderRoute(context, errorRoute, status);
         }
 
         throw err;
@@ -141,11 +141,11 @@ export function segmentToMiddlewares<State>(
 }
 
 export async function renderRoute<State>(
-  ctx: Context<State>,
+  context: Context<State>,
   route: Route<State>,
   status = 200,
 ): Promise<Response> {
-  const internals = getInternals(ctx);
+  const internals = getInternals(context);
   if (route.config?.skipAppWrapper) {
     internals.app = null;
   }
@@ -153,7 +153,7 @@ export async function renderRoute<State>(
     internals.layouts = [];
   }
 
-  const method = ctx.request.method as Method;
+  const method = context.request.method as Method;
 
   const handlers = route.handler;
   if (handlers === undefined) {
@@ -171,9 +171,9 @@ export async function renderRoute<State>(
         ? handlers[method] ?? null
         : handlers;
 
-      if (fn === null) return await ctx.next();
+      if (fn === null) return await context.next();
 
-      return await fn(ctx);
+      return await fn(context);
     } catch (err) {
       recordSpanError(span, err);
       throw err;
@@ -197,7 +197,7 @@ export async function renderRoute<State>(
 
   let vnode = null;
   if (route.component !== undefined) {
-    const result = await renderRouteComponent(ctx, {
+    const result = await renderRouteComponent(context, {
       component: route.component,
       // deno-lint-ignore no-explicit-any
       props: res.data as any,
@@ -210,5 +210,5 @@ export async function renderRoute<State>(
     vnode = result;
   }
 
-  return ctx.render(vnode, { headers, status });
+  return context.render(vnode, { headers, status });
 }

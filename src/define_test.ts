@@ -6,13 +6,13 @@ Deno.test.ignore("createDefine", () => {
   const define = createDefine<{ foo: number }>();
 
   // Testing the types
-  const handlerFn = define.handlers((ctx) => {
-    ctx.state.foo satisfies number;
+  const handlerFn = define.handlers((context) => {
+    context.state.foo satisfies number;
     return page({ bar: true });
   });
   const handlerObj = define.handlers({
-    GET(ctx) {
-      ctx.state.foo satisfies number;
+    GET(context) {
+      context.state.foo satisfies number;
       return page({ bar: [1, 2, 3] });
     },
     POST: () => {
@@ -34,8 +34,8 @@ Deno.test.ignore("createDefine", () => {
     return "page";
   });
 
-  define.middleware((ctx) => {
-    ctx.state.foo satisfies number;
+  define.middleware((context) => {
+    context.state.foo satisfies number;
     return new Response("Hello");
   });
 

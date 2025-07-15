@@ -1839,8 +1839,8 @@ Deno.test({
       .post("/partial", () => {
         throw new Error("FAIL");
       })
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div f-client-nav>
               <dialog open>
@@ -2716,8 +2716,8 @@ Deno.test({
   name: "partials - independent user popstate",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <div class="container">
             </div>

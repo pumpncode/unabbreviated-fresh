@@ -70,11 +70,11 @@ Deno.test("context.render - throw with invalid first arg", async () => {
   expect(res.status).toEqual(500);
 });
 
-Deno.test("ctx.isPartial - should indicate whether request is partial or not", async () => {
+Deno.test("context.isPartial - should indicate whether request is partial or not", async () => {
   const isPartials: boolean[] = [];
   const app = new App()
-    .get("/", (ctx) => {
-      isPartials.push(ctx.isPartial);
+    .get("/", (context) => {
+      isPartials.push(context.isPartial);
       return new Response("ok");
     });
   const server = new FakeServer(app.handler());

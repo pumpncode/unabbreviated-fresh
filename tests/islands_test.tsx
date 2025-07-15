@@ -562,15 +562,15 @@ Deno.test({
           </Doc>,
         );
       })
-      .get("/foo", (ctx) => {
-        return ctx.render(
+      .get("/foo", (context) => {
+        return context.render(
           <Doc>
             <EscapeIsland str={`<script>alert('hey')</script>`} />
           </Doc>,
         );
       })
-      .get("/bar", (ctx) => {
-        return ctx.render(
+      .get("/bar", (context) => {
+        return context.render(
           <Doc>
             <EscapeIsland str={`<!--<script>alert('hey')</script>`} />
           </Doc>,

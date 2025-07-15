@@ -24,11 +24,11 @@ export function automaticWorkspaceFolders<T>(root: string): MiddlewareFn<T> {
   let etag: string | undefined;
   let content: string | undefined;
 
-  return async (ctx) => {
-    const { pathname } = ctx.url;
+  return async (context) => {
+    const { pathname } = context.url;
 
     if (pathname !== "/.well-known/appspecific/com.chrome.devtools.json") {
-      return ctx.next();
+      return context.next();
     }
 
     uuid ??= await generate(
@@ -40,7 +40,7 @@ export function automaticWorkspaceFolders<T>(root: string): MiddlewareFn<T> {
     content ??= JSON.stringify({ workspace: { root, uuid } }, undefined, 2);
     etag ??= await eTag(content);
 
-    const noneMatchValue = ctx.request.headers.get("if-none-match");
+    const noneMatchValue = context.request.headers.get("if-none-match");
     if (!ifNoneMatch(noneMatchValue, etag)) {
       return new Response(undefined, { status: 304, headers: { etag } });
     }

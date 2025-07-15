@@ -10,10 +10,10 @@ const TITLE = "Showcase | Fresh";
 const DESCRIPTION = "Selection of projects that have been built with Fresh.";
 
 export const handler = define.handlers({
-  GET(ctx) {
-    ctx.state.title = TITLE;
-    ctx.state.description = DESCRIPTION;
-    ctx.state.ogImage = new URL(asset("/og-image.webp"), ctx.url).href;
+  GET(context) {
+    context.state.title = TITLE;
+    context.state.description = DESCRIPTION;
+    context.state.ogImage = new URL(asset("/og-image.webp"), context.url).href;
     return page();
   },
 });

@@ -7,7 +7,7 @@ export type CORSOptions<State> = {
     | string[]
     | ((
       requestOrigin: string,
-      context: FreshContext<State>
+      context: FreshContext<State>,
     ) => string | undefined | null);
   allowMethods?: string[];
   allowHeaders?: string[];
@@ -86,8 +86,8 @@ export function cors<State>(options?: CORSOptions<State>): MiddlewareFn<State> {
 
   const optsOrigin = opts.origin;
 
-  return async (ctx) => {
-    const requestOrigin = ctx.request.headers.get("origin") || "";
+  return async (context) => {
+    const requestOrigin = context.request.headers.get("origin") || "";
 
     let allowOrigin: string | null = null;
     if (typeof optsOrigin === "string") {
@@ -97,7 +97,7 @@ export function cors<State>(options?: CORSOptions<State>): MiddlewareFn<State> {
         allowOrigin = optsOrigin === requestOrigin ? requestOrigin : null;
       }
     } else if (typeof optsOrigin === "function") {
-      allowOrigin = optsOrigin(requestOrigin, ctx) ?? null;
+      allowOrigin = optsOrigin(requestOrigin, context) ?? null;
     } else {
       allowOrigin = optsOrigin.includes(requestOrigin) ? requestOrigin : null;
     }
@@ -108,7 +108,7 @@ export function cors<State>(options?: CORSOptions<State>): MiddlewareFn<State> {
       vary.add("Origin");
     }
 
-    if (ctx.request.method === "OPTIONS") {
+    if (context.request.method === "OPTIONS") {
       const headers = new Headers();
 
       addHeaderProperties(
@@ -130,7 +130,7 @@ export function cors<State>(options?: CORSOptions<State>): MiddlewareFn<State> {
 
       let allowHeaders = opts.allowHeaders;
       if (!allowHeaders?.length) {
-        const requestHeaders = ctx.request.headers.get(
+        const requestHeaders = context.request.headers.get(
           "Access-Control-Request-Headers",
         );
         if (requestHeaders) {
@@ -163,7 +163,7 @@ export function cors<State>(options?: CORSOptions<State>): MiddlewareFn<State> {
     }
 
     // For non-OPTIONS requests
-    const res = await ctx.next();
+    const res = await context.next();
 
     addHeaderProperties(
       res.headers,

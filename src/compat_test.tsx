@@ -4,10 +4,12 @@ import { expect } from "@std/expect";
 import { type defineApp, type defineLayout, defineRoute } from "./compat.ts";
 
 Deno.test("compat - defineFn works", () => {
-  const ctx = {} as PageProps<unknown>;
-  expect(defineRoute(() => new Response("test"))(ctx)).toBeInstanceOf(Response);
-  expect(defineRoute(() => <span>test</span>)(ctx)).toBeInstanceOf(Object);
-  expect(defineRoute(() => null)(ctx)).toEqual(null);
+  const context = {} as PageProps<unknown>;
+  expect(defineRoute(() => new Response("test"))(context)).toBeInstanceOf(
+    Response,
+  );
+  expect(defineRoute(() => <span>test</span>)(context)).toBeInstanceOf(Object);
+  expect(defineRoute(() => null)(context)).toEqual(null);
 });
 
 Deno.test("compat - functions equivalent", () => {

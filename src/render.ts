@@ -60,7 +60,7 @@ export async function renderAsyncAnyComponent<Props>(
 
 export function preactRender<State, Data>(
   vnode: VNode,
-  ctx: PageProps<Data, State>,
+  context: PageProps<Data, State>,
   state: RenderState,
   buildCache: BuildCache,
   headers: Headers,
@@ -71,7 +71,9 @@ export function preactRender<State, Data>(
     // comment markers in the right place in the DOM.
     if (!state.renderedHtmlBody) {
       let scripts = "";
-      if (ctx.url.pathname !== ctx.config.basePath + DEV_ERROR_OVERLAY_URL) {
+      if (
+        context.url.pathname !== context.config.basePath + DEV_ERROR_OVERLAY_URL
+      ) {
         scripts = renderToString(h(FreshScripts, null));
       }
       res = `<body>${res}${scripts}</body>`;
@@ -86,7 +88,7 @@ export function preactRender<State, Data>(
     return `<!DOCTYPE html>${res}`;
   } finally {
     // Add preload headers
-    const basePath = ctx.config.basePath;
+    const basePath = context.config.basePath;
     const runtimeUrl = `${basePath}/_fresh/js/${BUILD_ID}/fresh-runtime.js`;
     let link = `<${encodeURI(runtimeUrl)}>; rel="modulepreload"; as="script"`;
     state.islands.forEach((island) => {
@@ -129,22 +131,22 @@ export interface ComponentDef<Data, State> {
 }
 
 export async function renderRouteComponent<State>(
-  ctx: Context<State>,
+  context: Context<State>,
   def: ComponentDef<unknown, State>,
   child: FunctionComponent,
 ): Promise<VNode | Response> {
   const vnodeProps: PageProps<unknown, State> = {
     Component: child,
-    config: ctx.config,
+    config: context.config,
     data: def.props,
-    error: ctx.error,
-    info: ctx.info,
-    isPartial: ctx.isPartial,
-    params: ctx.params,
-    request: ctx.request,
-    req: ctx.request,
-    state: ctx.state,
-    url: ctx.url,
+    error: context.error,
+    info: context.info,
+    isPartial: context.isPartial,
+    params: context.params,
+    request: context.request,
+    req: context.request,
+    state: context.state,
+    url: context.url,
   };
 
   if (isAsyncAnyComponent(def.component)) {
