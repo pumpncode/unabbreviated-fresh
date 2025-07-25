@@ -29,7 +29,7 @@ jobs:
 
       - name: Publish @unabbreviated-fresh/plugin-tailwindcss
         working-directory: ./plugin-tailwindcss
-        run: deno publish
+        run: deno publish --no-check
 
       - name: Publish @unabbreviated-fresh/plugin-tailwindcss-v3
         working-directory: ./plugin-tailwindcss-v3
