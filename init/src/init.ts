@@ -3,10 +3,13 @@ import * as colors from "@std/fmt/colors";
 import * as path from "@std/path";
 
 // Keep these as is, as we replace these version in our release script
-const FRESH_VERSION = "2.0.0-alpha.38";
-const FRESH_TAILWIND_VERSION = "0.0.1-alpha.7";
+const FRESH_VERSION = "2.0.0-alpha.46";
+const FRESH_TAILWIND_VERSION = "0.0.1-alpha.9";
 const PREACT_VERSION = "10.26.9";
 const PREACT_SIGNALS_VERSION = "2.2.1";
+const TAILWINDCSS_VERSION = "4.1.10";
+const TAILWINDCSS_POSTCSS_VERSION = "4.1.10";
+const POSTCSS_VERSION = "8.5.6";
 
 function css(strs: TemplateStringsArray, ...exprs: string[]): string {
   let out = "";
@@ -155,25 +158,14 @@ ENV DENO_DEPLOYMENT_ID=\${GIT_REVISION}
 WORKDIR /app
 
 COPY . .
-RUN deno cache main.ts
+RUN deno cache _fresh/server.js
 
 EXPOSE 8000
 
-CMD ["run", "-A", "main.ts"]
+CMD ["serve", "-A", "_fresh/server.js"]
 
 `;
     await writeFile("Dockerfile", DOCKERFILE_TEXT);
-  }
-
-  const TAILWIND_CONFIG_TS = `import type { Config } from "tailwindcss";
-
-export default {
-  content: [
-    "{routes,islands,components}/**/*.{ts,tsx}",
-  ],
-} satisfies Config;`;
-  if (useTailwind) {
-    await writeFile("tailwind.config.ts", TAILWIND_CONFIG_TS);
   }
 
   // deno-fmt-ignore
@@ -309,7 +301,7 @@ html {
 .border-2 {
   border-width: 2px;
 }
-.rounded {
+.rounded-sm {
   border-radius: 0.25rem;
 }
 .hover\\:bg-gray-200:hover {
@@ -320,11 +312,8 @@ html {
 }
 
 ${GRADIENT_CSS}`;
-
   // deno-fmt-ignore
-  const TAILWIND_CSS = css`@tailwind base;
-@tailwind components;
-@tailwind utilities;
+  const TAILWIND_CSS = css`@import "tailwindcss";
 ${GRADIENT_CSS}`;
 
   const cssStyles = useTailwind ? TAILWIND_CSS : NO_TAILWIND_STYLES;
@@ -360,10 +349,12 @@ ${GRADIENT_CSS}`;
     // Skip this and be silent if there is a network issue.
   }
 
-  const MAIN_TS = `import { App, fsRoutes } from "fresh";
+  const MAIN_TS = `import { App, staticFiles } from "fresh";
 import { define, type State } from "./utils.ts";
 
 export const app = new App<State>();
+
+app.use(staticFiles());
 
 // this is the same as the /api/:name route defined via a file. feel free to delete this!
 app.get("/api2/:name", (context) => {
@@ -380,20 +371,15 @@ const exampleLoggerMiddleware = define.middleware((context) => {
 });
 app.use(exampleLoggerMiddleware);
 
-await fsRoutes(app, {
-  loadIsland: (path) => import(\`./islands/\${path}\`),
-  loadRoute: (path) => import(\`./routes/\${path}\`),
-});
-
-if (import.meta.main) {
-  await app.listen();
-}`;
+// Include file-system based routes here
+app.fsRoutes();`;
   await writeFile("main.ts", MAIN_TS);
 
   const COMPONENTS_BUTTON_TSX =
     `import type { ComponentChildren } from "preact";
 
 export interface ButtonProps {
+  id?: string;
   onClick?: () => void;
   children?: ComponentChildren;
   disabled?: boolean;
@@ -403,7 +389,7 @@ export function Button(props: ButtonProps) {
   return (
     <button
       {...props}
-      class="px-2 py-1 border-gray-500 border-2 rounded bg-white hover:bg-gray-200 transition-colors"
+      class="px-2 py-1 border-gray-500 border-2 rounded-sm bg-white hover:bg-gray-200 transition-colors"
     />
   );
 }`;
@@ -487,9 +473,9 @@ interface CounterProps {
 export default function Counter(props: CounterProps) {
   return (
     <div class="flex gap-8 py-6">
-      <Button onClick={() => props.count.value -= 1}>-1</Button>
+      <Button id="decrement" onClick={() => props.count.value -= 1}>-1</Button>
       <p class="text-3xl tabular-nums">{props.count}</p>
-      <Button onClick={() => props.count.value += 1}>+1</Button>
+      <Button id="increment" onClick={() => props.count.value += 1}>+1</Button>
     </div>
   );
 }`;
@@ -502,24 +488,24 @@ ${
       : ""
   }
 import { Builder } from "fresh/dev";
-import { app } from "./main.ts";
 
 const builder = new Builder();
-${useTailwind ? "tailwind(builder, app, {});" : ""}
+${useTailwind ? "tailwind(builder);" : ""}
 if (Deno.args.includes("build")) {
-  await builder.build(app);
+  await builder.build();
 } else {
-  await builder.listen(app);
+  await builder.listen(() => import("./main.ts"));
 }`;
   await writeFile("dev.ts", DEV_TS);
 
   const denoJson = {
+    nodeModulesDir: "auto",
     tasks: {
       check: "deno fmt --check . && deno lint . && deno check",
       dev: "deno run -A --watch=static/,routes/ dev.ts",
       build: "deno run -A dev.ts build",
-      start: "deno run -A main.ts",
-      update: "deno run -A -r jsr:@unabbreviated-fresh/update .",
+      start: "deno serve -A _fresh/server.js",
+      update: "deno run -A -r jsr:@fresh/update .",
     },
     lint: {
       rules: {
@@ -548,9 +534,12 @@ if (Deno.args.includes("build")) {
   };
 
   if (useTailwind) {
-    denoJson.imports["tailwindcss"] = "npm:tailwindcss@^3.4.3";
-    denoJson.imports["@unabbreviated-fresh/plugin-tailwind"] =
-      `jsr:@unabbreviated-fresh/plugin-tailwind@^${FRESH_TAILWIND_VERSION}`;
+    denoJson.imports["tailwindcss"] = `npm:tailwindcss@^${TAILWINDCSS_VERSION}`;
+    denoJson.imports["@fresh/plugin-tailwind"] =
+      `jsr:@fresh/plugin-tailwind@^${FRESH_TAILWIND_VERSION}`;
+    denoJson.imports["@tailwindcss/postcss"] =
+      `npm:@tailwindcss/postcss@^${TAILWINDCSS_POSTCSS_VERSION}`;
+    denoJson.imports["postcss"] = `npm:postcss@^${POSTCSS_VERSION}`;
   }
 
   await writeFile("deno.json", denoJson);

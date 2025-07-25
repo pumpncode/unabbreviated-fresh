@@ -71,32 +71,46 @@ import type { Define as _Define } from "../define.ts";
  * app.use(redirectMiddleware);
  * ```
  */
-export type MiddlewareFn<State> = (
+export type Middleware<State> = (
   context: Context<State>,
 ) => Response | Promise<Response>;
 
 /**
- * A single middleware function, or an array of middleware functions. For
- * further information, see {@link MiddlewareFn}.
+ * @deprecated Use {@linkcode Middleware} instead.
  */
-export type Middleware<State> = MiddlewareFn<State> | MiddlewareFn<State>[];
+export type MiddlewareFn<State> = Middleware<State>;
+
+/**
+ * A lazy {@linkcode Middleware}
+ */
+export type MaybeLazyMiddleware<State> = (
+  context: Context<State>,
+) => Response | Promise<Response | MiddlewareFn<State>>;
 
 export function runMiddlewares<State>(
-  middlewares: MiddlewareFn<State>[],
+  middlewares: MaybeLazyMiddleware<State>[],
   context: Context<State>,
 ): Promise<Response> {
   let fn = context.next;
   let i = middlewares.length;
   while (i--) {
     const local = fn;
-    const next = middlewares[i];
+    let next = middlewares[i];
+    const idx = i;
     fn = async () => {
       const internals = getInternals(context);
       const { app: prevApp, layouts: prevLayouts } = internals;
 
       context.next = local;
       try {
-        return await next(context);
+        const result = await next(context);
+        if (typeof result === "function") {
+          middlewares[idx] = result;
+          next = result;
+          return await result(context);
+        }
+
+        return result;
       } catch (err) {
         context.error = err;
         throw err;

@@ -1,7 +1,6 @@
 import { expect } from "@std/expect";
-import { App, getIslandRegistry, setBuildCache } from "./app.ts";
+import { App } from "./app.ts";
 import { FakeServer } from "./test_utils.ts";
-import { ProdBuildCache } from "./build_cache.ts";
 import { HttpError } from "./error.ts";
 
 Deno.test("App - .use()", async () => {
@@ -261,6 +260,27 @@ Deno.test("App - .mountApp() compose apps", async () => {
   expect(await res.text()).toEqual("A");
 });
 
+Deno.test("App - .mountApp() compose apps with .route()", async () => {
+  const innerApp = new App<{ text: string }>()
+    .use((ctx) => {
+      ctx.state.text = "A";
+      return ctx.next();
+    })
+    .route("/", { handler: (ctx) => new Response(ctx.state.text) });
+
+  const app = new App<{ text: string }>()
+    .get("/", () => new Response("ok"))
+    .mountApp("/foo", innerApp);
+
+  const server = new FakeServer(app.handler());
+
+  let res = await server.get("/");
+  expect(await res.text()).toEqual("ok");
+
+  res = await server.get("/foo");
+  expect(await res.text()).toEqual("A");
+});
+
 Deno.test("App - .mountApp() self mount, no middleware", async () => {
   const innerApp = new App<{ text: string }>()
     .use((context) => {
@@ -412,6 +432,29 @@ Deno.test(
   },
 );
 
+Deno.test("App - .mountApp() fallback route", async () => {
+  let called = "";
+  const innerApp = new App<{ text: string }>()
+    .use(function Inner(ctx) {
+      called += "_Inner";
+      return ctx.next();
+    })
+    .get("/", (ctx) => new Response(ctx.state.text));
+
+  const app = new App<{ text: string }>()
+    .use(function Outer(ctx) {
+      called += "Outer";
+      return ctx.next();
+    })
+    .mountApp("/", innerApp);
+
+  const server = new FakeServer(app.handler());
+
+  const res = await server.get("/invalid");
+  await res.body?.cancel();
+  expect(called).toEqual("Outer_Inner");
+});
+
 Deno.test("App - catches errors", async () => {
   let thrownErr: unknown | null = null;
   const app = new App<{ text: string }>()
@@ -433,30 +476,6 @@ Deno.test("App - catches errors", async () => {
   const res = await server.get("/");
   expect(res.status).toEqual(500);
   expect(thrownErr).toBeInstanceOf(Error);
-});
-
-// TODO: Find a better way to test this
-Deno.test.ignore("App - finish setup", async () => {
-  const app = new App<{ text: string }>()
-    .get("/", (context) => {
-      return context.render(<div>ok</div>);
-    });
-
-  setBuildCache(
-    app,
-    await ProdBuildCache.fromSnapshot({
-      ...app.config,
-      build: {
-        outDir: "foo",
-      },
-    }, getIslandRegistry(app).size),
-  );
-
-  const server = new FakeServer(app.handler());
-  const res = await server.get("/");
-  const text = await res.text();
-  expect(text).toContain("Finish setting up");
-  expect(res.status).toEqual(500);
 });
 
 Deno.test("App - sets error on context", async () => {
@@ -522,37 +541,6 @@ Deno.test("App - throw when middleware returns no response", async () => {
   expect(text).toContain("Internal server error");
 });
 
-Deno.test("App - adding Island should convert to valid export names", () => {
-  const app = new App();
-  const islands = getIslandRegistry(app);
-
-  const component1 = () => <>OK</>;
-  const component2 = () => <>OK</>;
-  const component3 = () => <>OK</>;
-  app.island("/islands/foo.v2.tsx", "default", component1);
-  app.island("/islands/_bar-baz-...-$.tsx", "default", component2);
-  app.island("/islands/1_hello.tsx", "default", component3);
-
-  expect(islands.get(component1)!).toEqual({
-    file: "/islands/foo.v2.tsx",
-    name: "foo_v2",
-    exportName: "default",
-    fn: component1,
-  });
-  expect(islands.get(component2)!).toEqual({
-    file: "/islands/_bar-baz-...-$.tsx",
-    name: "_bar_baz_$",
-    exportName: "default",
-    fn: component2,
-  });
-  expect(islands.get(component3)!).toEqual({
-    file: "/islands/1_hello.tsx",
-    name: "_hello",
-    exportName: "default",
-    fn: component3,
-  });
-});
-
 Deno.test("App - overwrite default 404 handler", async () => {
   const app = new App()
     .notFound(() => new Response("bar", { status: 404 }))
@@ -607,4 +595,85 @@ Deno.test("App - uses notFound route on 404", async () => {
 
   res = await server.get("/thrower_2");
   expect(await res.text()).toEqual("error route");
+});
+
+// Issue: https://github.com/denoland/fresh/issues/3115
+Deno.test("App - .route() with basePath", async () => {
+  const app = new App({ basePath: "/foo/bar" })
+    .route("/", { handler: () => new Response("ok") });
+
+  const server = new FakeServer(app.handler());
+
+  let res = await server.delete("/");
+  await res.body?.cancel();
+  expect(res.status).toEqual(404);
+
+  res = await server.delete("/foo");
+  await res.body?.cancel();
+  expect(res.status).toEqual(404);
+
+  res = await server.delete("/foo/bar");
+  expect(await res.text()).toEqual("ok");
+  expect(res.status).toEqual(200);
+});
+
+Deno.test("App - .use() - lazy", async () => {
+  const app = new App<{ text: string }>()
+    // deno-lint-ignore require-await
+    .use(async () => {
+      return (ctx) => {
+        ctx.state.text = "ok";
+        return ctx.next();
+      };
+    })
+    .get("/", (ctx) => new Response(ctx.state.text));
+
+  const server = new FakeServer(app.handler());
+
+  const res = await server.get("/");
+  expect(await res.text()).toEqual("ok");
+});
+
+Deno.test("App - .route() - lazy", async () => {
+  const app = new App()
+    // deno-lint-ignore require-await
+    .route("/", async () => {
+      return { handler: () => new Response("ok") };
+    });
+
+  const server = new FakeServer(app.handler());
+
+  const res = await server.get("/");
+  expect(await res.text()).toEqual("ok");
+});
+
+Deno.test("App - .get/post/patch/put/delete/head/all() - lazy", async () => {
+  const app = new App()
+    .get("/", () => Promise.resolve(() => new Response("ok")))
+    .post("/", () => Promise.resolve(() => new Response("ok")))
+    .patch("/", () => Promise.resolve(() => new Response("ok")))
+    .delete("/", () => Promise.resolve(() => new Response("ok")))
+    .put("/", () => Promise.resolve(() => new Response("ok")))
+    .head("/", () => Promise.resolve(() => new Response("ok")))
+    .all("/", () => Promise.resolve(() => new Response("ok")));
+
+  const server = new FakeServer(app.handler());
+
+  let res = await server.get("/");
+  expect(await res.text()).toEqual("ok");
+
+  res = await server.post("/");
+  expect(await res.text()).toEqual("ok");
+
+  res = await server.put("/");
+  expect(await res.text()).toEqual("ok");
+
+  res = await server.patch("/");
+  expect(await res.text()).toEqual("ok");
+
+  res = await server.delete("/");
+  expect(await res.text()).toEqual("ok");
+
+  res = await server.head("/");
+  expect(await res.text()).toEqual("ok");
 });

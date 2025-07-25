@@ -6,7 +6,7 @@ import { ProgressBar } from "@std/cli/unstable-progress-bar";
 
 export const SyntaxKind = tsmorph.ts.SyntaxKind;
 
-export const FRESH_VERSION = "2.0.0-alpha.38";
+export const FRESH_VERSION = "2.0.0-alpha.46";
 export const PREACT_VERSION = "10.26.9";
 export const PREACT_SIGNALS_VERSION = "2.2.1";
 
@@ -67,6 +67,7 @@ export interface ImportState {
   core: Set<string>;
   runtime: Set<string>;
   compat: Set<string>;
+  httpError: number;
 }
 
 const compat = new Set([
@@ -134,6 +135,10 @@ export async function updateProject(dir: string) {
           "deno fmt --check && deno lint && deno check **/*.ts && deno check **/*.tsx"
       ) {
         tasks.check = "deno fmt --check && deno lint && deno check";
+      }
+
+      if (tasks.preview === "deno run -A main.ts") {
+        tasks.preview = "deno serve -A _fresh/server.js";
       }
     }
   });
@@ -263,6 +268,7 @@ async function updateFile(sourceFile: tsmorph.SourceFile): Promise<boolean> {
     core: new Set(),
     runtime: new Set(),
     compat: new Set(),
+    httpError: 0,
   };
 
   const text = sourceFile.getFullText()
@@ -298,7 +304,7 @@ async function updateFile(sourceFile: tsmorph.SourceFile): Promise<boolean> {
                   const body = property.getBody();
                   if (body !== undefined) {
                     const stmts = body.getDescendantStatements();
-                    rewriteContextMethods(stmts);
+                    rewriteCtxMethods(newImports, stmts);
                   }
 
                   maybePrependRequestVar(property, newImports, true);
@@ -313,7 +319,7 @@ async function updateFile(sourceFile: tsmorph.SourceFile): Promise<boolean> {
                   const body = init.getBody();
                   if (body !== undefined) {
                     const stmts = body.getDescendantStatements();
-                    rewriteContextMethods(stmts);
+                    rewriteCtxMethods(newImports, stmts);
                   }
 
                   maybePrependRequestVar(init, newImports, true);
@@ -325,7 +331,7 @@ async function updateFile(sourceFile: tsmorph.SourceFile): Promise<boolean> {
           const body = node.getBody();
           if (body !== undefined) {
             const stmts = body.getDescendantStatements();
-            rewriteContextMethods(stmts);
+            rewriteCtxMethods(newImports, stmts);
           }
 
           maybePrependRequestVar(node, newImports, false);
@@ -350,7 +356,7 @@ async function updateFile(sourceFile: tsmorph.SourceFile): Promise<boolean> {
                   const body = first.getBody();
                   if (body !== undefined) {
                     const stmts = body.getDescendantStatements();
-                    rewriteContextMethods(stmts);
+                    rewriteCtxMethods(newImports, stmts);
                   }
 
                   maybePrependRequestVar(first, newImports, false);
@@ -362,7 +368,7 @@ async function updateFile(sourceFile: tsmorph.SourceFile): Promise<boolean> {
           const body = caller.getBody();
           if (body !== undefined) {
             const stmts = body.getDescendantStatements();
-            rewriteContextMethods(stmts);
+            rewriteCtxMethods(newImports, stmts);
           }
 
           maybePrependRequestVar(caller, newImports, false);
@@ -435,6 +441,12 @@ async function updateFile(sourceFile: tsmorph.SourceFile): Promise<boolean> {
     sourceFile.addImportDeclaration({
       moduleSpecifier: "fresh/compat",
       namedImports: Array.from(newImports.compat),
+    });
+  }
+  if (newImports.httpError > 0) {
+    sourceFile.addImportDeclaration({
+      moduleSpecifier: "fresh",
+      namedImports: ["HttpError"],
     });
   }
 
@@ -558,18 +570,36 @@ function maybePrependRequestVar(
   }
 }
 
-function rewriteContextMethods(
+function rewriteCtxMethods(
+  importState: ImportState,
   nodes: (tsmorph.Node<tsmorph.ts.Node>)[],
 ) {
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
 
+    if (node.wasForgotten()) continue;
+
+    if (
+      node.isKind(SyntaxKind.ExpressionStatement) &&
+      node.getText() === "ctx.renderNotFound();"
+    ) {
+      importState.httpError++;
+      node.replaceWithText("throw new HttpError(404);");
+      continue;
+    }
+
     if (node.isKind(SyntaxKind.PropertyAccessExpression)) {
       rewriteContextMemberName(node);
     } else if (node.isKind(SyntaxKind.ReturnStatement)) {
-      const expr = node.getExpression();
-      if (expr !== undefined) {
-        rewriteContextMethods([expr]);
+      if (node.getText() === "return ctx.renderNotFound();") {
+        importState.httpError++;
+        node.replaceWithText(`throw new HttpError(404)`);
+        continue;
+      } else {
+        const expr = node.getExpression();
+        if (expr !== undefined) {
+          rewriteCtxMethods(importState, [expr]);
+        }
       }
     } else if (node.isKind(SyntaxKind.VariableStatement)) {
       const decls = node.getDeclarations();
@@ -577,7 +607,7 @@ function rewriteContextMethods(
         const decl = decls[i];
         const init = decl.getInitializer();
         if (init !== undefined) {
-          rewriteContextMethods([init]);
+          rewriteCtxMethods(importState, [init]);
         }
       }
     } else if (
@@ -586,16 +616,16 @@ function rewriteContextMethods(
       node.isKind(SyntaxKind.CallExpression)
     ) {
       const expr = node.getExpression();
-      rewriteContextMethods([expr]);
+      rewriteCtxMethods(importState, [expr]);
     } else if (node.isKind(SyntaxKind.BinaryExpression)) {
-      rewriteContextMethods([node.getLeft()]);
-      rewriteContextMethods([node.getRight()]);
+      rewriteCtxMethods(importState, [node.getLeft()]);
+      rewriteCtxMethods(importState, [node.getRight()]);
     } else if (
       !node.isKind(SyntaxKind.ExpressionStatement) &&
       node.getKindName().endsWith("Statement")
     ) {
       const inner = node.getDescendantStatements();
-      rewriteContextMethods(inner);
+      rewriteCtxMethods(importState, inner);
     }
   }
 }
@@ -605,19 +635,12 @@ function rewriteContextMemberName(
 ) {
   const children = node.getChildren();
   if (children.length === 0) return;
-  const last = children[children.length - 1];
 
   if (
     node.getExpression().getText() === "context" &&
     node.getName() === "remoteAddr"
   ) {
-    node.getExpression().replaceWithText("context.info.remoteAddr");
-  } else if (last.getText() === "renderNotFound") {
-    last.replaceWithText("throw");
-    const caller = node.getParentIfKind(SyntaxKind.CallExpression);
-    if (caller !== undefined) {
-      caller.addArgument("404");
-    }
+    node.getExpression().replaceWithText("ctx.info.remoteAddr");
   } else if (children[0].isKind(SyntaxKind.PropertyAccessExpression)) {
     rewriteContextMemberName(children[0]);
   }

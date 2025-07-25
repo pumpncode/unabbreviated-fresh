@@ -23,7 +23,7 @@ import {
 } from "./render.ts";
 
 export interface Island {
-  file: string | URL;
+  file: string;
   name: string;
   exportName: string;
   fn: ComponentType;
@@ -43,8 +43,8 @@ export interface UiTree<Data, State> {
  */
 export type FreshContext<State = unknown> = Context<State>;
 
-export let getBuildCache: <T>(context: Context<T>) => BuildCache;
-export let getInternals: <T>(context: Context<T>) => UiTree<unknown, T>;
+export let getBuildCache: <T>(ctx: Context<T>) => BuildCache<T>;
+export let getInternals: <T>(ctx: Context<T>) => UiTree<unknown, T>;
 
 /**
  * The context passed to every middleware. It is unique for every request.
@@ -71,9 +71,14 @@ export class Context<State> {
    * @deprecated use {@link request}
    */
   readonly req: Request;
+  /** The matched route pattern. */
+  readonly route: string | null;
+  /** The url parameters of the matched route pattern. */
   readonly params: Record<string, string>;
+  /** State object that is shared with all middlewares. */
   readonly state: State = {} as State;
   data: unknown = undefined;
+  /** Error value if an error was caught (Default: null) */
   error: unknown | null = null;
   readonly info: Deno.ServeHandlerInfo | Deno.ServeHandlerInfo;
   /**
@@ -110,37 +115,35 @@ export class Context<State> {
    */
   next: () => Promise<Response>;
 
-  #islandRegistry: ServerIslandRegistry;
-  #buildCache: BuildCache;
+  #buildCache: BuildCache<State>;
 
-  // FIXME: remove after switching to <Slot />
   Component!: FunctionComponent;
 
   static {
     // deno-lint-ignore no-explicit-any
-    getInternals = (context) => (context as Context<unknown>).#internal as any;
-    getBuildCache = (context) => (context as Context<unknown>).#buildCache;
+    getInternals = <T>(ctx: Context<T>) => ctx.#internal as any;
+    getBuildCache = <T>(ctx: Context<T>) => ctx.#buildCache;
   }
 
   constructor(
     request: Request,
     url: URL,
     info: Deno.ServeHandlerInfo,
+    route: string | null,
     params: Record<string, string>,
     config: ResolvedFreshConfig,
     next: () => Promise<Response>,
-    islandRegistry: ServerIslandRegistry,
-    buildCache: BuildCache,
+    buildCache: BuildCache<State>,
   ) {
     this.url = url;
     this.request = request;
     this.req = request;
     this.info = info;
     this.params = params;
+    this.route = route;
     this.config = config;
     this.isPartial = url.searchParams.has(PARTIAL_SEARCH_PARAM);
     this.next = next;
-    this.#islandRegistry = islandRegistry;
     this.#buildCache = buildCache;
   }
 
@@ -182,6 +185,12 @@ export class Context<State> {
     });
   }
 
+  /**
+   * Render JSX and return an HTML `Response` instance.
+   * ```tsx
+   * ctx.render(<h1>hello world</h1>);
+   * ```
+   */
   async render(
     // deno-lint-ignore no-explicit-any
     vnode: VNode<any> | null,
@@ -261,7 +270,6 @@ export class Context<State> {
       span.setAttribute("fresh.span_type", "render");
       const state = new RenderState(
         this,
-        this.#islandRegistry,
         this.#buildCache,
         partialId,
       );
@@ -273,7 +281,6 @@ export class Context<State> {
           vnode ?? h(Fragment, null),
           this,
           state,
-          this.#buildCache,
           headers,
         );
       } catch (err) {
