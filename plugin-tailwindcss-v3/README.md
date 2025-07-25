@@ -2,15 +2,15 @@
 
 A Tailwind CSS v3 plugin to use in Fresh.
 
-> [info]: If you want to use latest tailwindcss use `@fresh/plugin-tailwindcss`
-> instead.
+> [info]: If you want to use latest tailwindcss use
+> `@unabbreviated-fresh/plugin-tailwindcss` instead.
 
 ## Basic Usage
 
 ```ts
 // dev.ts
 import { Builder } from "fresh/dev";
-import { tailwind } from "@fresh/plugin-tailwind-v3";
+import { tailwind } from "@unabbreviated-fresh/plugin-tailwind-v3";
 
 const builder = new Builder();
 tailwind(builder);

@@ -8,7 +8,7 @@
     "./update",
     "./www"
   ],
-  "name": "@fresh/core",
+  "name": "@unabbreviated-fresh/core",
   "version": "2.0.0-alpha.46",
   "license": "MIT",
   "exports": {

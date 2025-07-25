@@ -20,7 +20,7 @@ function PageLayout({ Component }) {
 
 const app = new App()
   .layout("*", PageLayout)
-  .get("/", (ctx) => ctx.render(<h1>hello</h1>));
+  .get("/", (context) => context.render(<h1>hello</h1>));
 ```
 
 If you browse to the `/` route, Fresh will render the following HTML

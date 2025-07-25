@@ -146,26 +146,26 @@ Deno.test("runMiddleware - lazy middlewares", async () => {
   // deno-lint-ignore require-await
   const lazy: Lazy<MiddlewareFn<State>> = async () => {
     called++;
-    return (ctx) => {
-      ctx.state.text += "_lazy";
-      return ctx.next();
+    return (context) => {
+      context.state.text += "_lazy";
+      return context.next();
     };
   };
 
   const middlewares: MaybeLazy<MiddlewareFn<State>>[] = [
-    async (ctx) => {
-      ctx.state.text = "A";
-      return await ctx.next();
+    async (context) => {
+      context.state.text = "A";
+      return await context.next();
     },
     lazy,
-    (ctx) => {
-      ctx.state.text += "_B";
-      return new Response(ctx.state.text);
+    (context) => {
+      context.state.text += "_B";
+      return new Response(context.state.text);
     },
   ];
 
-  const server = serveMiddleware<{ text: string }>((ctx) =>
-    runMiddlewares(middlewares, ctx)
+  const server = serveMiddleware<{ text: string }>((context) =>
+    runMiddlewares(middlewares, context)
   );
 
   let res = await server.get("/");

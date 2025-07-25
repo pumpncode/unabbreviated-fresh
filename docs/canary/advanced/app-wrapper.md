@@ -26,7 +26,7 @@ function AppWrapper({ Component }) {
 app.appWrapper(AppWrapper);
 ```
 
-Every `ctx.render()` call will include the app wrapper component by default,
+Every `context.render()` call will include the app wrapper component by default,
 unless opted out.
 
 Note that only one app wrapper component is supported per

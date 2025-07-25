@@ -581,7 +581,7 @@ function rewriteCtxMethods(
 
     if (
       node.isKind(SyntaxKind.ExpressionStatement) &&
-      node.getText() === "ctx.renderNotFound();"
+      node.getText() === "context.renderNotFound();"
     ) {
       importState.httpError++;
       node.replaceWithText("throw new HttpError(404);");
@@ -591,7 +591,7 @@ function rewriteCtxMethods(
     if (node.isKind(SyntaxKind.PropertyAccessExpression)) {
       rewriteContextMemberName(node);
     } else if (node.isKind(SyntaxKind.ReturnStatement)) {
-      if (node.getText() === "return ctx.renderNotFound();") {
+      if (node.getText() === "return context.renderNotFound();") {
         importState.httpError++;
         node.replaceWithText(`throw new HttpError(404)`);
         continue;
@@ -640,7 +640,7 @@ function rewriteContextMemberName(
     node.getExpression().getText() === "context" &&
     node.getName() === "remoteAddr"
   ) {
-    node.getExpression().replaceWithText("ctx.info.remoteAddr");
+    node.getExpression().replaceWithText("context.info.remoteAddr");
   } else if (children[0].isKind(SyntaxKind.PropertyAccessExpression)) {
     rewriteContextMemberName(children[0]);
   }

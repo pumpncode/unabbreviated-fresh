@@ -11,17 +11,17 @@ const app = new App()
   .get("/", () => new Response("hello")) // Responds to: GET /
   .get("/other", () => new Response("other")) // Responds to: GET /other
   .post("/upload", () => new Response("upload")); // Responds to: POST /upload
-  .get("/books/:id", (ctx) => {
+  .get("/books/:id", (context) => {
     // Responds to: GET /books/my-book, /books/cool-book, etc
-    const id = ctx.params.id
+    const id = context.params.id
     return new Response(`Book id: ${id}`));
   })
   .get("/blog/:post/comments", () => {
     // Responds to: GET /blog/my-post/comments, /blog/hello/comments, etc
-    const post = ctx.params.post
+    const post = context.params.post
     return new Response(`Blog post comments for post: ${post}`)
   })
-  .get("/foo/*", (ctx) => {
+  .get("/foo/*", (context) => {
     // Responds to: GET /foo/bar, /foo/bar/baz, etc
     return new Response("foo"));
   })

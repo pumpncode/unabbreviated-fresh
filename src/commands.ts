@@ -124,7 +124,10 @@ export function newNotFoundCmd<State>(
     : routeOrMiddleware;
   ensureHandler(route);
 
-  return { type: CommandType.NotFound, fn: (ctx) => renderRoute(ctx, route) };
+  return {
+    type: CommandType.NotFound,
+    fn: (context) => renderRoute(context, route),
+  };
 }
 
 export interface RouteCommand<State> {
@@ -276,12 +279,12 @@ function applyCommandsInner<State>(
           );
 
           let def: Route<State>;
-          fns.push(async (ctx) => {
+          fns.push(async (context) => {
             if (def === undefined) {
               def = await route();
             }
 
-            return renderRoute(ctx, def);
+            return renderRoute(context, def);
           });
 
           if (config === undefined || config.methods === "ALL") {
@@ -299,7 +302,7 @@ function applyCommandsInner<State>(
             }
           }
         } else {
-          fns.push((ctx) => renderRoute(ctx, route));
+          fns.push((context) => renderRoute(context, route));
 
           const routePath = mergePath(
             basePath,

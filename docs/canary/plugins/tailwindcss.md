@@ -21,12 +21,12 @@ that.
   }
 ```
 
-2. Run `deno install jsr:@fresh/plugin-tailwind`
+2. Run `deno install jsr:@unabbreviated-fresh/plugin-tailwind`
 3. Update `dev.ts`:
 
 ```diff dev.ts
   import { Builder } from "fresh/dev";
-+ import { tailwind } from "@fresh/plugin-tailwind";
++ import { tailwind } from "@unabbreviated-fresh/plugin-tailwind";
   
   const builder = new Builder();
 + tailwind(builder);
@@ -55,12 +55,12 @@ tailwind(builder, app, {
 ## Tailwindcss v3
 
 If can't update to the current version of tailwindcss we have a dedicated
-`@fresh/plugin-tailwindcss-v3` plugin that uses tailwindcss v3. That way you can
-decided on your own when it's best to update to v4.
+`@unabbreviated-fresh/plugin-tailwindcss-v3` plugin that uses tailwindcss v3.
+That way you can decided on your own when it's best to update to v4.
 
 ```ts dev.ts
 import { Builder } from "fresh/dev";
-import { tailwind } from "@fresh/plugin-tailwindcss-v3";
+import { tailwind } from "@unabbreviated-fresh/plugin-tailwindcss-v3";
 
 tailwind(builder, {});
 ```

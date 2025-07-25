@@ -9,12 +9,12 @@ features in Fresh itself are built using these APIs.
 ## Custom middlewares
 
 If you need to modify requests, add HTTP headers or pass additional data to
-other middlewares via `ctx.state`, then going with a middleware is the way to
-go.
+other middlewares via `context.state`, then going with a middleware is the way
+to go.
 
 ```ts
-const addXFreshHeader = define.middleware(async (ctx) => {
-  const res = await ctx.next();
+const addXFreshHeader = define.middleware(async (context) => {
+  const res = await context.next();
   res.headers.set("X-Fresh", "served by Fresh");
   return res;
 });

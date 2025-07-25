@@ -55,7 +55,7 @@ Deno.test({
   name: "islands - should make signals interactive",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
+      .get("/", (context) => {
         const sig = signal(3);
         return context.render(
           <Doc>
@@ -77,8 +77,8 @@ Deno.test({
   name: "islands - revive multiple islands from one island file",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <Multiple1 id="multiple-1" />
             <Multiple2 id="multiple-2" />
@@ -102,7 +102,7 @@ Deno.test({
   name: "islands - revive multiple islands with shared signal",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
+      .get("/", (context) => {
         const sig = signal(0);
         return context.render(
           <Doc>
@@ -127,8 +127,8 @@ Deno.test({
   name: "islands - import json",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <JsonIsland />
           </Doc>,
@@ -151,8 +151,8 @@ Deno.test({
   name: "islands - returns null",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <NullIsland />
           </Doc>,
@@ -170,8 +170,8 @@ Deno.test({
   name: "islands - only instantiate top level island",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <IslandInIsland />
           </Doc>,
@@ -194,8 +194,8 @@ Deno.test({
   name: "islands - pass null JSX props to islands",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <JsxIsland jsx={null}>{null}</JsxIsland>
           </Doc>,
@@ -218,8 +218,8 @@ Deno.test({
   name: "islands - pass JSX props to islands",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <JsxIsland jsx={<p>foo</p>}>
               <p>bar</p>
@@ -244,8 +244,8 @@ Deno.test({
   name: "islands - never serialize children prop",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <JsxChildrenIsland>
               foobar
@@ -275,8 +275,8 @@ Deno.test({
   name: "islands - instantiate islands in jsx children",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <PassThrough>
               <div>
@@ -301,8 +301,8 @@ Deno.test({
   name: "islands - instantiate islands in jsx children with slots",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <CounterWithSlots
               jsx={
@@ -338,8 +338,8 @@ Deno.test({
   name: "islands - nested children slots",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <PassThrough>
               <PassThrough>
@@ -374,8 +374,8 @@ Deno.test({
   name: "islands - conditional jsx children",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <JsxConditional
               jsx={
@@ -411,8 +411,8 @@ Deno.test({
   name: "islands - revive DOM attributes",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <JsxConditional>
               <div class="foo">
@@ -481,8 +481,8 @@ Deno.test({
   name: "islands - revive island with fn inside",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <FnIsland />
           </Doc>,
@@ -505,8 +505,8 @@ Deno.test({
   name: "islands - escape props",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) => {
-        return ctx.render(
+      .get("/", (context) => {
+        return context.render(
           <Doc>
             <EscapeIsland str={`"foo"asdf`} />
           </Doc>,
@@ -598,8 +598,8 @@ Deno.test({
   name: "islands - stub Node 'process.env'",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) =>
-        ctx.render(
+      .get("/", (context) =>
+        context.render(
           <Doc>
             <NodeProcess />
           </Doc>,
@@ -622,8 +622,8 @@ Deno.test({
   name: "islands - in base path",
   fn: async () => {
     const app = testApp({ basePath: "/foo" })
-      .get("/", (ctx) =>
-        ctx.render(
+      .get("/", (context) =>
+        context.render(
           <Doc>
             <SelfCounter />
           </Doc>,
@@ -643,8 +643,8 @@ Deno.test({
   name: "islands - preserve f-* attributes",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) =>
-        ctx.render(
+      .get("/", (context) =>
+        context.render(
           <Doc>
             <FreshAttrs />
           </Doc>,
@@ -711,8 +711,8 @@ Deno.test({
   name: "islands - adds preload HTTP headers",
   fn: async () => {
     const app = testApp()
-      .get("/", (ctx) =>
-        ctx.render(
+      .get("/", (context) =>
+        context.render(
           <Doc>
             <SelfCounter />
           </Doc>,

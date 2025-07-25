@@ -13,21 +13,21 @@ pass it to another middleware.
 
 ```tsx
 const app = new App<{ greeting: string }>()
-  .use((ctx) => {
+  .use((context) => {
     // Middleware to pass data
-    ctx.state.greeting = "Hello world";
-    return ctx.next();
+    context.state.greeting = "Hello world";
+    return context.next();
   })
-  .use(async (ctx) => {
+  .use(async (context) => {
     // Middleware to add a HTTP header
-    const res = await ctx.next();
+    const res = await context.next();
     res.headers.set("server", "fresh server");
     return res;
   })
   // A handler is a form of middleware that responds. Here we
   // render HTML and return it.
-  .get("/", (ctx) => {
-    return ctx.render(<h1>{ctx.state.greeting}</h1>);
+  .get("/", (context) => {
+    return context.render(<h1>{context.state.greeting}</h1>);
   });
 ```
 
@@ -41,9 +41,9 @@ Use the `define.middleware()` helper to get typings out of the box:
 ```ts
 import { define } from "./utils.ts";
 
-const middleware = define.middleware(async (ctx) => {
+const middleware = define.middleware(async (context) => {
   console.log("my middleware");
-  return await ctx.next();
+  return await context.next();
 });
 ```
 
@@ -63,9 +63,9 @@ file inside the `routes/` folder or any of it's subfolders.
 ```ts routes/foo/_middleware.ts
 import { define } from "./utils.ts";
 
-export default define.middleware(async (ctx) => {
+export default define.middleware(async (context) => {
   console.log("my middleware");
-  return await ctx.next();
+  return await context.next();
 });
 ```
 
@@ -74,14 +74,14 @@ You can also export an array of middlewares:
 ```ts routes/foo/_middleware.ts
 import { define } from "./utils.ts";
 
-const middleware1 = define.middleware(async (ctx) => {
+const middleware1 = define.middleware(async (context) => {
   console.log("A");
-  return await ctx.next();
+  return await context.next();
 });
 
-const middleware1 = define.middleware(async (ctx) => {
+const middleware1 = define.middleware(async (context) => {
   console.log("B");
-  return await ctx.next();
+  return await context.next();
 });
 
 export default [middleware1, middleware2];

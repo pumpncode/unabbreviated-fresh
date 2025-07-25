@@ -1,5 +1,5 @@
 {
-  "name": "@fresh/plugin-tailwind-v3",
+  "name": "@unabbreviated-fresh/plugin-tailwind-v3",
   "version": "1.0.0",
   "license": "MIT",
   "exports": "./src/mod.ts",

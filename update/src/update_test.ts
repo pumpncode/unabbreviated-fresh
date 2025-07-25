@@ -118,7 +118,7 @@ Deno.test("update - 1.x project deno.json tasks + lock", async () => {
       check: "deno fmt --check && deno lint && deno check",
       preview: "deno serve -A _fresh/server.js",
       start: "deno run -A --watch=static/,routes/ dev.ts",
-      update: "deno run -A -r jsr:@fresh/update .",
+      update: "deno run -A -r jsr:@unabbreviated-fresh/update .",
     });
 });
 
@@ -544,7 +544,7 @@ export default async function Index(context: FreshContext) {
 );
 
 Deno.test.ignore(
-  "update - 1.x ctx.renderNotFound() -> throw new HttpError(404)",
+  "update - 1.x context.renderNotFound() -> throw new HttpError(404)",
   async () => {
     await using _tmp = await withTmpDir();
     const dir = _tmp.dir;

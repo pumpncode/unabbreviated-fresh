@@ -32,7 +32,7 @@ care of making it interactive on the client.
 import MyIsland from "../islands/my-island.tsx";
 
 const app = new App()
-  .get("/", (ctx) => ctx.render(<MyIsland />));
+  .get("/", (context) => context.render(<MyIsland />));
 ```
 
 ## Passing props to islands
@@ -70,8 +70,8 @@ island via props.
 import MyIsland from "../islands/my-island.tsx";
 
 const app = new App()
-  .get("/", (ctx) => {
-    return ctx.render(
+  .get("/", (context) => {
+    return context.render(
       <MyIsland jsx={<h1>hello</h1>}>
         <p>This text is rendered on the server</p>
       </MyIsland>,

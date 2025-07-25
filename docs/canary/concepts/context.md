@@ -12,8 +12,8 @@ other metadata.
 Contains the resolved Fresh configuration.
 
 ```ts
-app.get("/", (ctx) => {
-  console.log("Config: ", ctx.config);
+app.get("/", (context) => {
+  console.log("Config: ", context.config);
   return new Response("hey");
 });
 ```
@@ -24,24 +24,24 @@ Contains a [`URL`](https://developer.mozilla.org/en-US/docs/Web/API/URL)
 instance of the requested url.
 
 ```ts
-app.get("/", (ctx) => {
-  console.log("path: ", ctx.url.pathname);
+app.get("/", (context) => {
+  console.log("path: ", context.url.pathname);
 
-  const hasParam = ctx.url.searchParams.has("q");
+  const hasParam = context.url.searchParams.has("q");
   return new Response(`Has q param: ${String(hasParam)});
 });
 ```
 
-## `.req`
+## `.request`
 
 Contains the incoming
 [`Request`](https://developer.mozilla.org/en-US/docs/Web/API/Request) instance.
 
 ```ts
-app.get("/", (ctx) => {
-  console.log("Request: ", ctx.req);
+app.get("/", (context) => {
+  console.log("Request: ", context.request);
 
-  if (ctx.req.headers.has("X-Foo")) {
+  if (context.request.headers.has("X-Foo")) {
     // do something
   }
 
@@ -55,8 +55,8 @@ Contains the matched route pattern as a `string`. Will be `null` if no pattern
 matched.
 
 ```ts
-app.get("/foo/:id", (ctx) => {
-  console.log(ctx.route); // Logs: "/foo/:id
+app.get("/foo/:id", (context) => {
+  console.log(context.route); // Logs: "/foo/:id
   // ...
 });
 ```
@@ -66,10 +66,10 @@ app.get("/foo/:id", (ctx) => {
 Contains the params of the matched route pattern.
 
 ```ts
-app.get("/foo/:id", (ctx) => {
-  console.log("id: ", ctx.params.id);
+app.get("/foo/:id", (context) => {
+  console.log("id: ", context.params.id);
 
-  return new Response(`Accessed: /foo/${ctx.params.id}`);
+  return new Response(`Accessed: /foo/${context.params.id}`);
 });
 ```
 
@@ -79,13 +79,13 @@ Pass data to the next middlewares with state. Every request has its own state
 object.
 
 ```ts
-app.use((ctx) => {
-  ctx.state.text = "foo";
-  return ctx.next();
+app.use((context) => {
+  context.state.text = "foo";
+  return context.next();
 });
-app.use((ctx) => {
-  console.log(ctx.state.text); // Logs: "foo"
-  return ctx.next();
+app.use((context) => {
+  console.log(context.state.text); // Logs: "foo"
+  return context.next();
 });
 ```
 
@@ -95,10 +95,10 @@ If an error was thrown, this property will hold the caught value (default:
 `null`). This is typically used mainly on an error page.
 
 ```ts
-app.onError((ctx) => {
-  const message = ctx.error instanceof Error
-    ? ctx.error.message
-    : String(ctx.error);
+app.onError((context) => {
+  const message = context.error instanceof Error
+    ? context.error.message
+    : String(context.error);
 
   return new Response(message, { status: 500 });
 });
@@ -109,16 +109,16 @@ app.onError((ctx) => {
 Trigger a redirect from a middleware:
 
 ```ts
-app.get("/old-url", (ctx) => {
-  return ctx.redirect("/new-url");
+app.get("/old-url", (context) => {
+  return context.redirect("/new-url");
 });
 ```
 
 Set a custom status code (default is `302`):
 
 ```ts
-app.get("/old-url", (ctx) => {
-  return ctx.redirect("/new-url", 307);
+app.get("/old-url", (context) => {
+  return context.redirect("/new-url", 307);
 });
 ```
 
@@ -127,16 +127,16 @@ app.get("/old-url", (ctx) => {
 Render JSX and create a HTML `Response`.
 
 ```tsx
-app.get("/", (ctx) => {
-  return ctx.render(<h1>hello world</h1>);
+app.get("/", (context) => {
+  return context.render(<h1>hello world</h1>);
 });
 ```
 
 Set custom response headers or other metadata:
 
 ```tsx
-app.get("/teapot", (ctx) => {
-  return ctx.render(
+app.get("/teapot", (context) => {
+  return context.render(
     <h1>I'm a teapot</h1>,
     {
       status: 418,

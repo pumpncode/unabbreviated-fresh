@@ -383,7 +383,7 @@ export class App<State> {
       // Prevent open redirect attacks
       url.pathname = url.pathname.replace(/\/+/g, "/");
 
-      const method = req.method.toUpperCase() as Method;
+      const method = request.method.toUpperCase() as Method;
       const matched = router.match(method, url);
       let { params, pattern, handlers, methodMatch } = matched;
 

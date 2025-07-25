@@ -8,7 +8,7 @@ A Tailwind CSS plugin to use in Fresh.
 // dev.ts
 import { Builder } from "fresh/dev";
 import { app } from "./main.ts";
-import { tailwind } from "@fresh/plugin-tailwind";
+import { tailwind } from "@unabbreviated-fresh/plugin-tailwind";
 
 const builder = new Builder();
 tailwind(builder, app);
@@ -26,7 +26,7 @@ if (Deno.args.includes("build")) {
 // dev.ts
 import { Builder } from "fresh/dev";
 import { app } from "./main.ts";
-import { tailwind } from "@fresh/plugin-tailwind";
+import { tailwind } from "@unabbreviated-fresh/plugin-tailwind";
 
 const builder = new Builder();
 tailwind(builder, app, {

@@ -14,7 +14,7 @@ import { App } from "fresh";
 
 const app = new App()
   .get("/", () => new Response("hello world"));
-  .get("/jsx", ctx => ctx.render(<h1>render JSX!</h1>));
+  .get("/jsx", context => context.render(<h1>render JSX!</h1>));
 
 app.listen();
 ```
@@ -24,7 +24,7 @@ app.listen();
 Create a new Fresh app by running:
 
 ```sh Terminal
-deno run -Ar jsr:@fresh/init
+deno run -Ar jsr:@unabbreviated-fresh/init
 ```
 
 ## Features

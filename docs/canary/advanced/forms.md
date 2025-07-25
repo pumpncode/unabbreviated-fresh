@@ -23,11 +23,11 @@ This example demonstrates how to handle `application/x-www-form-urlencoded`
 import { Handlers } from "$fresh/server.ts";
 
 export const handler: Handlers = {
-  async GET(req, ctx) {
-    return await ctx.render();
+  async GET(request, context) {
+    return await context.render();
   },
-  async POST(req, ctx) {
-    const form = await req.formData();
+  async POST(request, context) {
+    const form = await request.formData();
     const email = form.get("email")?.toString();
 
     // Add email to list.
@@ -72,17 +72,17 @@ interface Props {
 }
 
 export const handler: Handlers<Props> = {
-  async GET(req, ctx) {
-    return await ctx.render({
+  async GET(request, context) {
+    return await context.render({
       message: null,
     });
   },
-  async POST(req, ctx) {
-    const form = await req.formData();
+  async POST(request, context) {
+    const form = await request.formData();
     const file = form.get("my-file") as File;
 
     if (!file) {
-      return ctx.render({
+      return context.render({
         message: `Please try again`,
       });
     }
@@ -92,7 +92,7 @@ export const handler: Handlers<Props> = {
 
     console.log(contents);
 
-    return ctx.render({
+    return context.render({
       message: `${name} uploaded!`,
     });
   },

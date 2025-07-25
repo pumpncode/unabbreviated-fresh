@@ -24,5 +24,5 @@ const app = new App()
 
 ## Options
 
-See the [API docs](https://jsr.io/@fresh/core/doc/~/cors) for a list of all
-supported options
+See the [API docs](https://jsr.io/@unabbreviated-fresh/core/doc/~/cors) for a
+list of all supported options

@@ -43,8 +43,8 @@ export interface UiTree<Data, State> {
  */
 export type FreshContext<State = unknown> = Context<State>;
 
-export let getBuildCache: <T>(ctx: Context<T>) => BuildCache<T>;
-export let getInternals: <T>(ctx: Context<T>) => UiTree<unknown, T>;
+export let getBuildCache: <T>(context: Context<T>) => BuildCache<T>;
+export let getInternals: <T>(context: Context<T>) => UiTree<unknown, T>;
 
 /**
  * The context passed to every middleware. It is unique for every request.
@@ -121,8 +121,8 @@ export class Context<State> {
 
   static {
     // deno-lint-ignore no-explicit-any
-    getInternals = <T>(ctx: Context<T>) => ctx.#internal as any;
-    getBuildCache = <T>(ctx: Context<T>) => ctx.#buildCache;
+    getInternals = <T>(context: Context<T>) => context.#internal as any;
+    getBuildCache = <T>(context: Context<T>) => context.#buildCache;
   }
 
   constructor(
@@ -188,7 +188,7 @@ export class Context<State> {
   /**
    * Render JSX and return an HTML `Response` instance.
    * ```tsx
-   * ctx.render(<h1>hello world</h1>);
+   * context.render(<h1>hello world</h1>);
    * ```
    */
   async render(

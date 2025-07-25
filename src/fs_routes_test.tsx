@@ -180,9 +180,9 @@ Deno.test("fsRoutes - middleware", async () => {
       handler: (context) => new Response(context.state.text),
     },
     "routes/_middleware.ts": {
-      default: ((ctx: Context<{ text: string }>) => {
-        ctx.state.text = "ok";
-        return ctx.next();
+      default: ((context: Context<{ text: string }>) => {
+        context.state.text = "ok";
+        return context.next();
         // deno-lint-ignore no-explicit-any
       }) as any,
     },
@@ -1523,23 +1523,23 @@ Deno.test("fsRoutes - warn on _layout handler", async () => {
 Deno.test("fsRoutes - call correct middleware", async () => {
   const server = await createServer<{ text: string }>({
     "routes/_middleware.ts": {
-      handler: async function middleware(ctx) {
-        ctx.state.text = "_middleware";
-        return await ctx.next();
+      handler: async function middleware(context) {
+        context.state.text = "_middleware";
+        return await context.next();
       },
     },
     "routes/index.ts": {
-      default: async (ctx) => await new Response(ctx.state.text),
+      default: async (context) => await new Response(context.state.text),
     },
     "routes/admin/_middleware.ts": {
-      handler: async function adminMiddleware(ctx) {
-        ctx.state.text += "admin/_middleware";
-        return await ctx.next();
+      handler: async function adminMiddleware(context) {
+        context.state.text += "admin/_middleware";
+        return await context.next();
       },
     },
     "routes/foo/index.ts": {
-      handler: (ctx) => {
-        return new Response(ctx.state.text);
+      handler: (context) => {
+        return new Response(context.state.text);
       },
     },
   });

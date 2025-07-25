@@ -80,8 +80,8 @@ class DefaultRenderer extends Marked.Renderer {
   override code({ lang: info, text }: Marked.Tokens.Code): string {
     // For canary only
     text = text.replaceAll(
-      /(@fresh\/init)/g,
-      `@fresh/init@${denoJson.version}`,
+      /(@unabbreviated-fresh\/init)/g,
+      `@unabbreviated-fresh/init@${denoJson.version}`,
     );
 
     // format: tsx

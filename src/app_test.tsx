@@ -262,11 +262,11 @@ Deno.test("App - .mountApp() compose apps", async () => {
 
 Deno.test("App - .mountApp() compose apps with .route()", async () => {
   const innerApp = new App<{ text: string }>()
-    .use((ctx) => {
-      ctx.state.text = "A";
-      return ctx.next();
+    .use((context) => {
+      context.state.text = "A";
+      return context.next();
     })
-    .route("/", { handler: (ctx) => new Response(ctx.state.text) });
+    .route("/", { handler: (context) => new Response(context.state.text) });
 
   const app = new App<{ text: string }>()
     .get("/", () => new Response("ok"))
@@ -435,16 +435,16 @@ Deno.test(
 Deno.test("App - .mountApp() fallback route", async () => {
   let called = "";
   const innerApp = new App<{ text: string }>()
-    .use(function Inner(ctx) {
+    .use(function Inner(context) {
       called += "_Inner";
-      return ctx.next();
+      return context.next();
     })
-    .get("/", (ctx) => new Response(ctx.state.text));
+    .get("/", (context) => new Response(context.state.text));
 
   const app = new App<{ text: string }>()
-    .use(function Outer(ctx) {
+    .use(function Outer(context) {
       called += "Outer";
-      return ctx.next();
+      return context.next();
     })
     .mountApp("/", innerApp);
 
@@ -621,12 +621,12 @@ Deno.test("App - .use() - lazy", async () => {
   const app = new App<{ text: string }>()
     // deno-lint-ignore require-await
     .use(async () => {
-      return (ctx) => {
-        ctx.state.text = "ok";
-        return ctx.next();
+      return (context) => {
+        context.state.text = "ok";
+        return context.next();
       };
     })
-    .get("/", (ctx) => new Response(ctx.state.text));
+    .get("/", (context) => new Response(context.state.text));
 
   const server = new FakeServer(app.handler());
 

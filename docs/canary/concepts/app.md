@@ -11,7 +11,7 @@ defined.
 const app = new App()
   .use(staticFiles())
   .get("/", () => new Response("hello"))
-  .get("/about", (ctx) => ctx.render(<h1>About me</h1>));
+  .get("/about", (context) => context.render(<h1>About me</h1>));
 
 // Start server
 app.listen();
@@ -22,16 +22,16 @@ middleware _after_ a `.get()` handler, it won't be included.
 
 ```ts
 const app = new App()
-  .use((ctx) => {
+  .use((context) => {
     // Will be called for all middlewares
-    return ctx.next();
+    return context.next();
   })
   .get("/", () => new Response("hello"))
-  .use((ctx) => {
+  .use((context) => {
     // Will only be called for `/about
-    return ctx.next();
+    return context.next();
   })
-  .get("/about", (ctx) => ctx.render(<h1>About me</h1>));
+  .get("/about", (context) => context.render(<h1>About me</h1>));
 ```
 
 ## `.use()`
@@ -41,9 +41,9 @@ matched left to right.
 
 ```ts
 // Add a middleware at the root
-app.use(async (ctx) => {
+app.use(async (context) => {
   console.log("my middleware");
-  return await ctx.next();
+  return await context.next();
 });
 ```
 
@@ -73,16 +73,16 @@ app.use("/foo/bar", async () => {
 Respond to a `GET` request with the specified middlewares.
 
 ```ts
-app.get("/about", async (ctx) => {
-  return new Response(`GET: ${ctx.url.pathname}`);
+app.get("/about", async (context) => {
+  return new Response(`GET: ${context.url.pathname}`);
 });
 ```
 
 Respond with multiple middlewares:
 
 ```ts
-app.get("/about", middleware1, middleware2, async (ctx) => {
-  return new Response(`GET: ${ctx.url.pathname}`);
+app.get("/about", middleware1, middleware2, async (context) => {
+  return new Response(`GET: ${context.url.pathname}`);
 });
 ```
 
@@ -100,8 +100,8 @@ app.get("/about", async () => {
 Respond to a `POST` request with the specified middlewares.
 
 ```ts
-app.post("/api/user/:id", async (ctx) => {
-  await somehowCreateUser(ctx.params.id);
+app.post("/api/user/:id", async (context) => {
+  await somehowCreateUser(context.params.id);
   return new Response(`User created`);
 });
 ```
@@ -109,8 +109,8 @@ app.post("/api/user/:id", async (ctx) => {
 Respond with multiple middlewares:
 
 ```ts
-app.post("/api/user/:id", middleware1, middleware2, async (ctx) => {
-  await somehowCreateUser(ctx.params.id);
+app.post("/api/user/:id", middleware1, middleware2, async (context) => {
+  await somehowCreateUser(context.params.id);
   return new Response(`User created`);
 });
 ```
@@ -129,8 +129,8 @@ app.post("/api/user/:id", async () => {
 Respond to a `PUT` request with the specified middlewares.
 
 ```ts
-app.put("/api/user/:id", async (ctx) => {
-  await somehowSaveUser(ctx.params.id);
+app.put("/api/user/:id", async (context) => {
+  await somehowSaveUser(context.params.id);
   return new Response(`Updated user`);
 });
 ```
@@ -138,8 +138,8 @@ app.put("/api/user/:id", async (ctx) => {
 Respond with multiple middlewares:
 
 ```ts
-app.put("/api/user/:id", middleware1, middleware2, async (ctx) => {
-  await somehowSaveUser(ctx.params.id);
+app.put("/api/user/:id", middleware1, middleware2, async (context) => {
+  await somehowSaveUser(context.params.id);
   return new Response(`Updated user`);
 });
 ```
@@ -158,8 +158,8 @@ app.put("/api/user/:id", async () => {
 Respond to a `DELETE` request with the specified middlewares.
 
 ```ts
-app.delete("/api/user/:id", async (ctx) => {
-  await somehowDeleteUser(ctx.params.id);
+app.delete("/api/user/:id", async (context) => {
+  await somehowDeleteUser(context.params.id);
   return new Response(`User deleted`);
 });
 ```
@@ -167,8 +167,8 @@ app.delete("/api/user/:id", async (ctx) => {
 Respond with multiple middlewares:
 
 ```ts
-app.delete("/api/user/:id", middleware1, middleware2, async (ctx) => {
-  await somehowDeleteUser(ctx.params.id);
+app.delete("/api/user/:id", middleware1, middleware2, async (context) => {
+  await somehowDeleteUser(context.params.id);
   return new Response(`User deleted`);
 });
 ```
@@ -187,7 +187,7 @@ app.delete("/api/user/:id", async () => {
 Respond to a `HEAD` request with the specified middlewares.
 
 ```ts
-app.head("/api/user/:id", async (ctx) => {
+app.head("/api/user/:id", async (context) => {
   return new Response(null, { status: 200 });
 });
 ```
@@ -195,7 +195,7 @@ app.head("/api/user/:id", async (ctx) => {
 Respond with multiple middlewares:
 
 ```ts
-app.head("/api/user/:id", middleware1, middleware2, async (ctx) => {
+app.head("/api/user/:id", middleware1, middleware2, async (context) => {
   return new Response(null, { status: 200 });
 });
 ```
@@ -214,7 +214,7 @@ app.head("/api/user/:id", async () => {
 Respond to a request for all HTTP verbs with the specified middlewares.
 
 ```ts
-app.all("/api/foo", async (ctx) => {
+app.all("/api/foo", async (context) => {
   return new Response("hehe");
 });
 ```
@@ -222,7 +222,7 @@ app.all("/api/foo", async (ctx) => {
 Respond with multiple middlewares:
 
 ```ts
-app.all("/api/foo", middleware1, middleware2, async (ctx) => {
+app.all("/api/foo", middleware1, middleware2, async (context) => {
   return new Response("hehe");
 });
 ```
@@ -278,8 +278,8 @@ Setting a middleware:
 
 ```ts
 // top level error handler
-app.onError("*", ctx => {
-  return new Response(String(ctx.error), { status: 500 })
+app.onError("*", context => {
+  return new Response(String(context.error), { status: 500 })
 }))
 ```
 

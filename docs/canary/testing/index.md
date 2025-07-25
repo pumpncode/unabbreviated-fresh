@@ -17,15 +17,15 @@ dummy app and return the relevant info we want to check in a custom `/` handler.
 import { expect } from "@std/expect";
 import { App } from "fresh";
 
-const middleware = define.middleware((ctx) => {
-  ctx.state.text = "middleware text";
-  return await ctx.next();
+const middleware = define.middleware((context) => {
+  context.state.text = "middleware text";
+  return await context.next();
 });
 
-Deno.test("My middleware - sets ctx.state.text", async () => {
+Deno.test("My middleware - sets context.state.text", async () => {
   const handler = new App()
     .use(middleware)
-    .get("/", (ctx) => new Response(ctx.state.text))
+    .get("/", (context) => new Response(context.state.text))
     .handler();
 
   const res = await handler(new Request("http://localhost"));
@@ -64,7 +64,7 @@ function AppWrapper({ Component }) {
 Deno.test("App Wrapper - renders title and content", async () => {
   const handler = new App()
     .appWrapper(AppWrapper)
-    .get("/", (ctx) => ctx.render(<h1>hello</h1>))
+    .get("/", (context) => context.render(<h1>hello</h1>))
     .handler();
 
   const res = await handler(new Request("http://localhost"));
@@ -93,7 +93,7 @@ function MyLayout({ Component }) {
 Deno.test("MyLayout - renders heading and content", async () => {
   const handler = new App()
     .layout("*", MyLayout)
-    .get("/", (ctx) => ctx.render(<h1>hello</h1>))
+    .get("/", (context) => context.render(<h1>hello</h1>))
     .handler();
 
   const res = await handler(new Request("http://localhost"));

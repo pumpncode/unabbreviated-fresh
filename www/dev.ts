@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run -A --watch=static/,routes/
 
 import { Builder } from "fresh/dev";
-import { tailwind } from "@fresh/plugin-tailwind";
+import { tailwind } from "@unabbreviated-fresh/plugin-tailwind";
 
 const builder = new Builder({ target: "safari12" });
 tailwind(builder);

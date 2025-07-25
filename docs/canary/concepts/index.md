@@ -31,6 +31,6 @@ Advanced concepts:
 - [**App wrapper**](/docs/canary/advanced/app-wrapper) - Responsible for the
   outer HTML structure, usually up to the `<body>`-tag
 - [**Layouts**](/docs/canary/advanced/layouts) - Re-use a shared layout when
-  calling `ctx.render()` across routes
+  calling `context.render()` across routes
 - [**Partials**](/docs/canary/advanced/partials) - Stream in server generated
   content on the current page

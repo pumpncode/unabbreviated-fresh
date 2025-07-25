@@ -75,8 +75,8 @@ Deno.test({
   name: "partials - revive island not seen before",
   fn: async () => {
     const app = testApp()
-      .get("/partial", (ctx) => {
-        return ctx.render(
+      .get("/partial", (context) => {
+        return context.render(
           <Doc>
             <Partial name="foo">
               <SelfCounter />

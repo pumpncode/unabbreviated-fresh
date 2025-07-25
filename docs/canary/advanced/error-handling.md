@@ -22,8 +22,8 @@ To add an error page use [`app.onError()`](/docs/canary/concepts/app#onerror).
 
 ```ts
 const app = new App()
-  .onError("*", (ctx) => {
-    console.log(`Error: ${ctx.error}`);
+  .onError("*", (context) => {
+    console.log(`Error: ${context.error}`);
     return new Response("Oops!", { status: 500 });
   })
   .get("/thrower", () => {
@@ -39,10 +39,10 @@ You can also nest error pages:
 ```ts
 const app = new App()
   // Top level error page
-  .onError("*", (ctx) => {
+  .onError("*", (context) => {
     return new Response("Oops!", { status: 500 });
   })
-  .onError("/foo/bar", (ctx) => {
+  .onError("/foo/bar", (context) => {
     return new Response("nested error!", { status: 500 });
   })
   .get("/foo/bar/thrower", () => {
@@ -59,7 +59,7 @@ handler, Fresh ensures that every 404 error will invoke this callback.
 ```ts
 const app = new App()
   // Top level error page
-  .notFound((ctx) => {
+  .notFound((context) => {
     return new Response("Page not found", { status: 404 });
   })
   .get("/", () => new Response("foo"));
@@ -76,24 +76,24 @@ error code, you can use Fresh's `HttpError` class.
 ```ts
 import { HttpError } from "fresh";
 
-async function authMiddleware(ctx) {
-  const user = ctx.state.user;
+async function authMiddleware(context) {
+  const user = context.state.user;
 
   // Check if user is authenticated, throw 404 error if not
   if (!isAuthenticated(user)) {
     throw new HttpError(404);
   }
 
-  return await ctx.next();
+  return await context.next();
 }
 ```
 
 You can check the status code of the thrown `HttpError` in your error handler:
 
 ```ts
-app.onError((ctx) => {
-  if (ctx.error instanceof HttpError) {
-    const status = ctx.error.status;
+app.onError((context) => {
+  if (context.error instanceof HttpError) {
+    const status = context.error.status;
     return new Response("oops", { status });
   }
 

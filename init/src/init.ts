@@ -505,7 +505,7 @@ if (Deno.args.includes("build")) {
       dev: "deno run -A --watch=static/,routes/ dev.ts",
       build: "deno run -A dev.ts build",
       start: "deno serve -A _fresh/server.js",
-      update: "deno run -A -r jsr:@fresh/update .",
+      update: "deno run -A -r jsr:@unabbreviated-fresh/update .",
     },
     lint: {
       rules: {
@@ -535,8 +535,8 @@ if (Deno.args.includes("build")) {
 
   if (useTailwind) {
     denoJson.imports["tailwindcss"] = `npm:tailwindcss@^${TAILWINDCSS_VERSION}`;
-    denoJson.imports["@fresh/plugin-tailwind"] =
-      `jsr:@fresh/plugin-tailwind@^${FRESH_TAILWIND_VERSION}`;
+    denoJson.imports["@unabbreviated-fresh/plugin-tailwind"] =
+      `jsr:@unabbreviated-fresh/plugin-tailwind@^${FRESH_TAILWIND_VERSION}`;
     denoJson.imports["@tailwindcss/postcss"] =
       `npm:@tailwindcss/postcss@^${TAILWINDCSS_POSTCSS_VERSION}`;
     denoJson.imports["postcss"] = `npm:postcss@^${POSTCSS_VERSION}`;

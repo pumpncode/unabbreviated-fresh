@@ -85,12 +85,12 @@ Deno.test("context.isPartial - should indicate whether request is partial or not
   expect(isPartials).toEqual([false, true]);
 });
 
-Deno.test("ctx.route - should contain matched route", async () => {
+Deno.test("context.route - should contain matched route", async () => {
   let route: string | null = null;
   const app = new App()
-    .use((ctx) => {
-      route = ctx.route;
-      return ctx.next();
+    .use((context) => {
+      route = context.route;
+      return context.next();
     })
     .get("/foo/bar", () => new Response("ok"))
     .get("/foo/:id", () => new Response("ok"));
