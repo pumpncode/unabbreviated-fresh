@@ -196,7 +196,7 @@ export async function updateProject(dir: string) {
   // Create a progress bar
   const bar = new ProgressBar({
     max: sfs.length,
-    fmt(x) {
+    formatter(x) {
       return `[${x.styledTime}] [${x.progressBar}] [${x.value}/${x.max} files]`;
     },
   });
