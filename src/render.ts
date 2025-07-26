@@ -110,7 +110,6 @@ export type PageProps<Data = unknown, T = unknown> =
     | "config"
     | "url"
     | "request"
-    | "req"
     | "params"
     | "info"
     | "state"
@@ -139,7 +138,6 @@ export async function renderRouteComponent<State>(
     isPartial: context.isPartial,
     params: context.params,
     request: context.request,
-    req: context.request,
     state: context.state,
     url: context.url,
   };

@@ -66,11 +66,6 @@ export class Context<State> {
   /** The original incoming `Request` object` */
   readonly request: Request;
 
-  /**
-   * The original incoming `Request` object`
-   * @deprecated use {@link request}
-   */
-  readonly req: Request;
   /** The matched route pattern. */
   readonly route: string | null;
   /** The url parameters of the matched route pattern. */
@@ -137,7 +132,6 @@ export class Context<State> {
   ) {
     this.url = url;
     this.request = request;
-    this.req = request;
     this.info = info;
     this.params = params;
     this.route = route;
@@ -241,7 +235,6 @@ export class Context<State> {
         isPartial: this.isPartial,
         params: this.params,
         request: this.request,
-        req: this.request,
         state: this.state,
         url: this.url,
       });
@@ -308,7 +301,6 @@ Object.defineProperties(Context.prototype, {
   config: { enumerable: true },
   url: { enumerable: true },
   request: { enumerable: true },
-  req: { enumerable: true },
   params: { enumerable: true },
   state: { enumerable: true },
   data: { enumerable: true },
