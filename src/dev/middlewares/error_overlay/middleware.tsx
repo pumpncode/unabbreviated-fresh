@@ -5,8 +5,8 @@ import { FreshScripts } from "../../../runtime/server/preact_hooks.tsx";
 import { ErrorOverlay } from "./overlay.tsx";
 
 export function devErrorOverlay<T>(): Middleware<T> {
-  return async (ctx) => {
-    const { config, url } = ctx;
+  return async (context) => {
+    const { config, url } = context;
     if (url.pathname === config.basePath + DEV_ERROR_OVERLAY_URL) {
       return context.render(<ErrorOverlay url={url} />);
     }

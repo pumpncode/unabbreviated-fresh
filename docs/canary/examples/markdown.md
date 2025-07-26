@@ -36,11 +36,11 @@ and some interesting text here
 
 const app = new App();
 
-app.get("/", async (ctx) => {
+app.get("/", async (context) => {
   const content = await Deno.readTextFile("path/to/content.md");
   const html = renderMarkdown(content);
 
-  return await ctx.render(
+  return await context.render(
     <div>
       <h1>Here comes a markdown post:</h1>
       <style dangerouslySetInnerHTML={{ __html: CSS }} />

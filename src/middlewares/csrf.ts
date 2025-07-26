@@ -57,7 +57,7 @@ export function csrf<State>(
 ): Middleware<State> {
   const isAllowedOrigin = (
     origin: string | null,
-    ctx: Context<State>,
+    context: Context<State>,
   ) => {
     if (origin === null) {
       return false;
@@ -66,23 +66,23 @@ export function csrf<State>(
     const optsOrigin = options?.origin;
 
     if (!optsOrigin) {
-      return origin === ctx.url.origin;
+      return origin === context.url.origin;
     }
     if (typeof optsOrigin === "string") {
       return origin === optsOrigin;
     }
     if (typeof optsOrigin === "function") {
-      return optsOrigin(origin, ctx);
+      return optsOrigin(origin, context);
     }
     return Array.isArray(optsOrigin) && optsOrigin.includes(origin);
   };
 
-  return async (ctx) => {
-    const { method, headers } = ctx.req;
+  return async (context) => {
+    const { method, headers } = context.request;
 
     // Safe methods
     if (method === "GET" || method === "HEAD" || method === "OPTIONS") {
-      return await ctx.next();
+      return await context.next();
     }
 
     const secFetchSite = headers.get("Sec-Fetch-Site");
@@ -91,9 +91,9 @@ export function csrf<State>(
     if (secFetchSite !== null) {
       if (
         secFetchSite === "same-origin" || secFetchSite === "none" ||
-        isAllowedOrigin(origin, ctx)
+        isAllowedOrigin(origin, context)
       ) {
-        return await ctx.next();
+        return await context.next();
       }
 
       throw new HttpError(403);
@@ -101,11 +101,11 @@ export function csrf<State>(
 
     // Neither `Sec-Fetch-Site` or `Origin` is set
     if (origin === null) {
-      return await ctx.next();
+      return await context.next();
     }
 
-    if (isAllowedOrigin(origin, ctx)) {
-      return await ctx.next();
+    if (isAllowedOrigin(origin, context)) {
+      return await context.next();
     }
 
     throw new HttpError(403);

@@ -84,7 +84,7 @@ export type MiddlewareFn<State> = Middleware<State>;
  * A lazy {@linkcode Middleware}
  */
 export type MaybeLazyMiddleware<State> = (
-  ctx: Context<State>,
+  context: Context<State>,
 ) => Response | Promise<Response | Middleware<State>>;
 
 export function runMiddlewares<State>(

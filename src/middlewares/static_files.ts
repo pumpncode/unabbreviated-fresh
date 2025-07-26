@@ -14,8 +14,8 @@ import { getBuildCache } from "../context.ts";
  * ```
  */
 export function staticFiles<T>(): Middleware<T> {
-  return async function freshServeStaticFiles(ctx) {
-    const { req, url, config } = ctx;
+  return async function freshServeStaticFiles(context) {
+    const { request, url, config } = context;
 
     const buildCache = getBuildCache(context);
     if (buildCache === null) return await context.next();

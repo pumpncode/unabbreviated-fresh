@@ -13,8 +13,8 @@ import type { Middleware } from "./mod.ts";
 export function trailingSlashes<State>(
   mode: "always" | "never",
 ): Middleware<State> {
-  return function trailingSlashesMiddleware(ctx) {
-    const url = ctx.url;
+  return function trailingSlashesMiddleware(context) {
+    const url = context.url;
     if (url.pathname !== "/") {
       if (mode === "always" && !url.pathname.endsWith("/")) {
         return context.redirect(`${url.pathname}/${url.search}`);

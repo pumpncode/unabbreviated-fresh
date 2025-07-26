@@ -14,12 +14,12 @@ interface State {
   foo: string;
 }
 
-async function myMiddleware(ctx: Context<State>): Promise<Response> {
-  return new Response("hello " + ctx.state.foo);
+async function myMiddleware(context: Context<State>): Promise<Response> {
+  return new Response("hello " + context.state.foo);
 }
 
-async function otherMiddleware(ctx: Context<State>): Promise<Response> {
-  return new Response("other " + ctx.state.foo);
+async function otherMiddleware(context: Context<State>): Promise<Response> {
+  return new Response("other " + context.state.foo);
 }
 ```
 
@@ -30,12 +30,12 @@ With define helpers:
 const define = createDefine<{ foo: string }>();
 
 // Usage
-const myMiddleware = define.middleware((ctx) => {
-  return new Response("hello " + ctx.state.foo);
+const myMiddleware = define.middleware((context) => {
+  return new Response("hello " + context.state.foo);
 });
 
-const otherMiddleware = define.middleware((ctx) => {
-  return new Response("other " + ctx.state.foo);
+const otherMiddleware = define.middleware((context) => {
+  return new Response("other " + context.state.foo);
 });
 ```
 
@@ -47,7 +47,7 @@ when you can pass data from the handler to the component in a type-safe way.
 
 ```tsx routes/index.tsx
 export const handler = define.handlers({
-  GET(ctx) {
+  GET(context) {
     return { data: { foo: "Deno" } };
   },
 });

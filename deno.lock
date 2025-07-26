@@ -99,7 +99,7 @@
     "@deno/loader@0.2.1": {
       "integrity": "c9fcc7309ce6a77306d37a7dc4b886e547aafc5204a4a28b0eafa523ffa5c9fc"
     },
-    "@fresh/core@2.0.0-alpha.41": {
+    "@unabbreviated-fresh/core@2.0.0-alpha.41": {
       "integrity": "c2b267014ce4cf18aedfc9925f0e610a6636cf0ccfde81a768d472a00029aa40",
       "dependencies": [
         "jsr:@deno/esbuild-plugin",

@@ -85,9 +85,9 @@ interface State {
 
 const app = new App<State>();
 
-app.use((ctx) => {
-  ctx.state.text = "foo";
-  return ctx.next();
+app.use((context) => {
+  context.state.text = "foo";
+  return context.next();
 });
 app.use((context) => {
   console.log(context.state.text); // Logs: "foo"
