@@ -79,9 +79,15 @@ Pass data to the next middlewares with state. Every request has its own state
 object.
 
 ```ts
-app.use((context) => {
-  context.state.text = "foo";
-  return context.next();
+interface State {
+  text?: string;
+}
+
+const app = new App<State>();
+
+app.use((ctx) => {
+  ctx.state.text = "foo";
+  return ctx.next();
 });
 app.use((context) => {
   console.log(context.state.text); // Logs: "foo"

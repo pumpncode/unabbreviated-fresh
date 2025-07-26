@@ -1,14 +1,14 @@
 import { runMiddlewares } from "./mod.ts";
 import { expect } from "@std/expect";
 import { serveMiddleware } from "../test_utils.ts";
-import type { MiddlewareFn } from "./mod.ts";
+import type { Middleware } from "./mod.ts";
 import type { Lazy, MaybeLazy } from "../types.ts";
 
 Deno.test("runMiddleware", async () => {
-  const middlewares: MiddlewareFn<{ text: string }>[] = [
-    (context) => {
-      context.state.text = "A";
-      return context.next();
+  const middlewares: Middleware<{ text: string }>[] = [
+    (ctx) => {
+      ctx.state.text = "A";
+      return ctx.next();
     },
     (context) => {
       context.state.text += "B";
@@ -33,9 +33,9 @@ Deno.test("runMiddleware", async () => {
 });
 
 Deno.test("runMiddleware - middlewares should only be called once", async () => {
-  const A: MiddlewareFn<{ count: number }> = (context) => {
-    if (context.state.count === undefined) {
-      context.state.count = 0;
+  const A: Middleware<{ count: number }> = (ctx) => {
+    if (ctx.state.count === undefined) {
+      ctx.state.count = 0;
     } else {
       context.state.count++;
     }
@@ -55,21 +55,21 @@ Deno.test("runMiddleware - middlewares should only be called once", async () => 
 
 Deno.test("runMiddleware - runs multiple stacks", async () => {
   type State = { text: string };
-  const A: MiddlewareFn<State> = (context) => {
-    context.state.text += "A";
-    return context.next();
+  const A: Middleware<State> = (ctx) => {
+    ctx.state.text += "A";
+    return ctx.next();
   };
-  const B: MiddlewareFn<State> = (context) => {
-    context.state.text += "B";
-    return context.next();
+  const B: Middleware<State> = (ctx) => {
+    ctx.state.text += "B";
+    return ctx.next();
   };
-  const C: MiddlewareFn<State> = (context) => {
-    context.state.text += "C";
-    return context.next();
+  const C: Middleware<State> = (ctx) => {
+    ctx.state.text += "C";
+    return ctx.next();
   };
-  const D: MiddlewareFn<State> = (context) => {
-    context.state.text += "D";
-    return context.next();
+  const D: Middleware<State> = (ctx) => {
+    ctx.state.text += "D";
+    return ctx.next();
   };
 
   const server = serveMiddleware<State>((context) => {
@@ -95,8 +95,8 @@ Deno.test("runMiddleware - throws errors", async () => {
   let thrownB: unknown = null;
   let thrownC: unknown = null;
 
-  const middlewares: MiddlewareFn<{ text: string }>[] = [
-    async (context) => {
+  const middlewares: Middleware<{ text: string }>[] = [
+    async (ctx) => {
       try {
         return await context.next();
       } catch (err) {
@@ -144,7 +144,7 @@ Deno.test("runMiddleware - lazy middlewares", async () => {
 
   let called = 0;
   // deno-lint-ignore require-await
-  const lazy: Lazy<MiddlewareFn<State>> = async () => {
+  const lazy: Lazy<Middleware<State>> = async () => {
     called++;
     return (context) => {
       context.state.text += "_lazy";
@@ -152,10 +152,10 @@ Deno.test("runMiddleware - lazy middlewares", async () => {
     };
   };
 
-  const middlewares: MaybeLazy<MiddlewareFn<State>>[] = [
-    async (context) => {
-      context.state.text = "A";
-      return await context.next();
+  const middlewares: MaybeLazy<Middleware<State>>[] = [
+    async (ctx) => {
+      ctx.state.text = "A";
+      return await ctx.next();
     },
     lazy,
     (context) => {

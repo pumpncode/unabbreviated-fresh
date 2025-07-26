@@ -52,13 +52,13 @@ const toc: RawTableOfContents = {
           ["error-handling", "Error handling", "link:canary"],
           ["partials", "Partials", "link:canary"],
           ["forms", "Forms", "link:canary"],
+          ["define", "Define Helpers", "link:canary"],
         ],
       },
       deployment: {
         title: "Deployment",
         link: "canary",
         pages: [
-          ["production", "Production builds", "link:canary"],
           ["deno-deploy", "Deno Deploy", "link:canary"],
           ["docker", "Docker", "link:canary"],
         ],
@@ -72,6 +72,7 @@ const toc: RawTableOfContents = {
         link: "canary",
         pages: [
           ["cors", "cors", "link:canary"],
+          ["csrf", "csrf", "link:canary"],
           ["trailing-slashes", "trailingSlashes", "link:canary"],
           ["tailwindcss", "tailwindcss", "link:canary"],
         ],
@@ -81,16 +82,17 @@ const toc: RawTableOfContents = {
         link: "latest",
         pages: [
           ["migration-guide", "Migration Guide", "link:canary"],
+          ["daisyui", "daisyUI", "link:canary"],
           ["modifying-the-head", "Modifying the <head>", "link:latest"],
           ["creating-a-crud-api", "Creating a CRUD API", "link:latest"],
-          ["rendering-markdown", "Rendering markdown", "link:latest"],
           ["rendering-raw-html", "Rendering raw HTML", "link:canary"],
+          ["markdown", "Markdown", "link:canary"],
           [
             "sharing-state-between-islands",
             "Sharing state between islands",
             "link:latest",
           ],
-          ["active-links", "Styling active links", "link:latest"],
+          ["active-links", "Active links", "link:canary"],
         ],
       },
     },
