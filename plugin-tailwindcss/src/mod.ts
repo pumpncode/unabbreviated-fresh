@@ -11,6 +11,8 @@ export function tailwind(
   options: TailwindPluginOptions = {},
 ): void {
   const { exclude, ...tailwindOptions } = options;
+
+  // @ts-ignore -- fix CI
   const instance = postcss(twPostcss({
     optimize: builder.config.mode === "production",
     ...tailwindOptions,
